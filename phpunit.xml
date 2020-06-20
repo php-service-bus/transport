@@ -13,6 +13,8 @@
          stopOnFailure="false">
     <php>
         <ini name="error_reporting" value="-1"/>
+        <env name="REDIS_CONNECTION_DSN" value="tcp://localhost:6379"/>
+        <env name="TRANSPORT_CONNECTION_DSN" value="amqp://guest:guest@localhost:5672"/>
     </php>
 
     <testsuites>

@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Transport\Tests\Redis;
 
+use Amp\Loop;
 use PHPUnit\Framework\TestCase;
 use ServiceBus\Transport\Redis\RedisChannel;
 use ServiceBus\Transport\Redis\RedisConsumer;
@@ -54,10 +55,15 @@ final class RedisConsumerTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function disconnectWithoutConsuming(): \Generator
+    public function disconnectWithoutConsuming(): void
     {
-        $consumer = new RedisConsumer(new RedisChannel('qwerty'), $this->config);
+        Loop::run(
+            function(): \Generator
+            {
+                $consumer = new RedisConsumer(new RedisChannel('qwerty'), $this->config);
 
-        yield $consumer->stop();
+                yield $consumer->stop();
+            }
+        );
     }
 }

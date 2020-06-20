@@ -58,7 +58,7 @@ final class RedisConsumerTest extends TestCase
     public function disconnectWithoutConsuming(): void
     {
         Loop::run(
-            function(): \Generator
+            function (): \Generator
             {
                 $consumer = new RedisConsumer(new RedisChannel('qwerty'), $this->config);
 

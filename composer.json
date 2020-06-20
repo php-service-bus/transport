@@ -1,6 +1,6 @@
 {
   "name": "php-service-bus/transport",
-  "description": "co",
+  "description": "Transports implementation",
   "type": "library",
   "keywords": [
     "async-php",

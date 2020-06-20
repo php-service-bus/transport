@@ -1,0 +1,57 @@
+{
+  "name": "php-service-bus/transport-common",
+  "description": "Transport implementation",
+  "type": "library",
+  "keywords": [
+    "async-php",
+    "command-bus",
+    "messaging"
+  ],
+  "authors": [
+    {
+      "name": "Masiukevich Maksim",
+      "email": "dev@async-php.com",
+      "homepage": "https://github.com/mmasiukevich",
+      "role": "Developer"
+    }
+  ],
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "ServiceBus\\Transport\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ServiceBus\\Transport\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": ">=7.4",
+    "amphp/amp": "v2.4.*",
+    "amphp/redis": "v1.0.*",
+    "php-service-bus/common": "v4.1.*",
+    "phpinnacle/ridge": "v1.0.*",
+    "symfony/dependency-injection": "v5.1.*"
+  },
+  "require-dev": {
+    "php-service-bus/code-style-config": "v1.2.*",
+    "phpunit/phpunit": "v9.1.*",
+    "vimeo/psalm": "v3.11.*",
+    "phpstan/phpstan": "v0.12.*"
+  },
+  "prefer-stable": true,
+  "minimum-stability": "stable",
+  "scripts": {
+    "psalm": "./vendor/bin/psalm --config=psalm.xml",
+    "phpstan": "./vendor/bin/phpstan analyse src --level 7",
+    "tests": "./vendor/bin/phpunit --configuration phpunit.xml --verbose",
+    "coverage": "./vendor/bin/phpunit --configuration phpunit.xml --coverage-html ./coverage --verbose",
+    "cs-check": "./vendor/bin/php-cs-fixer fix --allow-risky=yes --dry-run",
+    "cs-fix": "./vendor/bin/php-cs-fixer fix --allow-risky=yes",
+    "pre-commit": "PHP_CS_FIXER_IGNORE_ENV=1 ./vendor/bin/php-cs-fixer fix --allow-risky=yes && ./vendor/bin/psalm --config=psalm.xml && ./vendor/bin/phpstan analyse src --level 7 && ./vendor/bin/phpunit --configuration phpunit.xml --verbose"
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
+}

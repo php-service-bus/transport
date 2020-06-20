@@ -18,11 +18,10 @@ cache:
 
 before_script:
   - mkdir -p build/logs
-  - psql -c 'CREATE DATABASE test;' -U postgres
 
 install:
   - travis_retry composer install --no-interaction --no-suggest
-  -
+
 script:
   - ./vendor/bin/phpunit --configuration ./phpunit.xml --coverage-clover=coverage.clover
   - if [ $TRAVIS_PHP_VERSION = "7.4" ]; then ./vendor/bin/psalm --config=psalm.xml; fi

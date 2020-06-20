@@ -19,7 +19,7 @@
 
     <testsuites>
 
-        <testsuite name="Common transport implementation interfaces">
+        <testsuite name="Transport implementation">
             <directory>./tests/</directory>
         </testsuite>
 
@@ -27,10 +27,9 @@
 
     <filter>
         <whitelist>
-            <directory>./</directory>
+            <directory>./src</directory>
             <exclude>
                 <directory>./tests</directory>
-                <directory>./vendor</directory>
             </exclude>
         </whitelist>
     </filter>

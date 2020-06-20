@@ -13,8 +13,6 @@ declare(strict_types = 1);
 namespace ServiceBus\Transport\Tests\Redis;
 
 use Symfony\Component\Uid\Uuid;
-use function Amp\call;
-use function Amp\Promise\wait;
 use function ServiceBus\Common\uuid;
 use Amp\Loop;
 use PHPUnit\Framework\TestCase;

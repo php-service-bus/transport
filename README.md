@@ -7,6 +7,7 @@ This component is part of the [PHP Service Bus](https://github.com/php-service-b
 
 ## Documentation
 [**PHPInnacle RabbitMQ module**](https://github.com/php-service-bus/documentation/blob/master/pages/modules/transport_phpinnacle.md)
+
 [**Redis transport documentation**](https://github.com/php-service-bus/documentation/blob/master/pages/modules/redis_transport.md)
 
 ## Contributing

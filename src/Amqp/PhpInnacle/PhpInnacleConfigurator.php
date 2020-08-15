@@ -22,6 +22,7 @@ use ServiceBus\Transport\Amqp\AmqpQueue;
 use ServiceBus\Transport\Common\Exceptions\BindFailed;
 use ServiceBus\Transport\Common\Exceptions\CreateQueueFailed;
 use ServiceBus\Transport\Common\Exceptions\CreateTopicFailed;
+use function ServiceBus\Common\throwableMessage;
 
 /**
  * Creating exchangers\queues and bind them.
@@ -75,7 +76,7 @@ final class PhpInnacleConfigurator
                 }
                 catch (\Throwable $throwable)
                 {
-                    $this->logger->error($throwable->getMessage(), [
+                    $this->logger->error(throwableMessage($throwable), [
                         'throwablePoint' => \sprintf('%s:%d', $throwable->getFile(), $throwable->getLine()),
                     ]);
 
@@ -160,7 +161,7 @@ final class PhpInnacleConfigurator
                 }
                 catch (\Throwable $throwable)
                 {
-                    $this->logger->error($throwable->getMessage(), [
+                    $this->logger->error(throwableMessage($throwable), [
                         'throwablePoint' => \sprintf('%s:%d', $throwable->getFile(), $throwable->getLine()),
                     ]);
 

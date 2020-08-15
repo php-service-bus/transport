@@ -207,7 +207,7 @@ final class AmqpQueue implements Queue
         $this->arguments = $arguments;
         $this->name      = $name;
 
-        if ($durable === true)
+        if ($durable)
         {
             $this->makeDurable();
         }

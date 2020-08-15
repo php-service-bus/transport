@@ -21,6 +21,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Common\Exceptions\ConnectionFail;
 use function ServiceBus\Common\jsonDecode;
+use function ServiceBus\Common\throwableMessage;
 
 /**
  * @internal
@@ -91,7 +92,7 @@ final class RedisConsumer
                     catch (\Throwable $throwable)
                     {
                         $this->logger->error('Emit package failed: {throwableMessage} ', [
-                            'throwableMessage' => $throwable->getMessage(),
+                            'throwableMessage' => throwableMessage($throwable),
                             'throwablePoint'   => \sprintf('%s:%d', $throwable->getFile(), $throwable->getLine()),
                         ]);
                     }

@@ -20,6 +20,7 @@ use PHPinnacle\Ridge\Message;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Amqp\AmqpQueue;
+use function ServiceBus\Common\throwableMessage;
 
 /**
  * @internal
@@ -141,7 +142,7 @@ final class PhpInnacleConsumer
                 $this->logger->error(
                     'Error occurred: {throwableMessage}',
                     [
-                        'throwableMessage'  => $throwable->getMessage(),
+                        'throwableMessage'  => throwableMessage($throwable),
                         'throwablePoint'    => \sprintf('%s:%d', $throwable->getFile(), $throwable->getLine()),
                         'rawMessagePayload' => $message->content(),
                     ]

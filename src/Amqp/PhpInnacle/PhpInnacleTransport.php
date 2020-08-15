@@ -87,7 +87,7 @@ final class PhpInnacleTransport implements Transport
         return call(
             function (): \Generator
             {
-                if ($this->client->isConnected() === true)
+                if ($this->client->isConnected())
                 {
                     return;
                 }
@@ -136,7 +136,7 @@ final class PhpInnacleTransport implements Transport
             {
                 try
                 {
-                    if ($this->client->isConnected() === true)
+                    if ($this->client->isConnected())
                     {
                         yield $this->client->disconnect();
                     }
@@ -210,7 +210,7 @@ final class PhpInnacleTransport implements Transport
                         'queueName' => $queueName,
                     ]);
 
-                    if (isset($this->consumers[$queueName]) === true)
+                    if (isset($this->consumers[$queueName]))
                     {
                         /** @var PhpInnacleConsumer $consumer */
                         $consumer = $this->consumers[$queueName];

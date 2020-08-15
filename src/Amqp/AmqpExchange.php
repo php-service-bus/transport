@@ -187,7 +187,7 @@ final class AmqpExchange implements Topic
         $this->name      = $name;
         $this->type      = $type;
 
-        if ($durable === true)
+        if ($durable)
         {
             $this->makeDurable();
         }

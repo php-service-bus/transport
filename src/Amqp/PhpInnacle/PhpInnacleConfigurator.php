@@ -147,7 +147,6 @@ final class PhpInnacleConfigurator
                 {
                     $this->logger->info('Creating "{exchangeName}" exchange', ['exchangeName' => $exchange->name]);
 
-                    /** @psalm-suppress TooManyTemplateParams */
                     yield $this->channel->exchangeDeclare(
                         $exchange->name,
                         $exchange->type,

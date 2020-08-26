@@ -102,10 +102,6 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
      */
     public function ack(): Promise
     {
-        /**
-         * @psalm-suppress MixedTypeCoercion
-         * @psalm-suppress InvalidArgument
-         */
         return call(
             function (): \Generator
             {

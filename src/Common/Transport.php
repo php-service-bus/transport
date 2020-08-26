@@ -53,7 +53,7 @@ interface Transport
      *
      * @return Promise<void>
      *
-     * @psalm-param callable(\ServiceBus\Transport\Common\Package\IncomingPackage):\Generator<void> $onMessage
+     * @psalm-param callable(\ServiceBus\Transport\Common\Package\IncomingPackage):\Generator $onMessage
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\ConnectionFail Connection refused
      */

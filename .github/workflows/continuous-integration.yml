@@ -67,9 +67,18 @@ jobs:
     name: PHPUnit
 
     runs-on: ubuntu-latest
+    services:
+      rabbitmq:
+        image: rabbitmq:alpine
+        ports:
+          - 5672:5672
+        env:
+          RABBITMQ_DEFAULT_USER: guest
+          RABBITMQ_DEFAULT_PASS: guest
+        options: --health-cmd "rabbitmqctl node_health_check" --health-interval 10s --health-timeout 5s --health-retries 5
 
     env:
-      PHP_EXTENSIONS: dom, json, mbstring, curl, tokenizer
+      PHP_EXTENSIONS: bstring, dom, intl, json, libxml, xml, xmlwriter, sockets
       PHP_INI_VALUES: assert.exception=1, zend.assertions=1
 
     steps:
@@ -87,8 +96,16 @@ jobs:
           ini-values: ${{ env.PHP_INI_VALUES }}
           tools: composer:v2
 
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.1.0
+        with:
+          redis-version: 6
+
       - name: Install dependencies
         run: composer update --no-ansi --no-interaction --no-progress --prefer-lowest
+
+      - name: Await
+        uses: jakejarvis/wait-action@master
 
       - name: Run tests with phpunit
         run: XDEBUG_MODE=coverage php ./vendor/bin/phpunit --configuration ./phpunit.xml --coverage-clover=coverage.xml

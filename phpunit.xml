@@ -4,26 +4,22 @@
          convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true"
          failOnRisky="true" failOnWarning="true" stopOnFailure="false"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+    <coverage>
+        <include>
+            <directory>./src</directory>
+        </include>
+        <exclude>
+            <directory>./tests</directory>
+        </exclude>
+    </coverage>
     <php>
         <ini name="error_reporting" value="-1"/>
         <env name="REDIS_CONNECTION_DSN" value="tcp://localhost:6379"/>
-        <env name="TRANSPORT_CONNECTION_DSN" value="amqp://guest:guest@localhost:5672"/>
+        <env name="TRANSPORT_CONNECTION_DSN" value="amqp://guest:guest@localhost:5672/?heartbeat=0"/>
     </php>
-
     <testsuites>
-
         <testsuite name="Transport implementation">
             <directory>./tests/</directory>
         </testsuite>
-
     </testsuites>
-
-    <filter>
-        <whitelist>
-            <directory>./src</directory>
-            <exclude>
-                <directory>./tests</directory>
-            </exclude>
-        </whitelist>
-    </filter>
 </phpunit>

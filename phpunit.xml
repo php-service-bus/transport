@@ -15,7 +15,7 @@
     <php>
         <ini name="error_reporting" value="-1"/>
         <env name="REDIS_CONNECTION_DSN" value="tcp://localhost:6379"/>
-        <env name="TRANSPORT_CONNECTION_DSN" value="amqp://guest:guest@localhost:5672/?heartbeat=0"/>
+        <env name="TRANSPORT_CONNECTION_DSN" value="amqp://guest:guest@127.0.0.1:5672/?heartbeat=0"/>
     </php>
     <testsuites>
         <testsuite name="Transport implementation">

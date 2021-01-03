@@ -30,18 +30,18 @@ final class AmqpConnectionConfigurationTest extends TestCase
     {
         $options = AmqpConnectionConfiguration::createLocalhost();
 
-        static::assertSame(
-            'amqp://guest:guest@localhost:5672?vhost=/&timeout=1&heartbeat=60.00',
+        self::assertSame(
+            'amqp://guest:guest@localhost:5672?vhost=/&timeout=5000&heartbeat=60000',
             (string) $options
         );
 
-        static::assertSame('localhost', $options->host());
-        static::assertSame(5672, $options->port());
-        static::assertSame('/', $options->virtualHost());
-        static::assertSame('guest', $options->password());
-        static::assertSame('guest', $options->user());
-        static::assertSame(1.0, $options->timeout());
-        static::assertSame(60.0, $options->heartbeatInterval());
+        self::assertSame('localhost', $options->parameters['host']);
+        self::assertSame(5672, $options->parameters['port']);
+        self::assertSame('/', $options->parameters['vhost']);
+        self::assertSame('guest', $options->parameters['password']);
+        self::assertSame('guest', $options->parameters['user']);
+        self::assertSame(5000, $options->parameters['timeout']);
+        self::assertSame(60000, $options->parameters['heartbeat']);
     }
 
     /**
@@ -51,11 +51,11 @@ final class AmqpConnectionConfigurationTest extends TestCase
      */
     public function parseDSN(): void
     {
-        static::assertSame(
-            AmqpConnectionConfiguration::createLocalhost()->heartbeatInterval(),
+        self::assertSame(
+            AmqpConnectionConfiguration::createLocalhost()->parameters['heartbeat'],
             (new AmqpConnectionConfiguration(
-                'amqp://guest:guest@localhost:5672?vhost=/&timeout=1&heartbeat=60.00'
-            ))->heartbeatInterval()
+                'amqp://guest:guest@localhost:5672?vhost=/&timeout=1&heartbeat=60000'
+            ))->parameters['heartbeat']
         );
     }
 
@@ -96,6 +96,6 @@ final class AmqpConnectionConfigurationTest extends TestCase
             'amqp://guest:guest@localhost:5672?vhost=/test//my/vhost///&timeout=1&heartbeat=60.00'
         );
 
-        static::assertSame('/test//my/vhost///', $config->virtualHost());
+        self::assertSame('/test//my/vhost///', $config->parameters['vhost']);
     }
 }

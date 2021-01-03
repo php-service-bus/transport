@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Common transport implementation interfaces.
+ * AMQP transport implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -31,7 +31,7 @@ class QueueBind
      *
      * @var string|null
      */
-    public $routingKey = null;
+    public $routingKey;
 
     public function __construct(Topic $destinationTopic, ?string $routingKey = null)
     {

@@ -56,8 +56,8 @@ final class AmqpTopicTest extends TestCase
     {
         $exchange = AmqpExchange::fanout('fanoutName');
 
-        static::assertSame('fanout', $exchange->type);
-        static::assertSame('fanoutName', $exchange->toString());
+        self::assertSame('fanout', $exchange->type);
+        self::assertSame('fanoutName', $exchange->toString());
     }
 
     /**
@@ -69,8 +69,8 @@ final class AmqpTopicTest extends TestCase
     {
         $exchange = AmqpExchange::direct('directName');
 
-        static::assertSame('direct', $exchange->type);
-        static::assertSame('directName', $exchange->toString());
+        self::assertSame('direct', $exchange->type);
+        self::assertSame('directName', $exchange->toString());
     }
 
     /**
@@ -82,8 +82,8 @@ final class AmqpTopicTest extends TestCase
     {
         $exchange = AmqpExchange::topic('topicName');
 
-        static::assertSame('topic', $exchange->type);
-        static::assertSame('topicName', $exchange->toString());
+        self::assertSame('topic', $exchange->type);
+        self::assertSame('topicName', $exchange->toString());
     }
 
     /**
@@ -95,10 +95,10 @@ final class AmqpTopicTest extends TestCase
     {
         $exchange = AmqpExchange::delayed('delayedName');
 
-        static::assertSame('x-delayed-message', $exchange->type);
-        static::assertSame('delayedName', $exchange->toString());
+        self::assertSame('x-delayed-message', $exchange->type);
+        self::assertSame('delayedName', $exchange->toString());
 
-        static::assertSame(['x-delayed-type' => 'direct'], $exchange->arguments);
+        self::assertSame(['x-delayed-type' => 'direct'], $exchange->arguments);
     }
 
     /**
@@ -111,13 +111,13 @@ final class AmqpTopicTest extends TestCase
         $exchange = AmqpExchange::direct('directName', true);
 
         /** @see AmqpExchange::AMQP_DURABLE */
-        static::assertSame(2, $exchange->flags);
+        self::assertSame(2, $exchange->flags);
 
         /** @see AmqpExchange::AMQP_PASSIVE */
         $exchange->makePassive();
-        static::assertSame(6, $exchange->flags);
+        self::assertSame(6, $exchange->flags);
 
         $exchange->wthArguments(['key' => 'value']);
-        static::assertSame(['key' => 'value'], $exchange->arguments);
+        self::assertSame(['key' => 'value'], $exchange->arguments);
     }
 }

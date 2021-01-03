@@ -66,8 +66,9 @@ final class PhpInnacleTransportTest extends TestCase
                     {
                         if (null !== $throwable)
                         {
-                            static::fail($throwable->getMessage());
+                            self::fail($throwable->getMessage());
 
+                            /** @noinspection PhpUnreachableStatementInspection */
                             return;
                         }
 
@@ -108,7 +109,7 @@ final class PhpInnacleTransportTest extends TestCase
                     {
                         if (null !== $throwable)
                         {
-                            static::fail($throwable->getMessage());
+                            self::fail($throwable->getMessage());
                         }
 
                         yield $this->transport->disconnect();
@@ -133,7 +134,7 @@ final class PhpInnacleTransportTest extends TestCase
                     {
                         if (null !== $throwable)
                         {
-                            static::fail($throwable->getMessage());
+                            self::fail($throwable->getMessage());
                         }
 
                         yield $this->transport->disconnect();
@@ -158,7 +159,7 @@ final class PhpInnacleTransportTest extends TestCase
                     {
                         if (null !== $throwable)
                         {
-                            static::fail($throwable->getMessage());
+                            self::fail($throwable->getMessage());
                         }
 
                         yield $this->transport->disconnect();
@@ -191,7 +192,7 @@ final class PhpInnacleTransportTest extends TestCase
                     {
                         if (null !== $throwable)
                         {
-                            static::fail($throwable->getMessage());
+                            self::fail($throwable->getMessage());
                         }
 
                         yield $this->transport->disconnect();
@@ -224,7 +225,7 @@ final class PhpInnacleTransportTest extends TestCase
                     {
                         if (null !== $throwable)
                         {
-                            static::fail($throwable->getMessage());
+                            self::fail($throwable->getMessage());
                         }
 
                         yield $this->transport->disconnect();
@@ -262,10 +263,10 @@ final class PhpInnacleTransportTest extends TestCase
                 yield $this->transport->consume(
                     function (PhpInnacleIncomingPackage $package): \Generator
                     {
-                        static::assertInstanceOf(PhpInnacleIncomingPackage::class, $package);
-                        static::assertSame('somePayload', $package->payload());
-                        static::assertCount(2, $package->headers());
-                        static::assertTrue(Uuid::isValid($package->traceId()));
+                        self::assertInstanceOf(PhpInnacleIncomingPackage::class, $package);
+                        self::assertSame('somePayload', $package->payload());
+                        self::assertCount(2, $package->headers());
+                        self::assertTrue(Uuid::isValid($package->traceId()));
 
                         yield $this->transport->disconnect();
                     },

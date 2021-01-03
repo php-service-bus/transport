@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AMQP transport common implementation.
+ * AMQP transport implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -29,9 +29,9 @@ final class AmqpConnectionConfiguration
 
     private const DEFAULT_PASSWORD = 'guest';
 
-    private const DEFAULT_TIMEOUT = 1;
+    private const DEFAULT_TIMEOUT = 5000;
 
-    private const DEFAULT_HEARTBEAT_INTERVAL = 60.0;
+    private const DEFAULT_HEARTBEAT_INTERVAL = 60000;
 
     private const DEFAULT_VIRTUAL_HOST = '/';
 
@@ -47,13 +47,13 @@ final class AmqpConnectionConfiguration
      *    host:string,
      *    port:int,
      *    vhost:string,
-     *    timeout:float,
-     *    heartbeat:float
+     *    timeout:int,
+     *    heartbeat:int
      * }
      *
      * @var array
      */
-    private $data;
+    public $parameters;
 
     /**
      * @param string $connectionDSN DSN example: amqp://user:password@host:port
@@ -62,7 +62,7 @@ final class AmqpConnectionConfiguration
      */
     public function __construct(string $connectionDSN)
     {
-        $this->data = self::extractConnectionParameters($connectionDSN);
+        $this->parameters = self::extractConnectionParameters($connectionDSN);
     }
 
     public static function createLocalhost(): self
@@ -73,72 +73,16 @@ final class AmqpConnectionConfiguration
     public function __toString(): string
     {
         return \sprintf(
-            '%s://%s:%s@%s:%s?vhost=%s&timeout=%d&heartbeat=%.2f',
-            $this->data['scheme'],
-            $this->data['user'],
-            $this->data['password'],
-            $this->data['host'],
-            $this->data['port'],
-            $this->data['vhost'],
-            $this->data['timeout'],
-            $this->data['heartbeat']
+            '%s://%s:%s@%s:%s?vhost=%s&timeout=%d&heartbeat=%d',
+            $this->parameters['scheme'],
+            $this->parameters['user'],
+            $this->parameters['password'],
+            $this->parameters['host'],
+            $this->parameters['port'],
+            $this->parameters['vhost'],
+            $this->parameters['timeout'],
+            $this->parameters['heartbeat']
         );
-    }
-
-    /**
-     * Receive connection timeout.
-     */
-    public function timeout(): float
-    {
-        return (float) $this->data['timeout'];
-    }
-
-    /**
-     * Receive heartbeat interval.
-     */
-    public function heartbeatInterval(): float
-    {
-        return (float) $this->data['heartbeat'];
-    }
-
-    /**
-     * Get virtual host path.
-     */
-    public function virtualHost(): string
-    {
-        return $this->data['vhost'];
-    }
-
-    /**
-     * Receive connection username.
-     */
-    public function user(): string
-    {
-        return $this->data['user'];
-    }
-
-    /**
-     * Receive connection password.
-     */
-    public function password(): string
-    {
-        return $this->data['password'];
-    }
-
-    /**
-     * Receive connection host.
-     */
-    public function host(): string
-    {
-        return $this->data['host'];
-    }
-
-    /**
-     * Receive connection port.
-     */
-    public function port(): int
-    {
-        return $this->data['port'];
     }
 
     /**
@@ -149,8 +93,8 @@ final class AmqpConnectionConfiguration
      *   host:string,
      *   port:int,
      *   vhost:string,
-     *   timeout:float,
-     *   heartbeat:float
+     *   timeout:int,
+     *   heartbeat:int
      * }
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\InvalidConnectionParameters Incorrect DSN
@@ -169,9 +113,9 @@ final class AmqpConnectionConfiguration
             'port'      => (int) ($connectionParts['port'] ?? self::DEFAULT_PORT),
             'user'      => (string) ($connectionParts['user'] ?? self::DEFAULT_USERNAME),
             'password'  => (string) ($connectionParts['pass'] ?? self::DEFAULT_PASSWORD),
-            'timeout'   => (float) ($queryParts['timeout'] ?? self::DEFAULT_TIMEOUT),
+            'timeout'   => (int) ($queryParts['timeout'] ?? self::DEFAULT_TIMEOUT),
             'vhost'     => (string) ($queryParts['vhost'] ?? self::DEFAULT_VIRTUAL_HOST),
-            'heartbeat' => (float) ($queryParts['heartbeat'] ?? self::DEFAULT_HEARTBEAT_INTERVAL),
+            'heartbeat' => (int) ($queryParts['heartbeat'] ?? self::DEFAULT_HEARTBEAT_INTERVAL),
         ];
     }
 

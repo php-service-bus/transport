@@ -45,6 +45,6 @@ final class PhpInnacleTransportModuleTest extends TestCase
 
         $containerBuilder->compile();
 
-        static::assertTrue(true);
+        self::assertTrue(true);
     }
 }

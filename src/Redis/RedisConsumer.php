@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Redis transport implementation.
+ * AMQP transport implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -21,6 +21,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Common\Exceptions\ConnectionFail;
 use function ServiceBus\Common\jsonDecode;
+use function ServiceBus\Common\throwableDetails;
 use function ServiceBus\Common\throwableMessage;
 
 /**
@@ -38,7 +39,7 @@ final class RedisConsumer
     private $logger;
 
     /** @var Subscriber|null */
-    private $subscribeClient = null;
+    private $subscribeClient;
 
     public function __construct(
         RedisChannel $channel,
@@ -91,10 +92,7 @@ final class RedisConsumer
                     // @codeCoverageIgnoreStart
                     catch (\Throwable $throwable)
                     {
-                        $this->logger->error('Emit package failed: {throwableMessage} ', [
-                            'throwableMessage' => throwableMessage($throwable),
-                            'throwablePoint'   => \sprintf('%s:%d', $throwable->getFile(), $throwable->getLine()),
-                        ]);
+                        $this->logger->error('Emit package failed: {throwableMessage} ', throwableDetails($throwable));
                     }
                     // @codeCoverageIgnoreEnd
                 }

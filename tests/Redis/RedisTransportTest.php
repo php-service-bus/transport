@@ -72,17 +72,17 @@ final class RedisTransportTest extends TestCase
                 yield $transport->consume(
                     static function (RedisIncomingPackage $message) use (&$messages, $transport): \Generator
                     {
-                        static::assertInstanceOf(RedisIncomingPackage::class, $message);
-                        static::assertTrue(Uuid::isValid($message->id()));
-                        static::assertTrue(Uuid::isValid($message->traceId()));
-                        static::assertArrayHasKey(Transport::SERVICE_BUS_TRACE_HEADER, $message->headers());
-                        static::assertTrue(Uuid::isValid($message->headers()[Transport::SERVICE_BUS_TRACE_HEADER]));
+                        self::assertInstanceOf(RedisIncomingPackage::class, $message);
+                        self::assertTrue(Uuid::isValid($message->id()));
+                        self::assertTrue(Uuid::isValid($message->traceId()));
+                        self::assertArrayHasKey(Transport::SERVICE_BUS_TRACE_HEADER, $message->headers());
+                        self::assertTrue(Uuid::isValid($message->headers()[Transport::SERVICE_BUS_TRACE_HEADER]));
 
                         $messages[] = $message->payload();
 
                         if (2 === \count($messages))
                         {
-                            static::assertSame(['qwerty.message', 'root.message'], $messages);
+                            self::assertSame(['qwerty.message', 'root.message'], $messages);
 
                             yield $transport->stop();
 

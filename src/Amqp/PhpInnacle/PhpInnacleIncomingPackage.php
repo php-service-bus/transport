@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHPinnacle RabbitMQ adapter.
+ * AMQP transport implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -35,7 +35,7 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
      *
      * @var string|null
      */
-    private $id = null;
+    private $id;
 
     /** @var Message */
     private $originMessage;
@@ -68,8 +68,8 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
     public function origin(): DeliveryDestination
     {
         return new AmqpTransportLevelDestination(
-            $this->originMessage->exchange(),
-            $this->originMessage->routingKey()
+            $this->originMessage->exchange,
+            $this->originMessage->routingKey
         );
     }
 
@@ -78,7 +78,7 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
      */
     public function payload(): string
     {
-        return $this->originMessage->content();
+        return $this->originMessage->content;
     }
 
     /**
@@ -92,7 +92,7 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
          *
          * @psalm-var    array<string, string|int|float> $headers
          */
-        $headers = $this->originMessage->headers();
+        $headers = $this->originMessage->headers;
 
         return $headers;
     }

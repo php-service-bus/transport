@@ -47,6 +47,6 @@ final class RedisTransportModuleTest extends TestCase
 
         $containerBuilder->get(Transport::class);
 
-        static::assertTrue(true);
+        self::assertTrue(true);
     }
 }

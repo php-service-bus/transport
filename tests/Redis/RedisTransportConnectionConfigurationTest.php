@@ -30,10 +30,10 @@ final class RedisTransportConnectionConfigurationTest extends TestCase
     {
         $config = new RedisTransportConnectionConfiguration('tcp://test-host:7000?timeout=-1&password=qwerty');
 
-        static::assertSame('test-host', $config->host);
-        static::assertSame(7000, $config->port);
-        static::assertSame(5, $config->timeout);
-        static::assertSame('qwerty', $config->password);
+        self::assertSame('test-host', $config->host);
+        self::assertSame(7000, $config->port);
+        self::assertSame(5, $config->timeout);
+        self::assertSame('qwerty', $config->password);
     }
 
     /**

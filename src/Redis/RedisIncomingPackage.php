@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Redis transport implementation.
+ * AMQP transport implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -126,7 +126,7 @@ final class RedisIncomingPackage implements IncomingPackage
     /**
      * {@inheritdoc}
      */
-    public function traceId()
+    public function traceId(): string
     {
         $traceId = (string) ($this->headers[Transport::SERVICE_BUS_TRACE_HEADER] ?? '');
 

@@ -1,7 +1,10 @@
 ## What is it?
-[![Build Status](https://travis-ci.org/php-service-bus/transport.svg?branch=v4.1)](https://travis-ci.org/php-service-bus/transport)
-[![Code Coverage](https://scrutinizer-ci.com/g/php-service-bus/transport/badges/coverage.png?b=v4.1)](https://scrutinizer-ci.com/g/php-service-bus/transport/?branch=v4.1)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/php-service-bus/transport/badges/quality-score.png?b=v4.1)](https://scrutinizer-ci.com/g/php-service-bus/transport/?branch=v4.1)
+
+[![Packagist](https://img.shields.io/packagist/v/php-service-bus/transport.svg)](https://packagist.org/packages/php-service-bus/transport)
+[![Packagist](https://img.shields.io/packagist/dt/php-service-bus/transport.svg)](https://packagist.org/packages/php-service-bus/transport)
+![Continuous Integration](https://github.com/php-service-bus/transport/workflows/Continuous%20Integration/badge.svg)
+[![codecov](https://codecov.io/gh/php-service-bus/transport/branch/v4.2/graph/badge.svg?token=0bKwdiuo0S)](https://codecov.io/gh/php-service-bus/transport)
+[![Shepherd](https://shepherd.dev/github/php-service-bus/transport/coverage.svg)](https://shepherd.dev/github/php-service-bus/transport)
 
 This component is part of the [PHP Service Bus](https://github.com/php-service-bus/service-bus): contains transport adapters implementation.
 

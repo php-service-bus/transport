@@ -28,7 +28,7 @@ final class RedisTransportLevelDestinationTest extends TestCase
      */
     public function successCreate(): void
     {
-        static::assertSame('qwerty', (new RedisTransportLevelDestination('qwerty'))->channel);
+        self::assertSame('qwerty', (new RedisTransportLevelDestination('qwerty'))->channel);
     }
 
     /**

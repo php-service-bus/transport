@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AMQP transport common implementation.
+ * AMQP transport implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -160,8 +160,10 @@ final class AmqpExchange implements Topic
 
     public function wthArguments(array $arguments): self
     {
-        /** @psalm-suppress MixedTypeCoercion */
-        $this->arguments = \array_merge($this->arguments, $arguments);
+        /** @psalm-var array<array-key, float|int|string> $merged */
+        $merged = \array_merge($this->arguments, $arguments);
+
+        $this->arguments = $merged;
 
         return $this;
     }

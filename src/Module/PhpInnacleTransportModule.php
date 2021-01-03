@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHPinnacle RabbitMQ adapter.
+ * AMQP transport implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -28,23 +28,23 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 final class PhpInnacleTransportModule implements ServiceBusModule
 {
-    /** @var string  */
+    /** @var string */
     private $connectionDSN;
 
-    /** @var string  */
+    /** @var string */
     private $defaultDestinationExchange;
 
-    /** @var string|null  */
-    private $defaultDestinationRoutingKey = null;
+    /** @var string|null */
+    private $defaultDestinationRoutingKey;
 
-    /** @var int|null  */
-    private $qosSize = null;
+    /** @var int|null */
+    private $qosSize;
 
-    /** @var int|null  */
-    private $qosCount = null;
+    /** @var int|null */
+    private $qosCount;
 
-    /** @var bool|null  */
-    private $qosGlobal = null;
+    /** @var bool|null */
+    private $qosGlobal;
 
     public function __construct(string $connectionDSN, string $defaultDestinationExchange, ?string $defaultDestinationRoutingKey)
     {

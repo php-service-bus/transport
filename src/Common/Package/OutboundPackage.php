@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Common transport implementation interfaces.
+ * AMQP transport implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -74,7 +74,7 @@ class OutboundPackage
      *
      * @var int|null
      */
-    public $expiredAfter = null;
+    public $expiredAfter;
 
     /**
      * Trace operation id.
@@ -85,14 +85,12 @@ class OutboundPackage
 
     /**
      * @psalm-param array<string, float|int|string> $headers
-     *
-     * @param int|string|null $traceId
      */
     public function __construct(
         string $payload,
         array $headers,
         DeliveryDestination $destination,
-        $traceId,
+        int|string|null $traceId,
         bool $persist = false,
         bool $mandatory = false,
         bool $immediate = false,

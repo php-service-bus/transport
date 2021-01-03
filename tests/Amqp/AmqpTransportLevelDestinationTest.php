@@ -43,7 +43,7 @@ final class AmqpTransportLevelDestinationTest extends TestCase
     {
         $destination = new AmqpTransportLevelDestination('qwerty', 'root');
 
-        static::assertSame('qwerty', $destination->exchange);
-        static::assertSame('root', $destination->routingKey);
+        self::assertSame('qwerty', $destination->exchange);
+        self::assertSame('root', $destination->routingKey);
     }
 }

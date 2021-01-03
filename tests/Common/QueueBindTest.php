@@ -45,7 +45,7 @@ final class QueueBindTest extends TestCase
 
         $bind = new QueueBind($topic, 'key');
 
-        static::assertSame('qwerty', $bind->destinationTopic->toString());
-        static::assertSame('key', $bind->routingKey);
+        self::assertSame('qwerty', $bind->destinationTopic->toString());
+        self::assertSame('key', $bind->routingKey);
     }
 }

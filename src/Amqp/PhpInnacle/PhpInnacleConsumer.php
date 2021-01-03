@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHPinnacle RabbitMQ adapter.
+ * AMQP transport implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -50,7 +50,7 @@ final class PhpInnacleConsumer
     public function __construct(AmqpQueue $queue, Channel $channel, ?LoggerInterface $logger = null)
     {
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->tag = \sha1((string) \random_bytes(16));
+        $this->tag = \sha1(\random_bytes(16));
 
         $this->queue   = $queue;
         $this->channel = $channel;
@@ -144,7 +144,7 @@ final class PhpInnacleConsumer
                     [
                         'throwableMessage'  => throwableMessage($throwable),
                         'throwablePoint'    => \sprintf('%s:%d', $throwable->getFile(), $throwable->getLine()),
-                        'rawMessagePayload' => $message->content(),
+                        'rawMessagePayload' => $message->content,
                     ]
                 );
             }

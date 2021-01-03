@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHPinnacle RabbitMQ adapter.
+ * AMQP transport implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -48,10 +48,10 @@ final class PhpInnacleTransport implements Transport
      *
      * @var Channel|null
      */
-    private $channel = null;
+    private $channel;
 
     /** @var PhpInnaclePublisher|null */
-    private $publisher = null;
+    private $publisher;
 
     /** @var LoggerInterface */
     private $logger;
@@ -79,9 +79,6 @@ final class PhpInnacleTransport implements Transport
         $this->client = new Client($this->config);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function connect(): Promise
     {
         return call(
@@ -102,9 +99,9 @@ final class PhpInnacleTransport implements Transport
                     $this->channel = $channel;
 
                     $this->logger->info('Connected to broker', [
-                        'host'  => $this->config->host(),
-                        'port'  => $this->config->port(),
-                        'vhost' => $this->config->vhost(),
+                        'host'  => $this->config->host,
+                        'port'  => $this->config->port,
+                        'vhost' => $this->config->vhost,
                     ]);
                 }
                 catch (\Throwable $throwable)
@@ -112,11 +109,11 @@ final class PhpInnacleTransport implements Transport
                     throw new ConnectionFail(
                         \sprintf(
                             'Can\'t connect to %s:%d (vhost: %s) with credentials %s:%s',
-                            $this->config->host(),
-                            $this->config->port(),
-                            $this->config->vhost(),
-                            $this->config->user(),
-                            $this->config->password()
+                            $this->config->host,
+                            $this->config->port,
+                            $this->config->vhost,
+                            $this->config->user,
+                            $this->config->pass
                         ),
                         (int) $throwable->getCode(),
                         $throwable
@@ -126,9 +123,6 @@ final class PhpInnacleTransport implements Transport
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function disconnect(): Promise
     {
         return call(
@@ -147,17 +141,14 @@ final class PhpInnacleTransport implements Transport
                 }
 
                 $this->logger->info('Disconnect from broker', [
-                    'host'  => $this->config->host(),
-                    'port'  => $this->config->port(),
-                    'vhost' => $this->config->vhost(),
+                    'host'  => $this->config->host,
+                    'port'  => $this->config->port,
+                    'vhost' => $this->config->vhost,
                 ]);
             }
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function consume(callable $onMessage, Queue ...$queues): Promise
     {
         return call(
@@ -172,9 +163,9 @@ final class PhpInnacleTransport implements Transport
                 foreach ($queues as $queue)
                 {
                     $this->logger->info('Starting a subscription to the "{queueName}" queue', [
-                        'host'      => $this->config->host(),
-                        'port'      => $this->config->port(),
-                        'vhost'     => $this->config->vhost(),
+                        'host'      => $this->config->host,
+                        'port'      => $this->config->port,
+                        'vhost'     => $this->config->vhost,
                         'queueName' => $queue->name,
                         'channel'   => $channel->id(),
                     ]);
@@ -189,9 +180,6 @@ final class PhpInnacleTransport implements Transport
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function stop(): Promise
     {
         return call(
@@ -204,9 +192,9 @@ final class PhpInnacleTransport implements Transport
                 foreach ($this->consumers as $queueName => $consumer)
                 {
                     $this->logger->info('Completing the subscription to the "{queueName}" queue', [
-                        'host'      => $this->config->host(),
-                        'port'      => $this->config->port(),
-                        'vhost'     => $this->config->vhost(),
+                        'host'      => $this->config->host,
+                        'port'      => $this->config->port,
+                        'vhost'     => $this->config->vhost,
                         'queueName' => $queueName,
                     ]);
 
@@ -224,9 +212,6 @@ final class PhpInnacleTransport implements Transport
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function send(OutboundPackage $outboundPackage): Promise
     {
         return call(
@@ -247,9 +232,6 @@ final class PhpInnacleTransport implements Transport
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createTopic(Topic $topic, TopicBind ...$binds): Promise
     {
         return call(
@@ -259,7 +241,7 @@ final class PhpInnacleTransport implements Transport
                 $amqpExchange = $topic;
 
                 /**
-                 * @var \ServiceBus\Transport\Common\TopicBind[] $binds
+                 * @var \ServiceBus\Transport\Common\TopicBind[]                   $binds
                  * @psalm-var array<mixed, \ServiceBus\Transport\Common\TopicBind> $binds
                  */
                 yield $this->connect();
@@ -275,9 +257,6 @@ final class PhpInnacleTransport implements Transport
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createQueue(Queue $queue, QueueBind ...$binds): Promise
     {
         return call(
@@ -287,7 +266,7 @@ final class PhpInnacleTransport implements Transport
                 $amqpQueue = $queue;
 
                 /**
-                 * @var \ServiceBus\Transport\Common\QueueBind[] $binds
+                 * @var \ServiceBus\Transport\Common\QueueBind[]                   $binds
                  * @psalm-var array<mixed, \ServiceBus\Transport\Common\QueueBind> $binds
                  */
                 yield $this->connect();
@@ -307,25 +286,25 @@ final class PhpInnacleTransport implements Transport
         AmqpConnectionConfiguration $connectionConfiguration,
         AmqpQoSConfiguration $qoSConfiguration
     ): Config {
-        $config = new Config(
-            $connectionConfiguration->host(),
-            $connectionConfiguration->port(),
-            $connectionConfiguration->user(),
-            $connectionConfiguration->password(),
-            $connectionConfiguration->virtualHost()
+        $connectionDSN = \sprintf(
+            '%s://%s:%s@%s:%s/%s?%s',
+            $connectionConfiguration->parameters['scheme'],
+            $connectionConfiguration->parameters['user'],
+            $connectionConfiguration->parameters['password'],
+            $connectionConfiguration->parameters['host'],
+            $connectionConfiguration->parameters['port'],
+            \ltrim($connectionConfiguration->parameters['vhost'], '/'),
+            http_build_query(
+                [
+                    'timeout'    => $connectionConfiguration->parameters['timeout'],
+                    'heartbeat'  => $connectionConfiguration->parameters['heartbeat'],
+                    'qos_size'   => $qoSConfiguration->size,
+                    'qos_count'  => $qoSConfiguration->count,
+                    'qos_global' => (int) $qoSConfiguration->global
+                ]
+            )
         );
 
-        $timeout = 0 < $connectionConfiguration->timeout()
-            ? (int) $connectionConfiguration->timeout()
-            : 1;
-
-        $config->timeout($timeout);
-
-        $config->heartbeat((int) $connectionConfiguration->heartbeatInterval());
-        $config->qosCount($qoSConfiguration->count);
-        $config->qosSize($qoSConfiguration->size);
-        $config->qosGlobal($qoSConfiguration->global);
-
-        return $config;
+        return Config::parse($connectionDSN);
     }
 }

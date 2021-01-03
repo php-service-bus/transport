@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Redis transport implementation.
+ * AMQP transport implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -86,7 +86,7 @@ final class RedisTransportConnectionConfiguration
             throw IncorrectConnectionParameters::connectionDsnCantBeEmpty();
         }
 
-        if (\strpos($connectionDSN, 'tcp://') !== 0 && \strpos($connectionDSN, 'unix://') !== 0)
+        if (!\str_starts_with($connectionDSN, 'tcp://') && !\str_starts_with($connectionDSN, 'unix://'))
         {
             throw IncorrectConnectionParameters::incorrectScheme();
         }

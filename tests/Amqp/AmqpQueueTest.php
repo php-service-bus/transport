@@ -57,9 +57,9 @@ final class AmqpQueueTest extends TestCase
     {
         $queue = AmqpQueue::default(__METHOD__);
 
-        static::assertSame(__METHOD__, $queue->toString());
+        self::assertSame(__METHOD__, $queue->toString());
 
-        static::assertSame(0, $queue->flags);
+        self::assertSame(0, $queue->flags);
     }
 
     /**
@@ -71,10 +71,10 @@ final class AmqpQueueTest extends TestCase
     {
         $queue = AmqpQueue::delayed('test', AmqpExchange::direct('qwerty'));
 
-        static::assertSame('test', $queue->toString());
+        self::assertSame('test', $queue->toString());
 
         /** @see AmqpQueue::AMQP_DURABLE */
-        static::assertSame(2, $queue->flags);
+        self::assertSame(2, $queue->flags);
     }
 
     /**
@@ -87,21 +87,21 @@ final class AmqpQueueTest extends TestCase
         $queue = AmqpQueue::default(__METHOD__, true);
 
         /** @see AmqpQueue::AMQP_DURABLE */
-        static::assertSame(2, $queue->flags);
+        self::assertSame(2, $queue->flags);
 
         /** @see AmqpQueue::AMQP_PASSIVE */
         $queue->makePassive();
-        static::assertSame(6, $queue->flags);
+        self::assertSame(6, $queue->flags);
 
         /** @see AmqpQueue::AMQP_AUTO_DELETE */
         $queue->enableAutoDelete();
-        static::assertSame(22, $queue->flags);
+        self::assertSame(22, $queue->flags);
 
         /** @see AmqpQueue::AMQP_EXCLUSIVE */
         $queue->makeExclusive();
-        static::assertSame(30, $queue->flags);
+        self::assertSame(30, $queue->flags);
 
         $queue->wthArguments(['key' => 'value']);
-        static::assertSame(['key' => 'value'], $queue->arguments);
+        self::assertSame(['key' => 'value'], $queue->arguments);
     }
 }

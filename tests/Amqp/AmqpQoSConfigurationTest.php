@@ -29,8 +29,8 @@ final class AmqpQoSConfigurationTest extends TestCase
     {
         $qos = new AmqpQoSConfiguration(1, 6, true);
 
-        static::assertSame(1, $qos->size);
-        static::assertSame(6, $qos->count);
-        static::assertTrue($qos->global);
+        self::assertSame(1, $qos->size);
+        self::assertSame(6, $qos->count);
+        self::assertTrue($qos->global);
     }
 }

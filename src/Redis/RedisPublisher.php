@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Redis transport implementation.
+ * AMQP transport implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -29,7 +29,7 @@ use function ServiceBus\Common\jsonEncode;
 final class RedisPublisher
 {
     /** @var Redis|null */
-    private $publishClient = null;
+    private $publishClient;
 
     /** @var RedisTransportConnectionConfiguration */
     private $config;

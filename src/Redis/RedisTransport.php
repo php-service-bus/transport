@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Redis transport implementation.
+ * AMQP transport implementation.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -29,7 +29,7 @@ use ServiceBus\Transport\Common\Transport;
  */
 final class RedisTransport implements Transport
 {
-    /** @var RedisTransportConnectionConfiguration  */
+    /** @var RedisTransportConnectionConfiguration */
     private $config;
 
     /**
@@ -40,7 +40,7 @@ final class RedisTransport implements Transport
     private $consumers = [];
 
     /** @var RedisPublisher|null */
-    private $publisher = null;
+    private $publisher;
 
     /** @var LoggerInterface */
     private $logger;
@@ -53,31 +53,24 @@ final class RedisTransport implements Transport
 
     /**
      * @codeCoverageIgnore
-     * @psalm-suppress InvalidReturnType
-     * @psalm-suppress InvalidReturnStatement
-     *
-     * {@inheritdoc}
      */
     public function createTopic(Topic $topic, TopicBind ...$binds): Promise
     {
-        return new Success();
+        return call(static function ()
+        {
+        });
     }
 
     /**
      * @codeCoverageIgnore
-     * @psalm-suppress InvalidReturnType
-     * @psalm-suppress InvalidReturnStatement
-     *
-     * {@inheritdoc}
      */
     public function createQueue(Queue $queue, QueueBind ...$binds): Promise
     {
-        return new Success();
+        return call(static function ()
+        {
+        });
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function consume(callable $onMessage, Queue ...$queues): Promise
     {
         return call(
@@ -114,23 +107,13 @@ final class RedisTransport implements Transport
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function stop(): Promise
     {
         return $this->disconnect();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function send(OutboundPackage $outboundPackage): Promise
     {
-        /**
-         * @psalm-suppress MixedTypeCoercion
-         * @psalm-suppress InvalidArgument
-         */
         return call(
             function () use ($outboundPackage): \Generator
             {
@@ -144,20 +127,13 @@ final class RedisTransport implements Transport
         );
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @psalm-suppress InvalidReturnType
-     * @psalm-suppress InvalidReturnStatement
-     */
     public function connect(): Promise
     {
-        return new Success();
+        return call(static function ()
+        {
+        });
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function disconnect(): Promise
     {
         return call(

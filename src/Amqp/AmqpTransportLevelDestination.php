@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Amqp;
 
@@ -17,15 +17,21 @@ use ServiceBus\Transport\Common\DeliveryDestination;
 
 /**
  * Which exchange (and with which key) the message will be sent to.
- *
- * @psalm-readonly
  */
 final class AmqpTransportLevelDestination implements DeliveryDestination
 {
-    /** @var string */
+    /**
+     * @psalm-readonly
+     *
+     * @var string
+     */
     public $exchange;
 
-    /** @var string|null */
+    /**
+     * @psalm-readonly
+     *
+     * @var string|null
+     */
     public $routingKey;
 
     /**

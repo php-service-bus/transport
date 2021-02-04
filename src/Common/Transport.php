@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Common;
 
@@ -20,10 +20,6 @@ use ServiceBus\Transport\Common\Package\OutboundPackage;
  */
 interface Transport
 {
-    public const SERVICE_BUS_TRACE_HEADER      = 'X-SERVICE-BUS-TRACE-ID';
-
-    public const SERVICE_BUS_SERIALIZER_HEADER = 'X-SERVICE-BUS-ENCODER';
-
     /**
      * Create topic and bind them
      * If the topic to which we binds does not exist, it will be created.
@@ -73,7 +69,7 @@ interface Transport
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\SendMessageFailed Failed to send message
      */
-    public function send(OutboundPackage $outboundPackage): Promise;
+    public function send(OutboundPackage ...$outboundPackages): Promise;
 
     /**
      * Connect to broker.

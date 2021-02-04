@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
@@ -66,13 +66,13 @@ final class PhpInnacleConfigurator
                     $this->logger->info('Creating "{queueName}" queue', ['queueName' => $queue->name]);
 
                     yield $this->channel->queueDeclare(
-                        $queue->name,
-                        $queue->passive,
-                        $queue->durable,
-                        $queue->exclusive,
-                        $queue->autoDelete,
-                        true,
-                        $queue->arguments
+                        queue: $queue->name,
+                        passive: $queue->passive,
+                        durable: $queue->durable,
+                        exclusive: $queue->exclusive,
+                        autoDelete: $queue->autoDelete,
+                        noWait: true,
+                        arguments: $queue->arguments
                     );
                 }
                 catch (\Throwable $throwable)
@@ -90,7 +90,7 @@ final class PhpInnacleConfigurator
      *
      * @psalm-param  array<mixed, \ServiceBus\Transport\Common\QueueBind> $binds
      *
-     * @param \ServiceBus\Transport\Common\QueueBind[] $binds
+     * @param \ServiceBus\Transport\Common\QueueBind[]                    $binds
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\BindFailed
      */
@@ -117,7 +117,12 @@ final class PhpInnacleConfigurator
                             ]
                         );
 
-                        yield $this->channel->queueBind($queue->name, $destinationExchange->name, (string) $bind->routingKey);
+                        yield $this->channel->queueBind(
+                            queue: $queue->name,
+                            exchange: $destinationExchange->name,
+                            routingKey: (string) $bind->routingKey,
+                            noWait: true
+                        );
                     }
                 }
                 catch (\Throwable $throwable)
@@ -145,14 +150,14 @@ final class PhpInnacleConfigurator
                     $this->logger->info('Creating "{exchangeName}" exchange', ['exchangeName' => $exchange->name]);
 
                     yield $this->channel->exchangeDeclare(
-                        $exchange->name,
-                        $exchange->type,
-                        $exchange->passive,
-                        $exchange->durable,
-                        false,
-                        false,
-                        true,
-                        $exchange->arguments
+                        exchange: $exchange->name,
+                        exchangeType: $exchange->type,
+                        passive: $exchange->passive,
+                        durable: $exchange->durable,
+                        autoDelete: false,
+                        internal: false,
+                        noWait: true,
+                        arguments: $exchange->arguments
                     );
                 }
                 catch (\Throwable $throwable)
@@ -170,7 +175,7 @@ final class PhpInnacleConfigurator
      *
      * @psalm-param  array<mixed, \ServiceBus\Transport\Common\TopicBind> $binds
      *
-     * @param \ServiceBus\Transport\Common\TopicBind[] $binds
+     * @param \ServiceBus\Transport\Common\TopicBind[]                    $binds
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\BindFailed
      */
@@ -197,7 +202,12 @@ final class PhpInnacleConfigurator
                             ]
                         );
 
-                        yield $this->channel->exchangeBind($sourceExchange->name, $exchange->name, (string) $bind->routingKey);
+                        yield $this->channel->exchangeBind(
+                            destination: $sourceExchange->name,
+                            source: $exchange->name,
+                            routingKey: (string) $bind->routingKey,
+                            noWait: true
+                        );
                     }
                 }
                 catch (\Throwable $throwable)

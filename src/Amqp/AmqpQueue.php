@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Amqp;
 
@@ -39,6 +39,8 @@ final class AmqpQueue implements Queue
      * is set, or the queue already exists. Error code: access-refused The queue name can be empty, or a sequence of
      * these characters: letters, digits, hyphen, underscore, period, or colon.
      *
+     * @psalm-readonly
+     *
      * @var string
      */
     public $name;
@@ -50,15 +52,17 @@ final class AmqpQueue implements Queue
      * no effect. Arguments are compared for semantic equivalence.
      *
      * The client MAY ask the server to assert that a queue exists without creating the queue if not. If the queue does
-     * not exist, the server treats this as a failure
+     * not exist, the server treats this as a failure.
      *
      * If not set and the queue exists, the server MUST check that the existing queue has the same values for durable,
      * exclusive, auto-delete, and arguments fields. The server MUST respond with Declare-Ok if the requested queue
-     * matches these fields, and MUST raise a channel exception if not
+     * matches these fields, and MUST raise a channel exception if not.
+     *
+     * @psalm-readonly
      *
      * @var bool
      */
-    public $passive = false;
+    public $passive;
 
     /**
      * If set when creating a new queue, the queue will be marked as durable. Durable queues remain active when a
@@ -69,9 +73,11 @@ final class AmqpQueue implements Queue
      * The server MUST recreate the durable queue after a restart.
      * The server MUST support both durable and transient queues.
      *
+     * @psalm-readonly
+     *
      * @var bool
      */
-    public $durable = false;
+    public $durable;
 
     /**
      * Exclusive queues may only be accessed by the current connection, and are deleted when that connection closes.
@@ -79,11 +85,13 @@ final class AmqpQueue implements Queue
      *
      * The server MUST support both exclusive (private) and non-exclusive (shared) queues.
      * The client MAY NOT attempt to use a queue that was declared as exclusive by another still-open connection. Error
-     * code
+     * code.
+     *
+     * @psalm-readonly
      *
      * @var bool
      */
-    public $exclusive = false;
+    public $exclusive;
 
     /**
      * If set, the queue is deleted when all consumers have finished using it. The last consumer can be cancelled
@@ -92,30 +100,36 @@ final class AmqpQueue implements Queue
      *
      * The server MUST ignore the auto-delete field if the queue already exists.
      *
+     * @psalm-readonly
+     *
      * @var bool
      */
-    public $autoDelete = false;
+    public $autoDelete;
 
     /**
      * @see http://www.rabbitmq.com/amqp-0-9-1-reference.html#domain.table
      *
+     * @psalm-readonly
+     *
      * @var array
      */
-    public $arguments = [];
+    public $arguments;
 
     /**
      * Queue flags.
      *
+     * @psalm-readonly
+     *
      * @var int
      */
-    public $flags = 0;
+    public $flags;
 
     /**
      * @throws \ServiceBus\Transport\Amqp\Exceptions\InvalidQueueName
      */
-    public static function default(string $name, bool $durable = false): self
+    public static function default(string $name): self
     {
-        return new self($name, $durable);
+        return new self($name);
     }
 
     /**
@@ -127,58 +141,76 @@ final class AmqpQueue implements Queue
      */
     public static function delayed(string $name, AmqpExchange $toExchange): self
     {
-        return new self($name, true, ['x-dead-letter-exchange' => $toExchange->name]);
+        return new self(
+            name: $name,
+            passive: true,
+            arguments: ['x-dead-letter-exchange' => $toExchange->name]
+        );
     }
 
     public function makePassive(): self
     {
-        if ($this->passive === false)
-        {
-            $this->passive = true;
-            $this->flags   += self::AMQP_PASSIVE;
-        }
-
-        return $this;
+        return new self(
+            name: $this->name,
+            passive: true,
+            durable: $this->durable,
+            exclusive: $this->exclusive,
+            autoDelete: $this->autoDelete,
+            arguments: $this->arguments,
+            flags: $this->passive ? $this->flags : $this->flags + self::AMQP_PASSIVE
+        );
     }
 
     public function makeExclusive(): self
     {
-        if ($this->exclusive === false)
-        {
-            $this->exclusive = true;
-            $this->flags     += self::AMQP_EXCLUSIVE;
-        }
-
-        return $this;
+        return new self(
+            name: $this->name,
+            passive: $this->passive,
+            durable: $this->durable,
+            exclusive: true,
+            autoDelete: $this->autoDelete,
+            arguments: $this->arguments,
+            flags: $this->exclusive ? $this->flags : $this->flags + self::AMQP_EXCLUSIVE
+        );
     }
 
     public function makeDurable(): self
     {
-        if ($this->durable === false)
-        {
-            $this->durable = true;
-            $this->flags   += self::AMQP_DURABLE;
-        }
-
-        return $this;
+        return new self(
+            name: $this->name,
+            passive: $this->passive,
+            durable: true,
+            exclusive: $this->exclusive,
+            autoDelete: $this->autoDelete,
+            arguments: $this->arguments,
+            flags: $this->durable ? $this->flags : $this->flags + self::AMQP_DURABLE
+        );
     }
 
     public function enableAutoDelete(): self
     {
-        if ($this->autoDelete === false)
-        {
-            $this->autoDelete = true;
-            $this->flags      += self::AMQP_AUTO_DELETE;
-        }
-
-        return $this;
+        return new self(
+            name: $this->name,
+            passive: $this->passive,
+            durable: $this->durable,
+            exclusive: $this->exclusive,
+            autoDelete: true,
+            arguments: $this->arguments,
+            flags: $this->autoDelete ? $this->flags : $this->flags + self::AMQP_AUTO_DELETE
+        );
     }
 
     public function wthArguments(array $arguments): self
     {
-        $this->arguments = \array_merge($this->arguments, $arguments);
-
-        return $this;
+        return new self(
+            name: $this->name,
+            passive: $this->passive,
+            durable: $this->durable,
+            exclusive: $this->exclusive,
+            autoDelete: $this->autoDelete,
+            arguments: \array_merge($this->arguments, $arguments),
+            flags: $this->flags
+        );
     }
 
     /**
@@ -189,11 +221,15 @@ final class AmqpQueue implements Queue
         return $this->name;
     }
 
-    /**
-     * @throws \ServiceBus\Transport\Amqp\Exceptions\InvalidQueueName
-     */
-    private function __construct(string $name, bool $durable = false, array $arguments = [])
-    {
+    private function __construct(
+        string $name,
+        bool $passive = false,
+        bool $durable = false,
+        bool $exclusive = false,
+        bool $autoDelete = false,
+        array $arguments = [],
+        int $flags = 0
+    ) {
         if ($name === '')
         {
             throw InvalidQueueName::nameCantBeEmpty();
@@ -204,12 +240,12 @@ final class AmqpQueue implements Queue
             throw InvalidQueueName::nameIsToLong($name);
         }
 
-        $this->arguments = $arguments;
-        $this->name      = $name;
-
-        if ($durable)
-        {
-            $this->makeDurable();
-        }
+        $this->name       = $name;
+        $this->passive    = $passive;
+        $this->durable    = $durable;
+        $this->exclusive  = $exclusive;
+        $this->autoDelete = $autoDelete;
+        $this->arguments  = $arguments;
+        $this->flags      = $flags;
     }
 }

@@ -3,7 +3,7 @@
 /**
  * Redis transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
@@ -18,7 +18,6 @@ use Amp\Loop;
 use PHPUnit\Framework\TestCase;
 use ServiceBus\Transport\Common\Exceptions\ConnectionFail;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
-use ServiceBus\Transport\Common\Transport;
 use ServiceBus\Transport\Redis\RedisChannel;
 use ServiceBus\Transport\Redis\RedisIncomingPackage;
 use ServiceBus\Transport\Redis\RedisTransport;
@@ -74,9 +73,6 @@ final class RedisTransportTest extends TestCase
                     {
                         self::assertInstanceOf(RedisIncomingPackage::class, $message);
                         self::assertTrue(Uuid::isValid($message->id()));
-                        self::assertTrue(Uuid::isValid($message->traceId()));
-                        self::assertArrayHasKey(Transport::SERVICE_BUS_TRACE_HEADER, $message->headers());
-                        self::assertTrue(Uuid::isValid($message->headers()[Transport::SERVICE_BUS_TRACE_HEADER]));
 
                         $messages[] = $message->payload();
 

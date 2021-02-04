@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Redis;
 
@@ -22,23 +22,30 @@ use Psr\Log\NullLogger;
 use ServiceBus\Transport\Common\Exceptions\ConnectionFail;
 use function ServiceBus\Common\jsonDecode;
 use function ServiceBus\Common\throwableDetails;
-use function ServiceBus\Common\throwableMessage;
 
 /**
  * @internal
  */
 final class RedisConsumer
 {
-    /** @var RedisChannel */
+    /**
+     * @var RedisChannel
+     */
     private $channel;
 
-    /** @var RedisTransportConnectionConfiguration */
+    /**
+     * @var RedisTransportConnectionConfiguration
+     */
     private $config;
 
-    /** @var LoggerInterface */
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
 
-    /** @var Subscriber|null */
+    /**
+     * @var Subscriber|null
+     */
     private $subscribeClient;
 
     public function __construct(

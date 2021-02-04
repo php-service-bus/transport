@@ -3,7 +3,7 @@
 /**
  * PHPinnacle RabbitMQ adapter.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
@@ -14,7 +14,6 @@ namespace ServiceBus\Transport\Tests\Amqp\PhpInnacle;
 
 use ServiceBus\Transport\Amqp\PhpInnacle\PhpInnacleIncomingPackage;
 use ServiceBus\Transport\Amqp\PhpInnacle\PhpInnacleTransport;
-use Symfony\Component\Uid\Uuid;
 use function ServiceBus\Common\readReflectionPropertyValue;
 use function ServiceBus\Common\uuid;
 use Amp\Loop;
@@ -265,8 +264,7 @@ final class PhpInnacleTransportTest extends TestCase
                     {
                         self::assertInstanceOf(PhpInnacleIncomingPackage::class, $package);
                         self::assertSame('somePayload', $package->payload());
-                        self::assertCount(2, $package->headers());
-                        self::assertTrue(Uuid::isValid($package->traceId()));
+                        self::assertCount(1, $package->headers());
 
                         yield $this->transport->disconnect();
                     },

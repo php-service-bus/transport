@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Redis;
 
@@ -17,7 +17,7 @@ use ServiceBus\Transport\Redis\Exceptions\IncorrectConnectionParameters;
 /**
  * Connection parameters.
  *
- * @psalm-readonly
+ * @psalm-immutable
  */
 final class RedisTransportConnectionConfiguration
 {
@@ -27,19 +27,39 @@ final class RedisTransportConnectionConfiguration
 
     private const DEFAULT_TIMEOUT = 5;
 
-    /** @var string */
+    /**
+     * @psalm-readonly
+     *
+     * @var string
+     */
     public $scheme;
 
-    /** @var string */
+    /**
+     * @psalm-readonly
+     *
+     * @var string
+     */
     public $host;
 
-    /** @var int */
+    /**
+     * @psalm-readonly
+     *
+     * @var int
+     */
     public $port;
 
-    /** @var int */
+    /**
+     * @psalm-readonly
+     *
+     * @var int
+     */
     public $timeout;
 
-    /** @var string|null */
+    /**
+     * @psalm-readonly
+     *
+     * @var string|null
+     */
     public $password;
 
     /**

@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
@@ -23,7 +23,6 @@ use ServiceBus\Transport\Common\Exceptions\AcknowledgeFailed;
 use ServiceBus\Transport\Common\Exceptions\NotAcknowledgeFailed;
 use ServiceBus\Transport\Common\Exceptions\RejectFailed;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
-use ServiceBus\Transport\Common\Transport;
 
 /**
  *
@@ -37,10 +36,14 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
      */
     private $id;
 
-    /** @var Message */
+    /**
+     * @var Message
+     */
     private $originMessage;
 
-    /** @var Channel */
+    /**
+     * @var Channel
+     */
     private $channel;
 
     public function __construct(Message $message, Channel $channel)
@@ -49,9 +52,6 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
         $this->channel       = $channel;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function id(): string
     {
         if ($this->id === null)
@@ -62,9 +62,6 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function origin(): DeliveryDestination
     {
         return new AmqpTransportLevelDestination(
@@ -73,17 +70,11 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function payload(): string
     {
         return $this->originMessage->content;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function headers(): array
     {
         /**
@@ -97,9 +88,6 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
         return $headers;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function ack(): Promise
     {
         return call(
@@ -117,9 +105,6 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function nack(bool $requeue, ?string $withReason = null): Promise
     {
         return call(
@@ -137,9 +122,6 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function reject(bool $requeue, ?string $withReason = null): Promise
     {
         return call(
@@ -155,20 +137,5 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
                 }
             }
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function traceId(): string
-    {
-        $traceId = (string) $this->originMessage->header(Transport::SERVICE_BUS_TRACE_HEADER);
-
-        if ($traceId === '')
-        {
-            $traceId = uuid();
-        }
-
-        return $traceId;
     }
 }

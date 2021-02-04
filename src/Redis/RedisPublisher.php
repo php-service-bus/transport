@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Redis;
 
@@ -20,7 +20,6 @@ use Amp\Redis\RemoteExecutor;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
-use ServiceBus\Transport\Common\Transport;
 use function ServiceBus\Common\jsonEncode;
 
 /**
@@ -28,13 +27,19 @@ use function ServiceBus\Common\jsonEncode;
  */
 final class RedisPublisher
 {
-    /** @var Redis|null */
+    /**
+     * @var Redis|null
+     */
     private $publishClient;
 
-    /** @var RedisTransportConnectionConfiguration */
+    /**
+     * @var RedisTransportConnectionConfiguration
+     */
     private $config;
 
-    /** @var LoggerInterface */
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
 
     public function __construct(RedisTransportConnectionConfiguration $config, ?LoggerInterface $logger = null)
@@ -55,6 +60,28 @@ final class RedisPublisher
     }
 
     /**
+     * Send multiple messages to Redis server.
+     */
+    public function publishBulk(OutboundPackage ...$outboundPackages): Promise
+    {
+        return call(
+            function () use ($outboundPackages): \Generator
+            {
+                /** @todo: fix me Support transactions? */
+
+                $promises = [];
+
+                foreach ($outboundPackages as $outboundPackage)
+                {
+                    $promises[] = $this->publish($outboundPackage);
+                }
+
+                yield $promises;
+            }
+        );
+    }
+
+    /**
      * Send message to Redis server.
      */
     public function publish(OutboundPackage $outboundPackage): Promise
@@ -69,12 +96,10 @@ final class RedisPublisher
                     );
                 }
 
-                $internalHeaders = [Transport::SERVICE_BUS_TRACE_HEADER => $outboundPackage->traceId];
-
                 /** @var RedisTransportLevelDestination $destination */
                 $destination        = $outboundPackage->destination;
                 $destinationChannel = $destination->channel;
-                $headers            = \array_filter(\array_merge($internalHeaders, $outboundPackage->headers));
+                $headers            = $outboundPackage->headers;
 
                 $package = jsonEncode([$outboundPackage->payload, $headers]);
 

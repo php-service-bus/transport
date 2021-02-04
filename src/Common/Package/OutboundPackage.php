@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Common\Package;
 
@@ -17,12 +17,14 @@ use ServiceBus\Transport\Common\DeliveryDestination;
 /**
  * Outbound package.
  *
- * @psalm-readonly
+ * @psalm-immutable
  */
 class OutboundPackage
 {
     /**
      * Message body.
+     *
+     * @psalm-readonly
      *
      * @var string
      */
@@ -31,6 +33,7 @@ class OutboundPackage
     /**
      * Message headers.
      *
+     * @psalm-readonly
      * @psalm-var array<string, float|int|string>
      *
      * @var array
@@ -40,6 +43,8 @@ class OutboundPackage
     /**
      * Message destination.
      *
+     * @psalm-readonly
+     *
      * @var DeliveryDestination
      */
     public $destination;
@@ -47,30 +52,38 @@ class OutboundPackage
     /**
      * The message must be stored in the broker.
      *
+     * @psalm-readonly
+     *
      * @var bool
      */
-    public $persistentFlag = false;
+    public $persistentFlag;
 
     /**
      * This flag tells the server how to react if the message cannot be routed to a queue. If this flag is set, the
      * server will return an unroutable message with a Return method. If this flag is zero, the server silently drops
      * the message.
      *
+     * @psalm-readonly
+     *
      * @var bool
      */
-    public $mandatoryFlag = false;
+    public $mandatoryFlag;
 
     /**
      * This flag tells the server how to react if the message cannot be routed to a queue consumer immediately. If this
      * flag is set, the server will return an undeliverable message with a Return method. If this flag is zero, the
      * server will queue the message, but with no guarantee that it will ever be consumed.
      *
+     * @psalm-readonly
+     *
      * @var bool
      */
-    public $immediateFlag = false;
+    public $immediateFlag;
 
     /**
      * The message will be marked expired after N milliseconds.
+     *
+     * @psalm-readonly
      *
      * @var int|null
      */
@@ -79,7 +92,9 @@ class OutboundPackage
     /**
      * Trace operation id.
      *
-     * @var int|string|null
+     * @psalm-readonly
+     *
+     * @var string|null
      */
     public $traceId;
 
@@ -90,7 +105,7 @@ class OutboundPackage
         string $payload,
         array $headers,
         DeliveryDestination $destination,
-        int|string|null $traceId,
+        string|null $traceId,
         bool $persist = false,
         bool $mandatory = false,
         bool $immediate = false,

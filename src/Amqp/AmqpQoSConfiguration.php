@@ -3,19 +3,17 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Amqp;
 
 /**
  * Quality Of Service settings.
- *
- * @psalm-readonly
  */
 final class AmqpQoSConfiguration
 {
@@ -37,6 +35,8 @@ final class AmqpQoSConfiguration
      * not limit the transfer of single messages to a client, only the sending in advance of more messages while the
      * client still has one or more unacknowledged messages.
      *
+     * @psalm-readonly
+     *
      * @var int
      */
     public $size;
@@ -49,6 +49,8 @@ final class AmqpQoSConfiguration
      * The server may send less data in advance than allowed by the client's specified prefetch windows but it MUST NOT
      * send more.
      *
+     * @psalm-readonly
+     *
      * @var int
      */
     public $count;
@@ -58,6 +60,8 @@ final class AmqpQoSConfiguration
      * the current channel only. If this field is set, they are applied to the entire connection." Instead, RabbitMQ
      * takes global=false to mean that the QoS settings should apply per-consumer (for new consumers on the channel;
      * existing ones being unaffected) and global=true to mean that the QoS settings should apply per-channel.
+     *
+     * @psalm-readonly
      *
      * @var bool
      */

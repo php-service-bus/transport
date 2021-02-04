@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Redis;
 
@@ -18,11 +18,15 @@ use ServiceBus\Transport\Redis\Exceptions\IncorrectChannelName;
 /**
  * Which channel the message will be sent to.
  *
- * @psalm-readonly
+ * @psalm-immutable
  */
 final class RedisTransportLevelDestination implements DeliveryDestination
 {
-    /** @var string */
+    /**
+     * @psalm-readonly
+     *
+     * @var string
+     */
     public $channel;
 
     /**

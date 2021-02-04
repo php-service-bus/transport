@@ -3,7 +3,7 @@
 /**
  * Common transport implementation interfaces.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
@@ -36,9 +36,9 @@ class OutboundPackageTest extends TestCase
 
         $package = new OutboundPackage('payloadData', ['key' => 'value'], $destination, 'traceId');
 
-        static::assertSame('payloadData', $package->payload);
-        static::assertSame(['key' => 'value'], $package->headers);
-        static::assertSame($destination, $package->destination);
-        static::assertSame('traceId', $package->traceId);
+        self::assertSame('payloadData', $package->payload);
+        self::assertSame(['key' => 'value'], $package->headers);
+        self::assertSame($destination, $package->destination);
+        self::assertSame('traceId', $package->traceId);
     }
 }

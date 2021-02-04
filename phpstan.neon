@@ -1,11 +1,3 @@
 parameters:
     checkGenericClassInNonGenericObjectType: false
     checkMissingIterableValueType: false
-    ignoreErrors:
-        -
-            message: '#should return Amp#'
-            path: %currentWorkingDirectory%/src
-        -
-            message: '#Unable to resolve the template type#'
-            path: %currentWorkingDirectory%/src
-

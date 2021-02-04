@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Module;
 
@@ -27,10 +27,14 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 final class RedisTransportModule implements ServiceBusModule
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $connectionDSN;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $defaultDestinationChannel;
 
     /**

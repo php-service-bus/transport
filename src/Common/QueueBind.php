@@ -3,24 +3,26 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Common;
 
 /**
  * Binding the queue to the topic.
  *
- * @psalm-readonly
+ * @psalm-immutable
  */
 class QueueBind
 {
     /**
      * The topic to which the binding is going.
+     *
+     * @psalm-readonly
      *
      * @var Topic
      */
@@ -28,6 +30,8 @@ class QueueBind
 
     /**
      * Binding Key.
+     *
+     * @psalm-readonly
      *
      * @var string|null
      */

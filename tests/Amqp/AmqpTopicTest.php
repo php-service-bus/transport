@@ -3,7 +3,7 @@
 /**
  * AMQP transport common implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
@@ -108,16 +108,16 @@ final class AmqpTopicTest extends TestCase
      */
     public function flags(): void
     {
-        $exchange = AmqpExchange::direct('directName', true);
+        $exchange = AmqpExchange::direct('directName')->makeDurable();
 
         /** @see AmqpExchange::AMQP_DURABLE */
         self::assertSame(2, $exchange->flags);
 
         /** @see AmqpExchange::AMQP_PASSIVE */
-        $exchange->makePassive();
+        $exchange = $exchange->makePassive();
         self::assertSame(6, $exchange->flags);
 
-        $exchange->wthArguments(['key' => 'value']);
+        $exchange = $exchange->wthArguments(['key' => 'value']);
         self::assertSame(['key' => 'value'], $exchange->arguments);
     }
 }

@@ -3,21 +3,20 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Redis;
 
+use function Amp\call;
 use function ServiceBus\Common\uuid;
 use Amp\Promise;
-use Amp\Success;
 use ServiceBus\Transport\Common\DeliveryDestination;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
-use ServiceBus\Transport\Common\Transport;
 
 /**
  *
@@ -31,10 +30,14 @@ final class RedisIncomingPackage implements IncomingPackage
      */
     private $id;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $fromChannel;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $payload;
 
     /**
@@ -55,33 +58,21 @@ final class RedisIncomingPackage implements IncomingPackage
         $this->fromChannel = $fromChannel;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function id(): string
     {
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function origin(): DeliveryDestination
     {
         return new RedisTransportLevelDestination($this->fromChannel);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function payload(): string
     {
         return $this->payload;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function headers(): array
     {
         return $this->headers;
@@ -89,52 +80,37 @@ final class RedisIncomingPackage implements IncomingPackage
 
     /**
      * @codeCoverageIgnore
-     * @psalm-suppress InvalidReturnType
-     * @psalm-suppress InvalidReturnStatement
-     *
-     * {@inheritdoc}
      */
     public function ack(): Promise
     {
-        return new Success();
+        return call(
+            static function ()
+            {
+            }
+        );
     }
 
     /**
      * @codeCoverageIgnore
-     * @psalm-suppress InvalidReturnType
-     * @psalm-suppress InvalidReturnStatement
-     *
-     * {@inheritdoc}
      */
     public function nack(bool $requeue, ?string $withReason = null): Promise
     {
-        return new Success();
+        return call(
+            static function ()
+            {
+            }
+        );
     }
 
     /**
      * @codeCoverageIgnore
-     * @psalm-suppress InvalidReturnType
-     * @psalm-suppress InvalidReturnStatement
-     *
-     * {@inheritdoc}
      */
     public function reject(bool $requeue, ?string $withReason = null): Promise
     {
-        return new Success();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function traceId(): string
-    {
-        $traceId = (string) ($this->headers[Transport::SERVICE_BUS_TRACE_HEADER] ?? '');
-
-        if ($traceId === '')
-        {
-            $traceId = uuid();
-        }
-
-        return $traceId;
+        return call(
+            static function ()
+            {
+            }
+        );
     }
 }

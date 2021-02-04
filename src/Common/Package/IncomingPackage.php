@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Common\Package;
 
@@ -74,11 +74,4 @@ interface IncomingPackage
      * @throws \ServiceBus\Transport\Common\Exceptions\RejectFailed
      */
     public function reject(bool $requeue, ?string $withReason = null): Promise;
-
-    /**
-     * Receive trace id.
-     *
-     * @return int|string
-     */
-    public function traceId(): int|string;
 }

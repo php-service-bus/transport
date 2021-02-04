@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
@@ -50,10 +50,14 @@ final class PhpInnacleTransport implements Transport
      */
     private $channel;
 
-    /** @var PhpInnaclePublisher|null */
+    /**
+     * @var PhpInnaclePublisher|null
+     */
     private $publisher;
 
-    /** @var LoggerInterface */
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
 
     /**
@@ -63,7 +67,9 @@ final class PhpInnacleTransport implements Transport
      */
     private $consumers = [];
 
-    /** @var Config */
+    /**
+     * @var Config
+     */
     private $config;
 
     public function __construct(
@@ -93,7 +99,6 @@ final class PhpInnacleTransport implements Transport
                 {
                     yield $this->client->connect();
 
-                    /** @var Channel $channel */
                     $channel = yield $this->client->channel();
 
                     $this->channel = $channel;
@@ -135,7 +140,7 @@ final class PhpInnacleTransport implements Transport
                         yield $this->client->disconnect();
                     }
                 }
-                catch (\Throwable $throwable)
+                catch (\Throwable)
                 {
                     /** Not interested */
                 }
@@ -156,7 +161,6 @@ final class PhpInnacleTransport implements Transport
             {
                 yield $this->connect();
 
-                /** @var Channel $channel */
                 $channel = yield $this->client->channel();
 
                 /** @var AmqpQueue $queue */
@@ -212,11 +216,16 @@ final class PhpInnacleTransport implements Transport
         );
     }
 
-    public function send(OutboundPackage $outboundPackage): Promise
+    public function send(OutboundPackage ...$outboundPackages): Promise
     {
         return call(
-            function () use ($outboundPackage): \Generator
+            function () use ($outboundPackages): \Generator
             {
+                if (\count($outboundPackages) === 0)
+                {
+                    return;
+                }
+
                 yield $this->connect();
 
                 /** @var Channel $channel */
@@ -227,7 +236,16 @@ final class PhpInnacleTransport implements Transport
                     $this->publisher = new PhpInnaclePublisher($channel, $this->logger);
                 }
 
-                yield $this->publisher->process($outboundPackage);
+                if (\count($outboundPackages) === 1)
+                {
+                    yield $this->publisher->process(
+                        $outboundPackages[\array_key_first($outboundPackages)]
+                    );
+
+                    return;
+                }
+
+                yield $this->publisher->processBulk(...$outboundPackages);
             }
         );
     }

@@ -3,12 +3,12 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
@@ -27,7 +27,7 @@ use function ServiceBus\Common\throwableMessage;
  */
 final class PhpInnacleConsumer
 {
-    /** @var Channel  */
+    /** @var Channel */
     private $channel;
 
     /**
@@ -72,13 +72,13 @@ final class PhpInnacleConsumer
         ]);
 
         return $this->channel->consume(
-            $this->createMessageHandler($onMessageReceived),
-            $this->queue->name,
-            (string) $this->tag,
-            false,
-            false,
-            false,
-            true
+            callback: $this->createMessageHandler($onMessageReceived),
+            queue: $this->queue->name,
+            consumerTag: (string) $this->tag,
+            noLocal: false,
+            noAck: false,
+            exclusive: false,
+            noWait: true
         );
     }
 
@@ -128,7 +128,6 @@ final class PhpInnacleConsumer
                 $this->logger->debug('New message received from "{queueName}"', [
                     'queueName'         => $this->queue->name,
                     'packageId'         => $incomingPackage->id(),
-                    'traceId'           => $incomingPackage->traceId(),
                     'rawMessagePayload' => $incomingPackage->payload(),
                     'rawMessageHeaders' => $incomingPackage->headers(),
                 ]);

@@ -3,18 +3,17 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <dev@async-php.com>
+ * @author  Maksim Masiukevich <contacts@desperado.dev>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Redis;
 
 use function Amp\call;
 use Amp\Promise;
-use Amp\Success;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
@@ -29,7 +28,9 @@ use ServiceBus\Transport\Common\Transport;
  */
 final class RedisTransport implements Transport
 {
-    /** @var RedisTransportConnectionConfiguration */
+    /**
+     * @var RedisTransportConnectionConfiguration
+     */
     private $config;
 
     /**
@@ -39,10 +40,14 @@ final class RedisTransport implements Transport
      */
     private $consumers = [];
 
-    /** @var RedisPublisher|null */
+    /**
+     * @var RedisPublisher|null
+     */
     private $publisher;
 
-    /** @var LoggerInterface */
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
 
     public function __construct(RedisTransportConnectionConfiguration $config, ?LoggerInterface $logger = null)
@@ -112,17 +117,29 @@ final class RedisTransport implements Transport
         return $this->disconnect();
     }
 
-    public function send(OutboundPackage $outboundPackage): Promise
+    public function send(OutboundPackage ...$outboundPackages): Promise
     {
         return call(
-            function () use ($outboundPackage): \Generator
+            function () use ($outboundPackages): \Generator
             {
+                if (\count($outboundPackages) === 0)
+                {
+                    return;
+                }
+
                 if ($this->publisher === null)
                 {
                     $this->publisher = new RedisPublisher($this->config, $this->logger);
                 }
 
-                yield $this->publisher->publish($outboundPackage);
+                if (\count($outboundPackages) === 1)
+                {
+                    yield $this->publisher->publish($outboundPackages[\array_key_first($outboundPackages)]);
+
+                    return;
+                }
+
+                yield $this->publisher->publishBulk(...$outboundPackages);
             }
         );
     }

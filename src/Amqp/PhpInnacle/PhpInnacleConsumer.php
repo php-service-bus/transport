@@ -27,7 +27,9 @@ use function ServiceBus\Common\throwableMessage;
  */
 final class PhpInnacleConsumer
 {
-    /** @var Channel */
+    /**
+     * @var Channel
+     */
     private $channel;
 
     /**
@@ -37,7 +39,9 @@ final class PhpInnacleConsumer
      */
     private $queue;
 
-    /** @var LoggerInterface */
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
 
     /**

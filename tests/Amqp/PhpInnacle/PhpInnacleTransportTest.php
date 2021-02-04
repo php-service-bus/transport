@@ -58,12 +58,12 @@ final class PhpInnacleTransportTest extends TestCase
         parent::tearDown();
 
         Loop::run(
-            function (): void
+            function(): void
             {
                 $this->transport->connect()->onResolve(
-                    function (?\Throwable $throwable): \Generator
+                    function(?\Throwable $throwable): \Generator
                     {
-                        if (null !== $throwable)
+                        if(null !== $throwable)
                         {
                             self::fail($throwable->getMessage());
 
@@ -74,10 +74,10 @@ final class PhpInnacleTransportTest extends TestCase
                         /** @var \PHPinnacle\Ridge\Channel|null $channel */
                         $channel = readReflectionPropertyValue($this->transport, 'channel');
 
-                        if (null !== $channel)
+                        if(null !== $channel)
                         {
                             yield $channel->exchangeDelete('createExchange');
-                            yield  $channel->queueDelete('createQueue');
+                            yield $channel->queueDelete('createQueue');
 
                             yield $channel->exchangeDelete('createExchange2');
                             yield $channel->queueDelete('createQueue2');
@@ -85,7 +85,7 @@ final class PhpInnacleTransportTest extends TestCase
                             yield $channel->exchangeDelete('consume');
                             yield $channel->queueDelete('consume.messages');
 
-                            yield  $this->transport->disconnect();
+                            yield $this->transport->disconnect();
                         }
                     }
                 );
@@ -101,12 +101,12 @@ final class PhpInnacleTransportTest extends TestCase
     public function connect(): void
     {
         Loop::run(
-            function (): void
+            function(): void
             {
                 $this->transport->connect()->onResolve(
-                    function (?\Throwable $throwable): \Generator
+                    function(?\Throwable $throwable): \Generator
                     {
-                        if (null !== $throwable)
+                        if(null !== $throwable)
                         {
                             self::fail($throwable->getMessage());
                         }
@@ -126,12 +126,12 @@ final class PhpInnacleTransportTest extends TestCase
     public function createExchange(): void
     {
         Loop::run(
-            function (): void
+            function(): void
             {
                 $this->transport->createTopic(AmqpExchange::topic('createExchange'))->onResolve(
-                    function (?\Throwable $throwable): \Generator
+                    function(?\Throwable $throwable): \Generator
                     {
-                        if (null !== $throwable)
+                        if(null !== $throwable)
                         {
                             self::fail($throwable->getMessage());
                         }
@@ -151,12 +151,12 @@ final class PhpInnacleTransportTest extends TestCase
     public function createQueue(): void
     {
         Loop::run(
-            function (): void
+            function(): void
             {
                 $this->transport->createQueue(AmqpQueue::default('createQueue'))->onResolve(
-                    function (?\Throwable $throwable): \Generator
+                    function(?\Throwable $throwable): \Generator
                     {
-                        if (null !== $throwable)
+                        if(null !== $throwable)
                         {
                             self::fail($throwable->getMessage());
                         }
@@ -176,7 +176,7 @@ final class PhpInnacleTransportTest extends TestCase
     public function bindTopic(): void
     {
         Loop::run(
-            function (): void
+            function(): void
             {
                 $promise = $this->transport->createTopic(
                     AmqpExchange::topic('createExchange'),
@@ -187,9 +187,9 @@ final class PhpInnacleTransportTest extends TestCase
                 );
 
                 $promise->onResolve(
-                    function (?\Throwable $throwable): \Generator
+                    function(?\Throwable $throwable): \Generator
                     {
-                        if (null !== $throwable)
+                        if(null !== $throwable)
                         {
                             self::fail($throwable->getMessage());
                         }
@@ -209,7 +209,7 @@ final class PhpInnacleTransportTest extends TestCase
     public function bindQueue(): void
     {
         Loop::run(
-            function (): void
+            function(): void
             {
                 $promise = $this->transport->createQueue(
                     AmqpQueue::default('createQueue'),
@@ -220,9 +220,9 @@ final class PhpInnacleTransportTest extends TestCase
                 );
 
                 $promise->onResolve(
-                    function (?\Throwable $throwable): \Generator
+                    function(?\Throwable $throwable): \Generator
                     {
-                        if (null !== $throwable)
+                        if(null !== $throwable)
                         {
                             self::fail($throwable->getMessage());
                         }
@@ -242,7 +242,7 @@ final class PhpInnacleTransportTest extends TestCase
     public function consume(): void
     {
         Loop::run(
-            function (): \Generator
+            function(): \Generator
             {
                 $exchange = AmqpExchange::direct('consume');
                 $queue    = AmqpQueue::default('consume.messages');
@@ -260,13 +260,66 @@ final class PhpInnacleTransportTest extends TestCase
                 );
 
                 yield $this->transport->consume(
-                    function (PhpInnacleIncomingPackage $package): \Generator
+                    function(PhpInnacleIncomingPackage $package): \Generator
                     {
                         self::assertInstanceOf(PhpInnacleIncomingPackage::class, $package);
                         self::assertSame('somePayload', $package->payload());
                         self::assertCount(1, $package->headers());
 
                         yield $this->transport->disconnect();
+                    },
+                    $queue
+                );
+            }
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @throws \Throwable
+     */
+    public function bulkPublish(): void
+    {
+        Loop::run(
+            function(): \Generator
+            {
+                $exchange = AmqpExchange::direct('consume');
+                $queue    = AmqpQueue::default('consume.messages');
+
+                yield $this->transport->createTopic($exchange);
+                yield $this->transport->createQueue($queue, new QueueBind($exchange, 'consume'));
+
+                yield $this->transport->send(
+                    new  OutboundPackage(
+                        'somePayload1',
+                        ['key' => 'value'],
+                        new AmqpTransportLevelDestination('consume', 'consume'),
+                        uuid()
+                    ),
+                    new  OutboundPackage(
+                        'somePayload2',
+                        ['key' => 'value2'],
+                        new AmqpTransportLevelDestination('consume', 'consume'),
+                        uuid()
+                    )
+                );
+
+                $index = 1;
+
+                yield $this->transport->consume(
+                    function(PhpInnacleIncomingPackage $package) use (&$index): \Generator
+                    {
+                        self::assertInstanceOf(PhpInnacleIncomingPackage::class, $package);
+                        self::assertSame('somePayload' . $index, $package->payload());
+                        self::assertCount(1, $package->headers());
+
+                        $index++;
+
+                        if($index === 2)
+                        {
+                            yield $this->transport->disconnect();
+                        }
                     },
                     $queue
                 );

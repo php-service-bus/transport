@@ -30,7 +30,7 @@
     "php": ">=8.0",
     "amphp/amp": "v2.5.*",
     "amphp/redis": "v1.0.*",
-    "php-service-bus/common": "v4.2.*",
+    "php-service-bus/common": "v5.0.*",
     "phpinnacle/ridge": "v1.2.*",
     "symfony/dependency-injection": "v5.2.*"
   },

@@ -254,8 +254,7 @@ final class PhpInnacleTransportTest extends TestCase
                     new  OutboundPackage(
                         'somePayload',
                         ['key' => 'value'],
-                        new AmqpTransportLevelDestination('consume', 'consume'),
-                        uuid()
+                        new AmqpTransportLevelDestination('consume', 'consume')
                     )
                 );
 
@@ -294,14 +293,12 @@ final class PhpInnacleTransportTest extends TestCase
                     new  OutboundPackage(
                         'somePayload1',
                         ['key' => 'value'],
-                        new AmqpTransportLevelDestination('consume', 'consume'),
-                        uuid()
+                        new AmqpTransportLevelDestination('consume', 'consume')
                     ),
                     new  OutboundPackage(
                         'somePayload2',
                         ['key' => 'value2'],
-                        new AmqpTransportLevelDestination('consume', 'consume'),
-                        uuid()
+                        new AmqpTransportLevelDestination('consume', 'consume')
                     )
                 );
 

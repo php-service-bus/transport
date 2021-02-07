@@ -100,7 +100,6 @@ final class PhpInnaclePublisher
                 $this->logger->debug(
                     'Publish message to "{rabbitMqExchange}" with routing key "{rabbitMqRoutingKey}"',
                     [
-                        'traceId'            => $outboundPackage->traceId,
                         'rabbitMqExchange'   => $destination->exchange,
                         'rabbitMqRoutingKey' => $destination->routingKey,
                         'content'            => $content,

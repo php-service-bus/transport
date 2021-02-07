@@ -90,11 +90,11 @@ final class RedisTransportTest extends TestCase
                 );
 
                 yield $transport->send(
-                    new  OutboundPackage('qwerty.message', [], new RedisTransportLevelDestination('qwerty'), uuid())
+                    new  OutboundPackage('qwerty.message', [], new RedisTransportLevelDestination('qwerty'))
                 );
 
                 yield $transport->send(
-                    new OutboundPackage('root.message', [], new RedisTransportLevelDestination('root'), uuid())
+                    new OutboundPackage('root.message', [], new RedisTransportLevelDestination('root'))
                 );
             }
         );

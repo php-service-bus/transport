@@ -90,22 +90,12 @@ class OutboundPackage
     public $expiredAfter;
 
     /**
-     * Trace operation id.
-     *
-     * @psalm-readonly
-     *
-     * @var string|null
-     */
-    public $traceId;
-
-    /**
      * @psalm-param array<string, int|float|string|null> $headers
      */
     public function __construct(
         string $payload,
         array $headers,
         DeliveryDestination $destination,
-        string|null $traceId,
         bool $persist = false,
         bool $mandatory = false,
         bool $immediate = false,
@@ -114,7 +104,6 @@ class OutboundPackage
         $this->payload        = $payload;
         $this->headers        = $headers;
         $this->destination    = $destination;
-        $this->traceId        = $traceId;
         $this->persistentFlag = $persist;
         $this->mandatoryFlag  = $mandatory;
         $this->immediateFlag  = $immediate;

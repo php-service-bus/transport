@@ -38,7 +38,7 @@ interface IncomingPackage
     /**
      * Receive message headers bag.
      *
-     * @psalm-return array<string, string|int|float>
+     * @psalm-return array<string, int|float|string|null>
      */
     public function headers(): array;
 

@@ -34,7 +34,7 @@ class OutboundPackage
      * Message headers.
      *
      * @psalm-readonly
-     * @psalm-var array<string, float|int|string>
+     * @psalm-var array<string, int|float|string|null>
      *
      * @var array
      */

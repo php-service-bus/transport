@@ -99,7 +99,7 @@ class OutboundPackage
     public $traceId;
 
     /**
-     * @psalm-param array<string, float|int|string> $headers
+     * @psalm-param array<string, int|float|string|null> $headers
      */
     public function __construct(
         string $payload,

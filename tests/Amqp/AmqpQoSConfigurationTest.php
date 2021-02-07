@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * AMQP transport common implementation.
@@ -22,8 +22,6 @@ final class AmqpQoSConfigurationTest extends TestCase
 {
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function successCreate(): void
     {

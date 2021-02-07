@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * AMQP transport common implementation.
@@ -23,8 +23,6 @@ final class AmqpTransportLevelDestinationTest extends TestCase
 {
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function withEmptyExchangeName(): void
     {
@@ -36,8 +34,6 @@ final class AmqpTransportLevelDestinationTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function successCreate(): void
     {

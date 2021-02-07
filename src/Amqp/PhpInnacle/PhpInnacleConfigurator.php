@@ -32,10 +32,14 @@ use function ServiceBus\Common\throwableMessage;
  */
 final class PhpInnacleConfigurator
 {
-    /** @var Channel */
+    /**
+     * @var Channel
+     */
     private $channel;
 
-    /** @var LoggerInterface */
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
 
     public function __construct(Channel $channel, ?LoggerInterface $logger = null)

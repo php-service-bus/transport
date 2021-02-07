@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * Redis transport implementation module.
@@ -26,8 +26,6 @@ final class RedisTransportModuleTest extends TestCase
 {
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function boot(): void
     {

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * AMQP transport common implementation.
@@ -22,11 +22,6 @@ use ServiceBus\Transport\Amqp\Exceptions\InvalidQueueName;
  */
 final class AmqpQueueTest extends TestCase
 {
-    /**
-     * @test
-     *
-     * @throws \Throwable
-     */
     public function createWithEmptyName(): void
     {
         $this->expectException(InvalidQueueName::class);
@@ -35,11 +30,6 @@ final class AmqpQueueTest extends TestCase
         AmqpQueue::default('');
     }
 
-    /**
-     * @test
-     *
-     * @throws \Throwable
-     */
     public function createWithToLongName(): void
     {
         $this->expectException(InvalidQueueName::class);
@@ -50,8 +40,6 @@ final class AmqpQueueTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function defaultCreate(): void
     {
@@ -64,8 +52,6 @@ final class AmqpQueueTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function delayedCreate(): void
     {
@@ -79,8 +65,6 @@ final class AmqpQueueTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function flags(): void
     {

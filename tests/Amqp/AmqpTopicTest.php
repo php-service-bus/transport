@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * AMQP transport common implementation.
@@ -23,8 +23,6 @@ final class AmqpTopicTest extends TestCase
 {
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function createWithEmptyName(): void
     {
@@ -36,8 +34,6 @@ final class AmqpTopicTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function createWithToLongName(): void
     {
@@ -49,8 +45,6 @@ final class AmqpTopicTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function fanoutCreate(): void
     {
@@ -62,8 +56,6 @@ final class AmqpTopicTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function directCreate(): void
     {
@@ -75,8 +67,6 @@ final class AmqpTopicTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function topicCreate(): void
     {
@@ -88,8 +78,6 @@ final class AmqpTopicTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function delayedCreate(): void
     {
@@ -103,8 +91,6 @@ final class AmqpTopicTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function flags(): void
     {

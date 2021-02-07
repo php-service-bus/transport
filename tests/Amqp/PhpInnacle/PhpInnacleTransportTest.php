@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * PHPinnacle RabbitMQ adapter.
@@ -15,7 +15,6 @@ namespace ServiceBus\Transport\Tests\Amqp\PhpInnacle;
 use ServiceBus\Transport\Amqp\PhpInnacle\PhpInnacleIncomingPackage;
 use ServiceBus\Transport\Amqp\PhpInnacle\PhpInnacleTransport;
 use function ServiceBus\Common\readReflectionPropertyValue;
-use function ServiceBus\Common\uuid;
 use Amp\Loop;
 use PHPUnit\Framework\TestCase;
 use ServiceBus\Transport\Amqp\AmqpConnectionConfiguration;
@@ -31,14 +30,11 @@ use ServiceBus\Transport\Common\TopicBind;
  */
 final class PhpInnacleTransportTest extends TestCase
 {
-    /** @var PhpInnacleTransport */
+    /**
+     * @var PhpInnacleTransport
+     */
     private $transport;
 
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Throwable
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -48,11 +44,6 @@ final class PhpInnacleTransportTest extends TestCase
         );
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Throwable
-     */
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -95,8 +86,6 @@ final class PhpInnacleTransportTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function connect(): void
     {
@@ -120,8 +109,6 @@ final class PhpInnacleTransportTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function createExchange(): void
     {
@@ -145,8 +132,6 @@ final class PhpInnacleTransportTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function createQueue(): void
     {
@@ -170,8 +155,6 @@ final class PhpInnacleTransportTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function bindTopic(): void
     {
@@ -203,8 +186,6 @@ final class PhpInnacleTransportTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function bindQueue(): void
     {
@@ -236,8 +217,6 @@ final class PhpInnacleTransportTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function consume(): void
     {
@@ -275,8 +254,6 @@ final class PhpInnacleTransportTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function bulkPublish(): void
     {

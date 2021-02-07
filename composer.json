@@ -23,7 +23,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "ServiceBus\\Transport\\Tests\\": "tests/"
+      "ServiceBus\\Transport\\Tests\\": "tests/",
+      "ServiceBus\\Common\\Tests\\": "vendor/php-service-bus/common/tests/"
     }
   },
   "require": {

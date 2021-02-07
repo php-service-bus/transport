@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * Redis transport implementation.
@@ -23,12 +23,12 @@ final class RedisTransportConnectionConfigurationTest extends TestCase
 {
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function successCreate(): void
     {
-        $config = new RedisTransportConnectionConfiguration('tcp://test-host:7000?timeout=-1&password=qwerty');
+        $config = new RedisTransportConnectionConfiguration(
+            'tcp://test-host:7000?timeout=-1&password=qwerty'
+        );
 
         self::assertSame('test-host', $config->host);
         self::assertSame(7000, $config->port);
@@ -38,8 +38,6 @@ final class RedisTransportConnectionConfigurationTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function emptyDSN(): void
     {
@@ -51,8 +49,6 @@ final class RedisTransportConnectionConfigurationTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function withoutScheme(): void
     {
@@ -64,8 +60,6 @@ final class RedisTransportConnectionConfigurationTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function incorrectDSN(): void
     {

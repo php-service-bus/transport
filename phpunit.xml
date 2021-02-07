@@ -18,8 +18,14 @@
         <env name="TRANSPORT_CONNECTION_DSN" value="amqp://guest:guest@127.0.0.1:5672/?heartbeat=0"/>
     </php>
     <testsuites>
+
+        <testsuite name="Component: common">
+            <directory>./vendor/php-service-bus/common/tests/</directory>
+        </testsuite>
+
         <testsuite name="Transport implementation">
             <directory>./tests/</directory>
         </testsuite>
+
     </testsuites>
 </phpunit>

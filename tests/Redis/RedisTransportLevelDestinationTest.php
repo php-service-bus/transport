@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * Redis transport implementation.
@@ -23,8 +23,6 @@ final class RedisTransportLevelDestinationTest extends TestCase
 {
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function successCreate(): void
     {
@@ -33,8 +31,6 @@ final class RedisTransportLevelDestinationTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function createWithEmptyName(): void
     {

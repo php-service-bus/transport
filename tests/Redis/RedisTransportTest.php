@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * Redis transport implementation.
@@ -13,7 +13,6 @@ declare(strict_types = 1);
 namespace ServiceBus\Transport\Tests\Redis;
 
 use Symfony\Component\Uid\Uuid;
-use function ServiceBus\Common\uuid;
 use Amp\Loop;
 use PHPUnit\Framework\TestCase;
 use ServiceBus\Transport\Common\Exceptions\ConnectionFail;
@@ -29,14 +28,11 @@ use ServiceBus\Transport\Redis\RedisTransportLevelDestination;
  */
 final class RedisTransportTest extends TestCase
 {
-    /** @var RedisTransportConnectionConfiguration */
+    /**
+     * @var RedisTransportConnectionConfiguration
+     */
     private $config;
 
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Throwable
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -44,11 +40,6 @@ final class RedisTransportTest extends TestCase
         $this->config = new RedisTransportConnectionConfiguration((string) \getenv('REDIS_CONNECTION_DSN'));
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Throwable
-     */
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -58,8 +49,6 @@ final class RedisTransportTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function flow(): void
     {
@@ -76,7 +65,7 @@ final class RedisTransportTest extends TestCase
 
                         $messages[] = $message->payload();
 
-                        if (2 === \count($messages))
+                        if (\count($messages) === 2)
                         {
                             self::assertSame(['qwerty.message', 'root.message'], $messages);
 
@@ -103,10 +92,6 @@ final class RedisTransportTest extends TestCase
     /**
      * @test
      *
-     * @throws \Throwable
-     *
-     * @return void
-     *
      */
     public function subscribeWithWrongConnectionData(): void
     {
@@ -132,8 +117,6 @@ final class RedisTransportTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function disconnectWithoutConnections(): void
     {

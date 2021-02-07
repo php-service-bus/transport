@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * PHPinnacle RabbitMQ adapter.
@@ -25,8 +25,6 @@ final class PhpInnacleTransportModuleTest extends TestCase
 {
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function boot(): void
     {

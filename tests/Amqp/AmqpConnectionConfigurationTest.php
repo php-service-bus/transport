@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * AMQP transport common implementation.
@@ -21,11 +21,6 @@ use ServiceBus\Transport\Common\Exceptions\InvalidConnectionParameters;
  */
 final class AmqpConnectionConfigurationTest extends TestCase
 {
-    /**
-     * @test
-     *
-     * @throws \Throwable
-     */
     public function createLocalhost(): void
     {
         $options = AmqpConnectionConfiguration::createLocalhost();
@@ -46,8 +41,6 @@ final class AmqpConnectionConfigurationTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function parseDSN(): void
     {
@@ -61,8 +54,6 @@ final class AmqpConnectionConfigurationTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function failedQuery(): void
     {
@@ -74,8 +65,6 @@ final class AmqpConnectionConfigurationTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function emptyDSN(): void
     {
@@ -87,8 +76,6 @@ final class AmqpConnectionConfigurationTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function virtualHost(): void
     {

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * Redis transport implementation.
@@ -23,14 +23,11 @@ use ServiceBus\Transport\Redis\RedisTransportConnectionConfiguration;
  */
 final class RedisConsumerTest extends TestCase
 {
-    /** @var RedisTransportConnectionConfiguration */
+    /**
+     * @var RedisTransportConnectionConfiguration
+     */
     private $config;
 
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Throwable
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -38,11 +35,6 @@ final class RedisConsumerTest extends TestCase
         $this->config = new RedisTransportConnectionConfiguration((string) \getenv('REDIS_CONNECTION_DSN'));
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Throwable
-     */
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -52,8 +44,6 @@ final class RedisConsumerTest extends TestCase
 
     /**
      * @test
-     *
-     * @throws \Throwable
      */
     public function disconnectWithoutConsuming(): void
     {

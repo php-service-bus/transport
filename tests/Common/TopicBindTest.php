@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * Common transport implementation interfaces.
@@ -23,10 +23,6 @@ final class TopicBindTest extends TestCase
 {
     /**
      * @test
-     *
-     * @throws \Throwable
-     *
-     * @return void
      */
     public function create(): void
     {

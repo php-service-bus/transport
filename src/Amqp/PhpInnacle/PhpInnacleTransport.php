@@ -103,7 +103,7 @@ final class PhpInnacleTransport implements Transport
 
                     $this->channel = $channel;
 
-                    $this->logger->info('Connected to broker', [
+                    $this->logger->debug('Connected to broker', [
                         'host'  => $this->config->host,
                         'port'  => $this->config->port,
                         'vhost' => $this->config->vhost,
@@ -145,7 +145,7 @@ final class PhpInnacleTransport implements Transport
                     /** Not interested */
                 }
 
-                $this->logger->info('Disconnect from broker', [
+                $this->logger->debug('Disconnect from broker', [
                     'host'  => $this->config->host,
                     'port'  => $this->config->port,
                     'vhost' => $this->config->vhost,
@@ -166,7 +166,7 @@ final class PhpInnacleTransport implements Transport
                 /** @var AmqpQueue $queue */
                 foreach ($queues as $queue)
                 {
-                    $this->logger->info('Starting a subscription to the "{queueName}" queue', [
+                    $this->logger->debug('Starting a subscription to the "{queueName}" queue', [
                         'host'      => $this->config->host,
                         'port'      => $this->config->port,
                         'vhost'     => $this->config->vhost,
@@ -195,7 +195,7 @@ final class PhpInnacleTransport implements Transport
                  */
                 foreach ($this->consumers as $queueName => $consumer)
                 {
-                    $this->logger->info('Completing the subscription to the "{queueName}" queue', [
+                    $this->logger->debug('Completing the subscription to the "{queueName}" queue', [
                         'host'      => $this->config->host,
                         'port'      => $this->config->port,
                         'vhost'     => $this->config->vhost,

@@ -12,6 +12,7 @@ declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
+use ServiceBus\Transport\Common\Package\IncomingPackage;
 use function Amp\asyncCall;
 use function Amp\call;
 use Amp\Promise;
@@ -21,6 +22,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Amqp\AmqpQueue;
 use function ServiceBus\Common\throwableMessage;
+use function ServiceBus\Common\uuid;
 
 /**
  * @internal
@@ -70,7 +72,7 @@ final class PhpInnacleConsumer
      */
     public function listen(callable $onMessageReceived): Promise
     {
-        $this->logger->info('Creates new consumer on channel for queue "{queue}" with tag "{consumerTag}"', [
+        $this->logger->debug('Creates new consumer on channel for queue "{queue}" with tag "{consumerTag}"', [
             'queue'       => $this->queue->name,
             'consumerTag' => $this->tag,
         ]);
@@ -101,7 +103,7 @@ final class PhpInnacleConsumer
                     yield $this->channel->cancel($this->tag);
                 }
 
-                $this->logger->info(
+                $this->logger->debug(
                     'Subscription canceled',
                     [
                         'queue'       => $this->queue->name,
@@ -127,11 +129,17 @@ final class PhpInnacleConsumer
         {
             try
             {
-                $incomingPackage = new PhpInnacleIncomingPackage($message, $channel);
+                $incomingPackage = new PhpInnacleIncomingPackage(
+                    messageId: self::extractUuidHeader(IncomingPackage::HEADER_MESSAGE_ID, $message),
+                    traceId: self::extractUuidHeader(IncomingPackage::HEADER_TRACE_ID, $message),
+                    message: $message,
+                    channel: $channel
+                );
 
                 $this->logger->debug('New message received from "{queueName}"', [
                     'queueName'         => $this->queue->name,
-                    'packageId'         => $incomingPackage->id(),
+                    'messageId'         => $incomingPackage->id(),
+                    'traceId'           => $incomingPackage->id(),
                     'rawMessagePayload' => $incomingPackage->payload(),
                     'rawMessageHeaders' => $incomingPackage->headers(),
                 ]);
@@ -152,5 +160,15 @@ final class PhpInnacleConsumer
                 );
             }
         };
+    }
+
+    private static function extractUuidHeader(string $key, Message $message): string
+    {
+        $id  = (string) ($message->headers[$key] ?? uuid());
+        $key = $key !== '' ? $key : uuid();
+
+        unset($message->headers[$key]);
+
+        return $id;
     }
 }

@@ -20,10 +20,18 @@ use ServiceBus\Transport\Common\DeliveryDestination;
  */
 interface IncomingPackage
 {
+    public const HEADER_TRACE_ID = 'X-TRACE-ID';
+    public const HEADER_MESSAGE_ID   = 'X-MESSAGE-ID';
+
     /**
-     * Receive package id.
+     * Receive message id.
      */
     public function id(): string;
+
+    /**
+     * Receive message id.
+     */
+    public function traceId(): string;
 
     /**
      * The source from which the message was received.

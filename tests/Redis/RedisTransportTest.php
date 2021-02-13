@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Transport\Tests\Redis;
 
+use function ServiceBus\Common\uuid;
 use Symfony\Component\Uid\Uuid;
 use Amp\Loop;
 use PHPUnit\Framework\TestCase;
@@ -79,11 +80,11 @@ final class RedisTransportTest extends TestCase
                 );
 
                 yield $transport->send(
-                    new  OutboundPackage('qwerty.message', [], new RedisTransportLevelDestination('qwerty'))
+                    new  OutboundPackage(uuid(), 'qwerty.message', [], new RedisTransportLevelDestination('qwerty'))
                 );
 
                 yield $transport->send(
-                    new OutboundPackage('root.message', [], new RedisTransportLevelDestination('root'))
+                    new OutboundPackage(uuid(), 'root.message', [], new RedisTransportLevelDestination('root'))
                 );
             }
         );

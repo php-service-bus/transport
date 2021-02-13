@@ -104,6 +104,7 @@ final class RedisPublisher
                 $package = jsonEncode([$outboundPackage->payload, $headers]);
 
                 $this->logger->debug('Publish message to "{channelName}"', [
+                    'traceId'     => $outboundPackage->traceId,
                     'channelName' => $destinationChannel,
                     'content'     => $package,
                     'isMandatory' => $outboundPackage->mandatoryFlag,
@@ -115,6 +116,7 @@ final class RedisPublisher
                 if ($result === 0 && $outboundPackage->mandatoryFlag === true)
                 {
                     $this->logger->critical('Publish message failed', [
+                        'traceId'     => $outboundPackage->traceId,
                         'channelName' => $destinationChannel,
                         'content'     => $package,
                     ]);

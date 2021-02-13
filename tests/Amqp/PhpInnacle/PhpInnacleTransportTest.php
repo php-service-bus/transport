@@ -24,6 +24,7 @@ use ServiceBus\Transport\Amqp\AmqpTransportLevelDestination;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
 use ServiceBus\Transport\Common\QueueBind;
 use ServiceBus\Transport\Common\TopicBind;
+use function ServiceBus\Common\uuid;
 
 /**
  *
@@ -231,6 +232,7 @@ final class PhpInnacleTransportTest extends TestCase
 
                 yield $this->transport->send(
                     new  OutboundPackage(
+                        uuid(),
                         'somePayload',
                         ['key' => 'value'],
                         new AmqpTransportLevelDestination('consume', 'consume')
@@ -268,11 +270,13 @@ final class PhpInnacleTransportTest extends TestCase
 
                 yield $this->transport->send(
                     new  OutboundPackage(
+                        uuid(),
                         'somePayload1',
                         ['key' => 'value'],
                         new AmqpTransportLevelDestination('consume', 'consume')
                     ),
                     new  OutboundPackage(
+                        uuid(),
                         'somePayload2',
                         ['key' => 'value2'],
                         new AmqpTransportLevelDestination('consume', 'consume')

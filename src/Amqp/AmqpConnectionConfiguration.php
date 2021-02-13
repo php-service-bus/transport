@@ -133,7 +133,7 @@ final class AmqpConnectionConfiguration
 
         $parsedParts = \parse_url($url);
 
-        if (false !== $parsedParts)
+        if ($parsedParts !== false)
         {
             return $parsedParts;
         }

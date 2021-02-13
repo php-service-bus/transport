@@ -49,7 +49,7 @@ final class PhpInnacleConfigurator
 
         if (\extension_loaded('ext-buffer') === false)
         {
-            $this->logger->info(
+            $this->logger->debug(
                 'Install a "ext-buffer" extension to improve performance (https://github.com/phpinnacle/ext-buffer)'
             );
         }
@@ -67,7 +67,7 @@ final class PhpInnacleConfigurator
             {
                 try
                 {
-                    $this->logger->info('Creating "{queueName}" queue', ['queueName' => $queue->name]);
+                    $this->logger->debug('Creating "{queueName}" queue', ['queueName' => $queue->name]);
 
                     yield $this->channel->queueDeclare(
                         queue: $queue->name,
@@ -112,7 +112,7 @@ final class PhpInnacleConfigurator
 
                         yield $this->doCreateExchange($destinationExchange);
 
-                        $this->logger->info(
+                        $this->logger->debug(
                             'Linking "{queueName}" queue to the exchange "{exchangeName}" with the routing key "{routingKey}"',
                             [
                                 'queueName'    => $queue->name,
@@ -151,7 +151,7 @@ final class PhpInnacleConfigurator
             {
                 try
                 {
-                    $this->logger->info('Creating "{exchangeName}" exchange', ['exchangeName' => $exchange->name]);
+                    $this->logger->debug('Creating "{exchangeName}" exchange', ['exchangeName' => $exchange->name]);
 
                     yield $this->channel->exchangeDeclare(
                         exchange: $exchange->name,
@@ -197,7 +197,7 @@ final class PhpInnacleConfigurator
 
                         yield $this->doCreateExchange($sourceExchange);
 
-                        $this->logger->info(
+                        $this->logger->debug(
                             'Linking "{exchangeName}" exchange to the exchange "{destinationExchangeName}" with the routing key "{routingKey}"',
                             [
                                 'queueName'               => $sourceExchange->name,

@@ -22,6 +22,15 @@ use ServiceBus\Transport\Common\DeliveryDestination;
 class OutboundPackage
 {
     /**
+     * Message trace id.
+     *
+     * @psalm-readonly
+     *
+     * @var string
+     */
+    public $traceId;
+
+    /**
      * Message body.
      *
      * @psalm-readonly
@@ -93,6 +102,7 @@ class OutboundPackage
      * @psalm-param array<string, int|float|string|null> $headers
      */
     public function __construct(
+        string $traceId,
         string $payload,
         array $headers,
         DeliveryDestination $destination,
@@ -101,6 +111,7 @@ class OutboundPackage
         bool $immediate = false,
         ?int $expiredAfter = null
     ) {
+        $this->traceId        = $traceId;
         $this->payload        = $payload;
         $this->headers        = $headers;
         $this->destination    = $destination;

@@ -12,6 +12,7 @@ declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Redis;
 
+use ServiceBus\Transport\Common\Package\IncomingPackage;
 use function Amp\asyncCall;
 use function Amp\call;
 use Amp\Promise;
@@ -22,6 +23,7 @@ use Psr\Log\NullLogger;
 use ServiceBus\Transport\Common\Exceptions\ConnectionFail;
 use function ServiceBus\Common\jsonDecode;
 use function ServiceBus\Common\throwableDetails;
+use function ServiceBus\Common\uuid;
 
 /**
  * @internal
@@ -73,7 +75,7 @@ final class RedisConsumer
                     $this->subscribeClient = new Subscriber(Config::fromUri($this->config->toString()));
                 }
 
-                $this->logger->info('Creates new consumer for channel "{channelName}" ', [
+                $this->logger->debug('Creates new consumer for channel "{channelName}" ', [
                     'channelName' => $this->channel->name,
                 ]);
 
@@ -119,13 +121,25 @@ final class RedisConsumer
         if (\count($decoded) === 2)
         {
             /**
-             * @psalm-var string $body
+             * @psalm-var string                          $body
              * @psalm-var array<string, string|int|float> $headers
              */
             [$body, $headers] = $decoded;
 
+            $messageId = self::extractUuidHeader(IncomingPackage::HEADER_MESSAGE_ID, $headers);
+            $traceId   = self::extractUuidHeader(IncomingPackage::HEADER_TRACE_ID, $headers);
+
             /** @psalm-suppress MixedArgumentTypeCoercion */
-            asyncCall($onMessage, new RedisIncomingPackage($body, $headers, $onChannel));
+            asyncCall(
+                $onMessage,
+                new RedisIncomingPackage(
+                    messageId: $messageId,
+                    traceId: $traceId,
+                    payload: $body,
+                    headers: $headers,
+                    fromChannel: $onChannel
+                )
+            );
 
             return;
         }
@@ -135,7 +149,16 @@ final class RedisConsumer
          *
          * @psalm-suppress MixedArgumentTypeCoercion
          */
-        asyncCall($onMessage, new RedisIncomingPackage($messagePayload, [], $onChannel));
+        asyncCall(
+            $onMessage,
+            new RedisIncomingPackage(
+                messageId: uuid(),
+                traceId: uuid(),
+                payload: $messagePayload,
+                headers: [],
+                fromChannel: $onChannel
+            )
+        );
     }
 
     /**
@@ -155,8 +178,18 @@ final class RedisConsumer
 
                 $this->subscribeClient = null;
 
-                $this->logger->info('Subscription canceled', ['channelName' => $this->channel->name]);
+                $this->logger->debug('Subscription canceled', ['channelName' => $this->channel->name]);
             }
         );
+    }
+
+    private static function extractUuidHeader(string $key, array &$headers): string
+    {
+        $id  = (string) ($headers[$key] ?? uuid());
+        $key = $key !== '' ? $key : uuid();
+
+        unset($headers[$key]);
+
+        return $id;
     }
 }

@@ -13,7 +13,6 @@ declare(strict_types = 0);
 namespace ServiceBus\Transport\Redis;
 
 use function Amp\call;
-use function ServiceBus\Common\uuid;
 use Amp\Promise;
 use ServiceBus\Transport\Common\DeliveryDestination;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
@@ -24,11 +23,18 @@ use ServiceBus\Transport\Common\Package\IncomingPackage;
 final class RedisIncomingPackage implements IncomingPackage
 {
     /**
-     * Received package id.
+     * Received message id.
      *
      * @var string
      */
     private $id;
+
+    /**
+     * Received trace message id.
+     *
+     * @var string
+     */
+    private $traceId;
 
     /**
      * @var string
@@ -50,9 +56,10 @@ final class RedisIncomingPackage implements IncomingPackage
     /**
      * @psalm-param array<string, string|int|float> $headers
      */
-    public function __construct(string $payload, array $headers, string $fromChannel)
+    public function __construct(string $messageId, string $traceId, string $payload, array $headers, string $fromChannel)
     {
-        $this->id          = uuid();
+        $this->id          = $messageId;
+        $this->traceId     = $traceId;
         $this->payload     = $payload;
         $this->headers     = $headers;
         $this->fromChannel = $fromChannel;
@@ -61,6 +68,11 @@ final class RedisIncomingPackage implements IncomingPackage
     public function id(): string
     {
         return $this->id;
+    }
+
+    public function traceId(): string
+    {
+        return $this->traceId;
     }
 
     public function origin(): DeliveryDestination

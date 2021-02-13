@@ -86,7 +86,7 @@ final class RedisTransport implements Transport
                 /** @var \ServiceBus\Transport\Redis\RedisChannel $channel */
                 foreach ($queues as $channel)
                 {
-                    $this->logger->info('Starting a subscription to the "{channelName}" channel', [
+                    $this->logger->debug('Starting a subscription to the "{channelName}" channel', [
                         'host'        => $this->config->host,
                         'port'        => $this->config->port,
                         'channelName' => $channel->name,

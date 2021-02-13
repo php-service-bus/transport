@@ -13,7 +13,6 @@ declare(strict_types = 0);
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
 use function Amp\call;
-use function ServiceBus\Common\uuid;
 use Amp\Promise;
 use PHPinnacle\Ridge\Channel;
 use PHPinnacle\Ridge\Message;
@@ -30,11 +29,18 @@ use ServiceBus\Transport\Common\Package\IncomingPackage;
 final class PhpInnacleIncomingPackage implements IncomingPackage
 {
     /**
-     * Received package id.
+     * Received message id.
      *
-     * @var string|null
+     * @var string
      */
     private $id;
+
+    /**
+     * Received trace message id.
+     *
+     * @var string
+     */
+    private $traceId;
 
     /**
      * @var Message
@@ -46,20 +52,22 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
      */
     private $channel;
 
-    public function __construct(Message $message, Channel $channel)
+    public function __construct(string $messageId, string $traceId, Message $message, Channel $channel)
     {
+        $this->id            = $messageId;
+        $this->traceId       = $traceId;
         $this->originMessage = $message;
         $this->channel       = $channel;
     }
 
     public function id(): string
     {
-        if ($this->id === null)
-        {
-            $this->id = uuid();
-        }
-
         return $this->id;
+    }
+
+    public function traceId(): string
+    {
+        return $this->traceId;
     }
 
     public function origin(): DeliveryDestination

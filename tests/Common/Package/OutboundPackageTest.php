@@ -15,6 +15,7 @@ namespace ServiceBus\Transport\Tests\Common\Package;
 use PHPUnit\Framework\TestCase;
 use ServiceBus\Transport\Common\DeliveryDestination;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
+use function ServiceBus\Common\uuid;
 
 /**
  *
@@ -30,7 +31,7 @@ class OutboundPackageTest extends TestCase
         {
         };
 
-        $package = new OutboundPackage('payloadData', ['key' => 'value'], $destination);
+        $package = new OutboundPackage(uuid(), 'payloadData', ['key' => 'value'], $destination);
 
         self::assertSame('payloadData', $package->payload);
         self::assertSame(['key' => 'value'], $package->headers);

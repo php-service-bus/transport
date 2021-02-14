@@ -12,6 +12,7 @@ declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
+use ServiceBus\Transport\Amqp\AmqpTransportLevelDestination;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
 use function Amp\call;
 use Amp\Promise;
@@ -68,7 +69,24 @@ final class PhpInnaclePublisher
 
                     foreach ($outboundPackages as $outboundPackage)
                     {
-                        $promises[] = $this->process($outboundPackage);
+                        /** @var AmqpTransportLevelDestination $destination */
+                        $destination = $outboundPackage->destination;
+                        $headers     = $this->prepareHeaders($outboundPackage);
+
+                        $this->logDelivery(
+                            package: $outboundPackage,
+                            destination: $destination,
+                            headers: $headers
+                        );
+
+                        $promises[] = $this->transactionChannel->publish(
+                            body: $outboundPackage->payload,
+                            exchange: $destination->exchange,
+                            routingKey: (string) $destination->routingKey,
+                            headers: $headers,
+                            mandatory: $outboundPackage->mandatoryFlag,
+                            immediate: $outboundPackage->immediateFlag
+                        );
                     }
 
                     yield $promises;
@@ -94,40 +112,56 @@ final class PhpInnaclePublisher
         return call(
             function () use ($outboundPackage): \Generator
             {
-                $internalHeaders = [
-                    'delivery-mode'                  => $outboundPackage->persistentFlag === true ? self::AMQP_DURABLE : null,
-                    'expiration'                     => $outboundPackage->expiredAfter,
-                    IncomingPackage::HEADER_TRACE_ID => $outboundPackage->traceId
-                ];
-
-                /** @var \ServiceBus\Transport\Amqp\AmqpTransportLevelDestination $destination */
+                /** @var AmqpTransportLevelDestination $destination */
                 $destination = $outboundPackage->destination;
-                $headers     = \array_filter(\array_merge($internalHeaders, $outboundPackage->headers));
-                $content     = $outboundPackage->payload;
+                $headers     = $this->prepareHeaders($outboundPackage);
 
-                $this->logger->debug(
-                    'Publish message to "{rabbitMqExchange}" with routing key "{rabbitMqRoutingKey}"',
-                    [
-                        'traceId'            => $outboundPackage->traceId,
-                        'rabbitMqExchange'   => $destination->exchange,
-                        'rabbitMqRoutingKey' => $destination->routingKey,
-                        'content'            => $content,
-                        'headers'            => $headers,
-                        'isMandatory'        => $outboundPackage->mandatoryFlag,
-                        'isImmediate'        => $outboundPackage->immediateFlag,
-                        'expiredAt'          => $outboundPackage->expiredAfter,
-                    ]
+                $this->logDelivery(
+                    package: $outboundPackage,
+                    destination: $destination,
+                    headers: $headers
                 );
 
                 yield $this->regularChannel->publish(
-                    body: $content,
+                    body: $outboundPackage->payload,
                     exchange: $destination->exchange,
                     routingKey: (string) $destination->routingKey,
-                    headers: \array_filter($headers),
+                    headers: $headers,
                     mandatory: $outboundPackage->mandatoryFlag,
                     immediate: $outboundPackage->immediateFlag
                 );
             }
         );
+    }
+
+    private function logDelivery(
+        OutboundPackage $package,
+        AmqpTransportLevelDestination $destination,
+        array $headers
+    ): void {
+        $this->logger->debug(
+            'Publish message to "{rabbitMqExchange}" with routing key "{rabbitMqRoutingKey}"',
+            [
+                'traceId'            => $package->traceId,
+                'rabbitMqExchange'   => $destination->exchange,
+                'rabbitMqRoutingKey' => $destination->routingKey,
+                'content'            => $package->payload,
+                'headers'            => $headers,
+                'isMandatory'        => $package->mandatoryFlag,
+                'isImmediate'        => $package->immediateFlag,
+                'expiredAt'          => $package->expiredAfter,
+            ]
+        );
+    }
+
+    private function prepareHeaders(OutboundPackage $outboundPackage): array
+    {
+        $internalHeaders = [
+            'delivery-mode'                  => $outboundPackage->persistentFlag === true ? self::AMQP_DURABLE : null,
+            'expiration'                     => $outboundPackage->expiredAfter,
+            IncomingPackage::HEADER_TRACE_ID => $outboundPackage->traceId
+        ];
+
+        return \array_filter(\array_merge($internalHeaders, $outboundPackage->headers));
     }
 }

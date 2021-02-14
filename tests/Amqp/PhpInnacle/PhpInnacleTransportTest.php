@@ -184,7 +184,7 @@ final class PhpInnacleTransportTest extends TestCase
                 yield $this->transport->createQueue($queue, new QueueBind($exchange, 'consume'));
 
                 yield $this->transport->send(
-                    new  OutboundPackage(
+                    new OutboundPackage(
                         uuid(),
                         'somePayload1',
                         ['key' => 'value'],
@@ -194,6 +194,15 @@ final class PhpInnacleTransportTest extends TestCase
                         uuid(),
                         'somePayload2',
                         ['key' => 'value2'],
+                        new AmqpTransportLevelDestination('consume', 'consume')
+                    )
+                );
+
+                yield $this->transport->send(
+                    new OutboundPackage(
+                        uuid(),
+                        'somePayload3',
+                        ['key' => 'value'],
                         new AmqpTransportLevelDestination('consume', 'consume')
                     )
                 );
@@ -209,7 +218,7 @@ final class PhpInnacleTransportTest extends TestCase
 
                         $index++;
 
-                        if ($index === 2)
+                        if ($index === 3)
                         {
                             yield $this->transport->disconnect();
                         }

@@ -12,6 +12,7 @@ declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Redis;
 
+use ServiceBus\Transport\Common\Package\IncomingPackage;
 use function Amp\call;
 use Amp\Promise;
 use Amp\Redis\Config;
@@ -99,7 +100,9 @@ final class RedisPublisher
                 /** @var RedisTransportLevelDestination $destination */
                 $destination        = $outboundPackage->destination;
                 $destinationChannel = $destination->channel;
-                $headers            = $outboundPackage->headers;
+                $headers            = \array_merge($outboundPackage->headers, [
+                    IncomingPackage::HEADER_TRACE_ID => $outboundPackage->traceId
+                ]);
 
                 $package = jsonEncode([$outboundPackage->payload, $headers]);
 

@@ -12,6 +12,7 @@ declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
+use ServiceBus\Transport\Common\Package\IncomingPackage;
 use function Amp\call;
 use Amp\Promise;
 use PHPinnacle\Ridge\Channel;
@@ -90,6 +91,7 @@ final class PhpInnaclePublisher
                 $internalHeaders = [
                     'delivery-mode' => $outboundPackage->persistentFlag === true ? self::AMQP_DURABLE : null,
                     'expiration'    => $outboundPackage->expiredAfter,
+                    IncomingPackage::HEADER_TRACE_ID => $outboundPackage->traceId
                 ];
 
                 /** @var \ServiceBus\Transport\Amqp\AmqpTransportLevelDestination $destination */

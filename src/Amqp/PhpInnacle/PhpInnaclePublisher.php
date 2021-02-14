@@ -12,6 +12,7 @@ declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
+use PHPinnacle\Ridge\Client;
 use ServiceBus\Transport\Amqp\AmqpTransportLevelDestination;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
 use function Amp\call;
@@ -28,25 +29,24 @@ final class PhpInnaclePublisher
     private const AMQP_DURABLE = 2;
 
     /**
-     * @var Channel
+     * @var Client
      */
-    private $regularChannel;
+    private $client;
 
     /**
-     * @var Channel
+     * @var Channel|null
      */
-    private $transactionChannel;
+    private $regularChannel;
 
     /**
      * @var LoggerInterface
      */
     private $logger;
 
-    public function __construct(Channel $regularChannel, Channel $transactionChannel, LoggerInterface $logger)
+    public function __construct(Client $client, LoggerInterface $logger)
     {
-        $this->regularChannel     = $regularChannel;
-        $this->transactionChannel = $transactionChannel;
-        $this->logger             = $logger;
+        $this->client = $client;
+        $this->logger = $logger;
     }
 
     /**
@@ -61,7 +61,10 @@ final class PhpInnaclePublisher
         return call(
             function () use ($outboundPackages): \Generator
             {
-                yield $this->transactionChannel->txSelect();
+                /** @var Channel $channel */
+                $channel = yield $this->client->channel();
+
+                yield $channel->txSelect();
 
                 try
                 {
@@ -79,7 +82,7 @@ final class PhpInnaclePublisher
                             headers: $headers
                         );
 
-                        $promises[] = $this->transactionChannel->publish(
+                        $promises[] = $channel->publish(
                             body: $outboundPackage->payload,
                             exchange: $destination->exchange,
                             routingKey: (string) $destination->routingKey,
@@ -90,13 +93,17 @@ final class PhpInnaclePublisher
                     }
 
                     yield $promises;
-                    yield $this->transactionChannel->txCommit();
+                    yield $channel->txCommit();
                 }
                 catch (\Throwable $throwable)
                 {
-                    yield $this->transactionChannel->txRollback();
+                    yield $channel->txRollback();
 
                     throw $throwable;
+                }
+                finally
+                {
+                    yield $channel->close();
                 }
             }
         );
@@ -112,6 +119,11 @@ final class PhpInnaclePublisher
         return call(
             function () use ($outboundPackage): \Generator
             {
+                if ($this->regularChannel === null)
+                {
+                    $this->regularChannel = yield $this->client->channel();
+                }
+
                 /** @var AmqpTransportLevelDestination $destination */
                 $destination = $outboundPackage->destination;
                 $headers     = $this->prepareHeaders($outboundPackage);

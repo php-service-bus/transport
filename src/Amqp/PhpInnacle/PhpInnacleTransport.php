@@ -44,20 +44,6 @@ final class PhpInnacleTransport implements Transport
     private $client;
 
     /**
-     * Null if not connected.
-     *
-     * @var Channel|null
-     */
-    private $regularChannel;
-
-    /**
-     * Null if not connected.
-     *
-     * @var Channel|null
-     */
-    private $transactionChannel;
-
-    /**
      * @var PhpInnaclePublisher|null
      */
     private $publisher;
@@ -106,9 +92,6 @@ final class PhpInnacleTransport implements Transport
                 {
                     yield $this->client->connect();
 
-                    $this->regularChannel     = yield $this->client->channel();
-                    $this->transactionChannel = yield $this->client->channel();
-
                     $this->logger->debug('Connected to broker', [
                         'host'  => $this->config->host,
                         'port'  => $this->config->port,
@@ -141,19 +124,6 @@ final class PhpInnacleTransport implements Transport
             {
                 try
                 {
-                    $regularChannel     = $this->regularChannel;
-                    $transactionChannel = $this->transactionChannel;
-
-                    if ($regularChannel !== null)
-                    {
-                        yield $regularChannel->close();
-                    }
-
-                    if ($transactionChannel !== null)
-                    {
-                        yield $transactionChannel->close();
-                    }
-
                     if ($this->client->isConnected())
                     {
                         yield $this->client->disconnect();
@@ -249,15 +219,8 @@ final class PhpInnacleTransport implements Transport
 
                 if ($this->publisher === null)
                 {
-                    /** @var Channel $regularChannel */
-                    $regularChannel = $this->regularChannel;
-
-                    /** @var Channel $transactionChannel */
-                    $transactionChannel = $this->transactionChannel;
-
                     $this->publisher = new PhpInnaclePublisher(
-                        regularChannel: $regularChannel,
-                        transactionChannel: $transactionChannel,
+                        client: $this->client,
                         logger: $this->logger
                     );
                 }

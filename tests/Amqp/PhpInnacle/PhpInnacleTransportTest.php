@@ -14,6 +14,7 @@ namespace ServiceBus\Transport\Tests\Amqp\PhpInnacle;
 
 use ServiceBus\Transport\Amqp\PhpInnacle\PhpInnacleIncomingPackage;
 use ServiceBus\Transport\Amqp\PhpInnacle\PhpInnacleTransport;
+use function Amp\Promise\wait;
 use function ServiceBus\Common\readReflectionPropertyValue;
 use Amp\Loop;
 use PHPUnit\Framework\TestCase;
@@ -49,40 +50,29 @@ final class PhpInnacleTransportTest extends TestCase
     {
         parent::tearDown();
 
-        Loop::run(
-            function (): void
-            {
-                $this->transport->connect()->onResolve(
-                    function (?\Throwable $throwable): \Generator
-                    {
-                        if (null !== $throwable)
-                        {
-                            self::fail($throwable->getMessage());
+        try
+        {
+            wait($this->transport->connect());
 
-                            /** @noinspection PhpUnreachableStatementInspection */
-                            return;
-                        }
+            /** @var \PHPinnacle\Ridge\Client|null $client */
+            $client = readReflectionPropertyValue($this->transport, 'client');
 
-                        /** @var \PHPinnacle\Ridge\Channel|null $channel */
-                        $channel = readReflectionPropertyValue($this->transport, 'channel');
+            $channel = wait($client->channel());
 
-                        if (null !== $channel)
-                        {
-                            yield $channel->exchangeDelete('createExchange');
-                            yield $channel->queueDelete('createQueue');
+            wait($channel->exchangeDelete('createExchange'));
+            wait($channel->queueDelete('createQueue'));
 
-                            yield $channel->exchangeDelete('createExchange2');
-                            yield $channel->queueDelete('createQueue2');
+            wait($channel->exchangeDelete('createExchange2'));
+            wait($channel->queueDelete('createQueue2'));
 
-                            yield $channel->exchangeDelete('consume');
-                            yield $channel->queueDelete('consume.messages');
+            wait($channel->exchangeDelete('consume'));
+            wait($channel->queueDelete('consume.messages'));
 
-                            yield $this->transport->disconnect();
-                        }
-                    }
-                );
-            }
-        );
+            wait($this->transport->disconnect());
+        }
+        catch (\Throwable)
+        {
+        }
     }
 
     /**
@@ -90,22 +80,7 @@ final class PhpInnacleTransportTest extends TestCase
      */
     public function connect(): void
     {
-        Loop::run(
-            function (): void
-            {
-                $this->transport->connect()->onResolve(
-                    function (?\Throwable $throwable): \Generator
-                    {
-                        if (null !== $throwable)
-                        {
-                            self::fail($throwable->getMessage());
-                        }
-
-                        yield $this->transport->disconnect();
-                    }
-                );
-            }
-        );
+        wait($this->transport->connect());
     }
 
     /**
@@ -113,22 +88,7 @@ final class PhpInnacleTransportTest extends TestCase
      */
     public function createExchange(): void
     {
-        Loop::run(
-            function (): void
-            {
-                $this->transport->createTopic(AmqpExchange::topic('createExchange'))->onResolve(
-                    function (?\Throwable $throwable): \Generator
-                    {
-                        if (null !== $throwable)
-                        {
-                            self::fail($throwable->getMessage());
-                        }
-
-                        yield $this->transport->disconnect();
-                    }
-                );
-            }
-        );
+        wait($this->transport->createTopic(AmqpExchange::topic('createExchange')));
     }
 
     /**
@@ -136,22 +96,7 @@ final class PhpInnacleTransportTest extends TestCase
      */
     public function createQueue(): void
     {
-        Loop::run(
-            function (): void
-            {
-                $this->transport->createQueue(AmqpQueue::default('createQueue'))->onResolve(
-                    function (?\Throwable $throwable): \Generator
-                    {
-                        if (null !== $throwable)
-                        {
-                            self::fail($throwable->getMessage());
-                        }
-
-                        yield $this->transport->disconnect();
-                    }
-                );
-            }
-        );
+        wait($this->transport->createQueue(AmqpQueue::default('createQueue')));
     }
 
     /**
@@ -159,29 +104,14 @@ final class PhpInnacleTransportTest extends TestCase
      */
     public function bindTopic(): void
     {
-        Loop::run(
-            function (): void
-            {
-                $promise = $this->transport->createTopic(
-                    AmqpExchange::topic('createExchange'),
-                    new TopicBind(
-                        AmqpExchange::topic('createExchange2'),
-                        'qwerty'
-                    )
-                );
-
-                $promise->onResolve(
-                    function (?\Throwable $throwable): \Generator
-                    {
-                        if (null !== $throwable)
-                        {
-                            self::fail($throwable->getMessage());
-                        }
-
-                        yield $this->transport->disconnect();
-                    }
-                );
-            }
+        wait(
+            $this->transport->createTopic(
+                AmqpExchange::topic('createExchange'),
+                new TopicBind(
+                    AmqpExchange::topic('createExchange2'),
+                    'qwerty'
+                )
+            )
         );
     }
 
@@ -190,29 +120,14 @@ final class PhpInnacleTransportTest extends TestCase
      */
     public function bindQueue(): void
     {
-        Loop::run(
-            function (): void
-            {
-                $promise = $this->transport->createQueue(
-                    AmqpQueue::default('createQueue'),
-                    new  QueueBind(
-                        AmqpExchange::topic('createExchange2'),
-                        'qwerty'
-                    )
-                );
-
-                $promise->onResolve(
-                    function (?\Throwable $throwable): \Generator
-                    {
-                        if (null !== $throwable)
-                        {
-                            self::fail($throwable->getMessage());
-                        }
-
-                        yield $this->transport->disconnect();
-                    }
-                );
-            }
+        wait(
+            $this->transport->createQueue(
+                AmqpQueue::default('createQueue'),
+                new  QueueBind(
+                    AmqpExchange::topic('createExchange2'),
+                    'qwerty'
+                )
+            )
         );
     }
 

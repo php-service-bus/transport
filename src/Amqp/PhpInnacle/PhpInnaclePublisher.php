@@ -29,17 +29,23 @@ final class PhpInnaclePublisher
     /**
      * @var Channel
      */
-    private $channel;
+    private $regularChannel;
+
+    /**
+     * @var Channel
+     */
+    private $transactionChannel;
 
     /**
      * @var LoggerInterface
      */
     private $logger;
 
-    public function __construct(Channel $channel, LoggerInterface $logger)
+    public function __construct(Channel $regularChannel, Channel $transactionChannel, LoggerInterface $logger)
     {
-        $this->channel = $channel;
-        $this->logger  = $logger;
+        $this->regularChannel     = $regularChannel;
+        $this->transactionChannel = $transactionChannel;
+        $this->logger             = $logger;
     }
 
     /**
@@ -54,7 +60,7 @@ final class PhpInnaclePublisher
         return call(
             function () use ($outboundPackages): \Generator
             {
-                yield $this->channel->txSelect();
+                yield $this->transactionChannel->txSelect();
 
                 try
                 {
@@ -66,11 +72,11 @@ final class PhpInnaclePublisher
                     }
 
                     yield $promises;
-                    yield $this->channel->txCommit();
+                    yield $this->transactionChannel->txCommit();
                 }
                 catch (\Throwable $throwable)
                 {
-                    yield $this->channel->txRollback();
+                    yield $this->transactionChannel->txRollback();
 
                     throw $throwable;
                 }
@@ -89,8 +95,8 @@ final class PhpInnaclePublisher
             function () use ($outboundPackage): \Generator
             {
                 $internalHeaders = [
-                    'delivery-mode' => $outboundPackage->persistentFlag === true ? self::AMQP_DURABLE : null,
-                    'expiration'    => $outboundPackage->expiredAfter,
+                    'delivery-mode'                  => $outboundPackage->persistentFlag === true ? self::AMQP_DURABLE : null,
+                    'expiration'                     => $outboundPackage->expiredAfter,
                     IncomingPackage::HEADER_TRACE_ID => $outboundPackage->traceId
                 ];
 
@@ -113,7 +119,7 @@ final class PhpInnaclePublisher
                     ]
                 );
 
-                yield $this->channel->publish(
+                yield $this->regularChannel->publish(
                     body: $content,
                     exchange: $destination->exchange,
                     routingKey: (string) $destination->routingKey,

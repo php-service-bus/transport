@@ -48,7 +48,14 @@ final class PhpInnacleTransport implements Transport
      *
      * @var Channel|null
      */
-    private $channel;
+    private $regularChannel;
+
+    /**
+     * Null if not connected.
+     *
+     * @var Channel|null
+     */
+    private $transactionChannel;
 
     /**
      * @var PhpInnaclePublisher|null
@@ -99,9 +106,8 @@ final class PhpInnacleTransport implements Transport
                 {
                     yield $this->client->connect();
 
-                    $channel = yield $this->client->channel();
-
-                    $this->channel = $channel;
+                    $this->regularChannel     = yield $this->client->channel();
+                    $this->transactionChannel = yield $this->client->channel();
 
                     $this->logger->debug('Connected to broker', [
                         'host'  => $this->config->host,
@@ -228,12 +234,13 @@ final class PhpInnacleTransport implements Transport
 
                 yield $this->connect();
 
-                /** @var Channel $channel */
-                $channel = $this->channel;
-
                 if ($this->publisher === null)
                 {
-                    $this->publisher = new PhpInnaclePublisher($channel, $this->logger);
+                    $this->publisher = new PhpInnaclePublisher(
+                        regularChannel: $this->regularChannel,
+                        transactionChannel: $this->transactionChannel,
+                        logger: $this->logger
+                    );
                 }
 
                 if (\count($outboundPackages) === 1)
@@ -265,7 +272,7 @@ final class PhpInnacleTransport implements Transport
                 yield $this->connect();
 
                 /** @var Channel $channel */
-                $channel = $this->channel;
+                $channel = $this->regularChannel;
 
                 $configurator = new PhpInnacleConfigurator($channel);
 
@@ -290,7 +297,7 @@ final class PhpInnacleTransport implements Transport
                 yield $this->connect();
 
                 /** @var Channel $channel */
-                $channel = $this->channel;
+                $channel = $this->regularChannel;
 
                 $configurator = new PhpInnacleConfigurator($channel);
 

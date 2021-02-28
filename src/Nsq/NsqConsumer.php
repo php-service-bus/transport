@@ -166,6 +166,9 @@ final class NsqConsumer
                     return;
                 }
 
+                /** @psalm-suppress InternalMethod */
+                $this->subscribeClient->close();
+
                 $this->subscribeClient = null;
 
                 $this->logger->debug('Subscription canceled', ['channelName' => $this->channel->name]);

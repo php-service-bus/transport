@@ -55,6 +55,8 @@ final class NsqPublisher
     {
         if ($this->publishClient !== null)
         {
+            /** @psalm-suppress InternalMethod */
+            $this->publishClient->close();
             $this->publishClient = null;
         }
     }

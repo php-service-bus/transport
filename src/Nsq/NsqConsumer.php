@@ -99,7 +99,7 @@ final class NsqConsumer
                     }
                     catch (ConnectException $e)
                     {
-                        throw new ConnectionFail($e->getMessage(), 0, $e);
+                        throw ConnectionFail::fromThrowable($e);
                     }
                 }
             }

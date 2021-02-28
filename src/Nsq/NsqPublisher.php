@@ -12,8 +12,11 @@ declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Nsq;
 
+use Amp\Socket\ConnectException;
+use Exception;
 use Nsq\Config\ClientConfig;
 use Nsq\Producer;
+use ServiceBus\Transport\Common\Exceptions\ConnectionFail;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
 use function Amp\call;
 use Amp\Promise;
@@ -116,7 +119,14 @@ final class NsqPublisher
                     'isMandatory' => $outboundPackage->mandatoryFlag,
                 ]);
 
-                yield $this->publishClient->connect();
+                try
+                {
+                    yield $this->publishClient->connect();
+                }
+                catch (ConnectException $e)
+                {
+                    throw ConnectionFail::fromThrowable($e);
+                }
 
                 /** @var int $result */
                 $result = yield $this->publishClient->publish($destinationChannel, $package);

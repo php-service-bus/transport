@@ -13,7 +13,7 @@ declare(strict_types = 0);
 namespace ServiceBus\Transport\Nsq;
 
 use ServiceBus\Transport\Common\DeliveryDestination;
-use ServiceBus\Transport\Redis\Exceptions\IncorrectChannelName;
+use ServiceBus\Transport\Nsq\Exceptions\IncorrectChannelName;
 
 /**
  * Which channel the message will be sent to.
@@ -30,7 +30,7 @@ final class NsqTransportLevelDestination implements DeliveryDestination
     public $channel;
 
     /**
-     * @throws \ServiceBus\Transport\Redis\Exceptions\IncorrectChannelName
+     * @throws \ServiceBus\Transport\Nsq\Exceptions\IncorrectChannelName
      */
     public function __construct(string $channel)
     {

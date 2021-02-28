@@ -34,7 +34,7 @@ final class NsqTransport implements Transport
     private $config;
 
     /**
-     * @psalm-var array<string, \ServiceBus\Transport\Redis\RedisConsumer>
+     * @psalm-var array<string, \ServiceBus\Transport\Nsq\NsqConsumer>
      *
      * @var NsqConsumer[]
      */

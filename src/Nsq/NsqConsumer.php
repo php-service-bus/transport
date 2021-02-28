@@ -19,7 +19,6 @@ use ServiceBus\Transport\Common\Package\IncomingPackage;
 use function Amp\asyncCall;
 use function Amp\call;
 use Amp\Promise;
-use Amp\Redis\Subscriber;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use function ServiceBus\Common\jsonDecode;
@@ -46,7 +45,7 @@ final class NsqConsumer
     private $logger;
 
     /**
-     * @var Subscriber|null
+     * @var Consumer|null
      */
     private $subscribeClient;
 
@@ -142,9 +141,10 @@ final class NsqConsumer
         asyncCall(
             $onMessage,
             new NsqIncomingPackage(
+                $message,
                 messageId: uuid(),
                 traceId: uuid(),
-                payload: $messagePayload,
+                payload: $message->body,
                 headers: [],
                 fromChannel: $onChannel
             )

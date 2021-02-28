@@ -97,7 +97,7 @@ final class NsqTransportTest extends TestCase
     public function subscribeWithWrongConnectionData(): void
     {
         $this->expectException(ConnectionFail::class);
-        $this->expectExceptionMessage('Failed to connect to redis instance (tcp://localhost:1000)');
+        $this->expectExceptionMessage('Failed to connect to nsq instance (tcp://localhost:1000)');
 
         Loop::run(
             static function (): \Generator

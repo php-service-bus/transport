@@ -12,7 +12,7 @@ declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Nsq;
 
-use ServiceBus\Transport\Redis\Exceptions\IncorrectConnectionParameters;
+use ServiceBus\Transport\Nsq\Exceptions\IncorrectConnectionParameters;
 
 /**
  * Connection parameters.
@@ -56,7 +56,7 @@ final class NsqTransportConnectionConfiguration
     public $timeout;
 
     /**
-     * @throws \ServiceBus\Transport\Redis\Exceptions\IncorrectConnectionParameters
+     * @throws \ServiceBus\Transport\Nsq\Exceptions\IncorrectConnectionParameters
      */
     public function __construct(string $connectionDSN)
     {
@@ -88,7 +88,7 @@ final class NsqTransportConnectionConfiguration
     }
 
     /**
-     * @throws \ServiceBus\Transport\Redis\Exceptions\IncorrectConnectionParameters
+     * @throws \ServiceBus\Transport\Nsq\Exceptions\IncorrectConnectionParameters
      */
     private static function parseUrl(string $connectionDSN): array
     {

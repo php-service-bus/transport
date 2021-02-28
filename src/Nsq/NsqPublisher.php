@@ -82,7 +82,7 @@ final class NsqPublisher
     }
 
     /**
-     * Send message to Redis server.
+     * Send message to Nsq server.
      */
     public function publish(OutboundPackage $outboundPackage): Promise
     {

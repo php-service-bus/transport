@@ -12,9 +12,11 @@ declare(strict_types = 0);
 
 namespace ServiceBus\Transport\Nsq;
 
+use Amp\Socket\ConnectException;
 use Nsq\Config\ClientConfig;
 use Nsq\Consumer;
 use Nsq\Message;
+use ServiceBus\Transport\Common\Exceptions\ConnectionFail;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
 use function Amp\asyncCall;
 use function Amp\call;
@@ -91,7 +93,14 @@ final class NsqConsumer
                         $this->logger,
                     );
 
-                    yield $this->subscribeClient->connect();
+                    try
+                    {
+                        yield $this->subscribeClient->connect();
+                    }
+                    catch (ConnectException $e)
+                    {
+                        throw new ConnectionFail($e->getMessage(), 0, $e);
+                    }
                 }
             }
         );

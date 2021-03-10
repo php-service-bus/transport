@@ -75,9 +75,6 @@ final class PhpInnacleTransportModule implements ServiceBusModule
         $this->qosGlobal = $isGlobal;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function boot(ContainerBuilder $containerBuilder): void
     {
         $this->injectParameters($containerBuilder);

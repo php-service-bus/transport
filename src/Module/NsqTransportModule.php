@@ -3,7 +3,7 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <contacts@desperado.dev>
+ * @author  Konstantin  Grachev <me@grachevko.ru>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
@@ -38,7 +38,7 @@ final class NsqTransportModule implements ServiceBusModule
     private $defaultDestinationChannel;
 
     /**
-     * Connection DSN example: tcp://test-host:6379?timeout=10&password=qwerty.
+     * Connection DSN example: tcp://localhost:4150.
      */
     public function __construct(string $connectionDSN, string $defaultDestinationChannel)
     {
@@ -46,9 +46,6 @@ final class NsqTransportModule implements ServiceBusModule
         $this->defaultDestinationChannel = $defaultDestinationChannel;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function boot(ContainerBuilder $containerBuilder): void
     {
         $this->injectParameters($containerBuilder);

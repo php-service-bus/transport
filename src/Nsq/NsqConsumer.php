@@ -3,7 +3,7 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <contacts@desperado.dev>
+ * @author  Konstantin  Grachev <me@grachevko.ru>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */

@@ -3,7 +3,7 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <contacts@desperado.dev>
+ * @author  Konstantin  Grachev <me@grachevko.ru>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
@@ -13,7 +13,6 @@ declare(strict_types = 0);
 namespace ServiceBus\Transport\Nsq;
 
 use Amp\Socket\ConnectException;
-use Exception;
 use Nsq\Config\ClientConfig;
 use Nsq\Producer;
 use ServiceBus\Transport\Common\Exceptions\ConnectionFail;

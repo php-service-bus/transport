@@ -46,9 +46,6 @@ final class RedisTransportModule implements ServiceBusModule
         $this->defaultDestinationChannel = $defaultDestinationChannel;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function boot(ContainerBuilder $containerBuilder): void
     {
         $this->injectParameters($containerBuilder);

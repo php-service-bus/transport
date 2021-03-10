@@ -3,7 +3,7 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <contacts@desperado.dev>
+ * @author  Konstantin  Grachev <me@grachevko.ru>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
@@ -23,7 +23,7 @@ final class NsqTransportConnectionConfiguration
 {
     private const DEFAULT_HOST = 'localhost';
 
-    private const DEFAULT_PORT = 6379;
+    private const DEFAULT_PORT = 4150;
 
     private const DEFAULT_TIMEOUT = 5;
 

@@ -3,7 +3,7 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <contacts@desperado.dev>
+ * @author  Konstantin  Grachev <me@grachevko.ru>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
@@ -29,11 +29,6 @@ final class NsqChannel implements Queue
      */
     public $name;
 
-    public function toString(): string
-    {
-        return $this->name;
-    }
-
     /**
      * @throws \ServiceBus\Transport\Nsq\Exceptions\IncorrectChannelName
      */
@@ -45,5 +40,10 @@ final class NsqChannel implements Queue
         }
 
         $this->name = $channel;
+    }
+
+    public function toString(): string
+    {
+        return $this->name;
     }
 }

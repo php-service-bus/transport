@@ -3,7 +3,7 @@
 /**
  * AMQP transport implementation.
  *
- * @author  Maksim Masiukevich <contacts@desperado.dev>
+ * @author  Konstantin  Grachev <me@grachevko.ru>
  * @license MIT
  * @license https://opensource.org/licenses/MIT
  */
@@ -98,9 +98,6 @@ final class NsqIncomingPackage implements IncomingPackage
         return $this->headers;
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
     public function ack(): Promise
     {
         return call(
@@ -111,9 +108,6 @@ final class NsqIncomingPackage implements IncomingPackage
         );
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
     public function nack(bool $requeue, ?string $withReason = null): Promise
     {
         return call(
@@ -131,9 +125,6 @@ final class NsqIncomingPackage implements IncomingPackage
         );
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
     public function reject(bool $requeue, ?string $withReason = null): Promise
     {
         return call(

@@ -9,16 +9,15 @@
 This component is part of the [PHP Service Bus](https://github.com/php-service-bus/service-bus): contains transport adapters implementation.
 
 ## Documentation
-[**PHPInnacle RabbitMQ module**](https://github.com/php-service-bus/documentation/blob/master/pages/modules/transport_phpinnacle.md)
-
-[**Redis transport documentation**](https://github.com/php-service-bus/documentation/blob/master/pages/modules/redis_transport.md)
+[**Transport**](https://github.com/php-service-bus/service-bus/blob/v5.0/.documentation/transport.md)
 
 ## Contributing
-Contributions are welcome! Please read [CONTRIBUTING](CONTRIBUTING.md) for details.
+Contributions are welcome! Please read [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
 
-## Communication Channels
+### Communication Channels
 You can find help and discussion in the following places:
 * [Telegram chat (RU)](https://t.me/php_service_bus)
+* [Twitter](https://twitter.com/PhpBus)
 * Create issue [https://github.com/php-service-bus/service-bus/issues](https://github.com/php-service-bus/service-bus/issues)
 
 ## License

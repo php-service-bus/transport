@@ -76,7 +76,11 @@ jobs:
           RABBITMQ_DEFAULT_USER: guest
           RABBITMQ_DEFAULT_PASS: guest
         options: --health-cmd "rabbitmqctl node_health_check" --health-interval 10s --health-timeout 5s --health-retries 5
-
+      nsqd:
+        image: nsqio/nsq:v1.2.0
+        options: --entrypoint /nsqd
+        ports:
+          - 4150:4150
     env:
       PHP_EXTENSIONS: bstring, dom, intl, json, libxml, xml, xmlwriter, sockets
       PHP_INI_VALUES: assert.exception=1, zend.assertions=1

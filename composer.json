@@ -33,7 +33,8 @@
     "amphp/redis": "v1.0.*",
     "php-service-bus/common": "v5.0.*",
     "phpinnacle/ridge": "v1.2.*",
-    "symfony/dependency-injection": "v5.2.*"
+    "symfony/dependency-injection": "v5.2.*",
+    "nsq/nsq": "^0.5.1"
   },
   "require-dev": {
     "php-service-bus/code-style-config": "v1.3.*",

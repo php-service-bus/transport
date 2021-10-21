@@ -26,6 +26,8 @@ final class AmqpExchange implements Topic
 
     private const TYPE_TOPIC = 'topic';
 
+    private const TYPE_HEADERS = 'headers';
+
     private const AMQP_DURABLE = 2;
 
     private const AMQP_PASSIVE = 4;
@@ -125,6 +127,17 @@ final class AmqpExchange implements Topic
         return new self(
             name: $name,
             type: self::TYPE_DIRECT
+        );
+    }
+
+    /**
+     * @throws \ServiceBus\Transport\Amqp\Exceptions\InvalidExchangeName
+     */
+    public static function headers(string $name): self
+    {
+        return new self(
+            name: $name,
+            type: self::TYPE_HEADERS
         );
     }
 

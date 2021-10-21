@@ -118,6 +118,7 @@ final class PhpInnacleConfigurator
                                 'queueName'    => $queue->name,
                                 'exchangeName' => $destinationExchange->name,
                                 'routingKey'   => (string) $bind->routingKey,
+                                'arguments'    =>  $bind->arguments,
                             ]
                         );
 
@@ -125,7 +126,8 @@ final class PhpInnacleConfigurator
                             queue: $queue->name,
                             exchange: $destinationExchange->name,
                             routingKey: (string) $bind->routingKey,
-                            noWait: true
+                            noWait: true,
+                            arguments: $bind->arguments
                         );
                     }
                 }
@@ -200,15 +202,15 @@ final class PhpInnacleConfigurator
                         $this->logger->debug(
                             'Linking "{exchangeName}" exchange to the exchange "{destinationExchangeName}" with the routing key "{routingKey}"',
                             [
-                                'queueName'               => $sourceExchange->name,
+                                'exchangeName'            => $sourceExchange->name,
                                 'destinationExchangeName' => $exchange->name,
                                 'routingKey'              => (string) $bind->routingKey,
                             ]
                         );
 
                         yield $this->channel->exchangeBind(
-                            destination: $sourceExchange->name,
-                            source: $exchange->name,
+                            destination: $exchange->name,
+                            source: $sourceExchange->name,
                             routingKey: (string) $bind->routingKey,
                             noWait: true
                         );

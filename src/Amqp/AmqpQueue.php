@@ -133,6 +133,23 @@ final class AmqpQueue implements Queue
     }
 
     /**
+     * Create quorum queue.
+     *
+     * @see https://www.rabbitmq.com/quorum-queues.html
+     *
+     * @throws \ServiceBus\Transport\Amqp\Exceptions\InvalidQueueName
+     */
+    public static function quorum(string $name): self
+    {
+        return new self(
+            name: $name,
+            durable: true,
+            exclusive: false,
+            arguments: ['x-queue-type' => 'quorum']
+        );
+    }
+
+    /**
      * Create delayed queue.
      *
      * @see https://github.com/rabbitmq/rabbitmq-delayed-message-exchange

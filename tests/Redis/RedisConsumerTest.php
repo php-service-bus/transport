@@ -55,6 +55,8 @@ final class RedisConsumerTest extends TestCase
                 $consumer = new RedisConsumer(new RedisChannel('qwerty'), $this->config);
 
                 yield $consumer->stop();
+
+                self::assertTrue(true);
             }
         );
     }

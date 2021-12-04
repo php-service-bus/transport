@@ -170,6 +170,8 @@ final class PhpInnacleConsumer
                         'rawMessagePayload' => $message->content,
                     ]
                 );
+
+                throw $throwable;
             }
         };
     }

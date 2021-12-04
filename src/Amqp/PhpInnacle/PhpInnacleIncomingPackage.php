@@ -66,9 +66,10 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
         $this->originMessage = $message;
         $this->channel       = $channel;
         /** @psalm-suppress MixedPropertyTypeCoercion */
-        $this->headers       = $message->headers; /* @phpstan-ignore-line */
-        $this->id            = $this->extractFromHeaders(IncomingPackage::HEADER_MESSAGE_ID, uuid());
-        $this->traceId       = $this->extractFromHeaders(IncomingPackage::HEADER_TRACE_ID, uuid());
+        /* @phpstan-ignore-next-line */
+        $this->headers = $message->headers;
+        $this->id      = $this->extractUuidFromHeaders(IncomingPackage::HEADER_MESSAGE_ID);
+        $this->traceId = $this->extractUuidFromHeaders(IncomingPackage::HEADER_TRACE_ID);
     }
 
     public function id(): string
@@ -157,21 +158,20 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
 
     /**
      * @psalm-param non-empty-string $key
-     * @psalm-param non-empty-string $withDefault
      *
      * @psalm-return non-empty-string
      */
-    private function extractFromHeaders(string $key, string $withDefault): string
+    private function extractUuidFromHeaders(string $key): string
     {
-        $value = (string) $this->headers[$key];
-
-        unset($this->headers[$key]);
-
-        if (!empty($value))
+        if (\array_key_exists($key, $this->headers) && \is_string($this->headers[$key]) && $this->headers[$key] !== '')
         {
+            $value = $this->headers[$key];
+
+            unset($this->headers[$key]);
+
             return $value;
         }
 
-        return $withDefault;
+        return uuid();
     }
 }

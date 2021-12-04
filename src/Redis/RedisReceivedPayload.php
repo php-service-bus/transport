@@ -71,12 +71,12 @@ final class RedisReceivedPayload
      */
     private function extractUuidHeader(string $key, array &$headers): string
     {
-        $value = (string) $headers[$key];
-
-        unset($headers[$key]);
-
-        if ($value !== '')
+        if (\array_key_exists($key, $headers) && \is_string($headers[$key]) && $headers[$key] !== '')
         {
+            $value = $headers[$key];
+
+            unset($headers[$key]);
+
             return $value;
         }
 

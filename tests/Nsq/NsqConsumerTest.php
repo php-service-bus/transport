@@ -54,6 +54,8 @@ final class NsqConsumerTest extends TestCase
             {
                 $consumer = new NsqConsumer(new NsqChannel('qwerty'), $this->config);
 
+                self::assertTrue(true);
+
                 yield $consumer->stop();
             }
         );

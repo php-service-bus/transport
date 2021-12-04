@@ -26,17 +26,6 @@ final class AmqpTopicTest extends TestCase
     /**
      * @test
      */
-    public function createWithEmptyName(): void
-    {
-        $this->expectException(InvalidExchangeName::class);
-        $this->expectExceptionMessage('Exchange name must be specified');
-
-        AmqpExchange::fanout('');
-    }
-
-    /**
-     * @test
-     */
     public function createWithToLongName(): void
     {
         $this->expectException(InvalidExchangeName::class);
@@ -52,7 +41,7 @@ final class AmqpTopicTest extends TestCase
     {
         $exchange = AmqpExchange::fanout('fanoutName');
 
-        self::assertSame('fanout', $exchange->type);
+        self::assertSame('fanout', $exchange->type->value);
         self::assertSame('fanoutName', $exchange->toString());
     }
 
@@ -63,7 +52,7 @@ final class AmqpTopicTest extends TestCase
     {
         $exchange = AmqpExchange::direct('directName');
 
-        self::assertSame('direct', $exchange->type);
+        self::assertSame('direct', $exchange->type->value);
         self::assertSame('directName', $exchange->toString());
     }
 
@@ -74,7 +63,7 @@ final class AmqpTopicTest extends TestCase
     {
         $exchange = AmqpExchange::topic('topicName');
 
-        self::assertSame('topic', $exchange->type);
+        self::assertSame('topic', $exchange->type->value);
         self::assertSame('topicName', $exchange->toString());
     }
 
@@ -85,7 +74,7 @@ final class AmqpTopicTest extends TestCase
     {
         $exchange = AmqpExchange::delayed('delayedName');
 
-        self::assertSame('x-delayed-message', $exchange->type);
+        self::assertSame('x-delayed-message', $exchange->type->value);
         self::assertSame('delayedName', $exchange->toString());
 
         self::assertSame(['x-delayed-type' => 'direct'], $exchange->arguments);

@@ -12,7 +12,7 @@ declare(strict_types=0);
 
 namespace ServiceBus\Transport\Redis;
 
-use ServiceBus\Transport\Redis\Exceptions\IncorrectConnectionParameters;
+use ServiceBus\Transport\Common\Exceptions\IncorrectConnectionParameters;
 use function ServiceBus\Transport\Common\parseConnectionDSN;
 use function ServiceBus\Transport\Common\parseConnectionQuery;
 
@@ -66,7 +66,7 @@ final class RedisTransportConnectionConfiguration
     public $password;
 
     /**
-     * @throws \ServiceBus\Transport\Redis\Exceptions\IncorrectConnectionParameters
+     * @throws \ServiceBus\Transport\Common\Exceptions\IncorrectConnectionParameters
      */
     public function __construct(string $connectionDSN)
     {

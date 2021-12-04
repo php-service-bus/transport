@@ -18,9 +18,6 @@ use PHPUnit\Framework\TestCase;
 use ServiceBus\Transport\Nsq\Exceptions\IncorrectChannelName;
 use ServiceBus\Transport\Nsq\NsqChannel;
 
-/**
- *
- */
 final class NsqChannelTest extends TestCase
 {
     /**

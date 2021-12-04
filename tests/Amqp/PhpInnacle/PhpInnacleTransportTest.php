@@ -83,6 +83,8 @@ final class PhpInnacleTransportTest extends TestCase
     public function connect(): void
     {
         wait($this->transport->connect());
+
+        self::assertTrue(true);
     }
 
     /**
@@ -91,6 +93,8 @@ final class PhpInnacleTransportTest extends TestCase
     public function createExchange(): void
     {
         wait($this->transport->createTopic(AmqpExchange::topic('createExchange')));
+
+        self::assertTrue(true);
     }
 
     /**
@@ -99,6 +103,8 @@ final class PhpInnacleTransportTest extends TestCase
     public function createQueue(): void
     {
         wait($this->transport->createQueue(AmqpQueue::default('createQueue')));
+
+        self::assertTrue(true);
     }
 
     /**
@@ -115,6 +121,8 @@ final class PhpInnacleTransportTest extends TestCase
                 )
             )
         );
+
+        self::assertTrue(true);
     }
 
     /**
@@ -131,6 +139,8 @@ final class PhpInnacleTransportTest extends TestCase
                 )
             )
         );
+
+        self::assertTrue(true);
     }
 
     /**

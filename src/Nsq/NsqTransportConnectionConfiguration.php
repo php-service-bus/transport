@@ -12,7 +12,7 @@ declare(strict_types=0);
 
 namespace ServiceBus\Transport\Nsq;
 
-use ServiceBus\Transport\Nsq\Exceptions\IncorrectConnectionParameters;
+use ServiceBus\Transport\Common\Exceptions\IncorrectConnectionParameters;
 use function ServiceBus\Transport\Common\parseConnectionDSN;
 use function ServiceBus\Transport\Common\parseConnectionQuery;
 
@@ -58,7 +58,7 @@ final class NsqTransportConnectionConfiguration
     public $timeout;
 
     /**
-     * @throws \ServiceBus\Transport\Nsq\Exceptions\IncorrectConnectionParameters
+     * @throws \ServiceBus\Transport\Common\Exceptions\IncorrectConnectionParameters
      */
     public function __construct(string $connectionDSN)
     {

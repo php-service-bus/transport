@@ -165,7 +165,7 @@ final class PhpInnacleTransport implements Transport
 
                     $consumer = new PhpInnacleConsumer($queue, $channel, $this->logger);
 
-                    $consumer->listen($onMessage);
+                    yield $consumer->listen($onMessage);
 
                     $this->consumers[$queue->name] = $consumer;
                 }

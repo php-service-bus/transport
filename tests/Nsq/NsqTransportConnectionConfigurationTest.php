@@ -15,12 +15,9 @@ declare(strict_types=1);
 namespace ServiceBus\Transport\Tests\Nsq;
 
 use PHPUnit\Framework\TestCase;
-use ServiceBus\Transport\Nsq\Exceptions\IncorrectConnectionParameters;
+use ServiceBus\Transport\Common\Exceptions\IncorrectConnectionParameters;
 use ServiceBus\Transport\Nsq\NsqTransportConnectionConfiguration;
 
-/**
- *
- */
 final class NsqTransportConnectionConfigurationTest extends TestCase
 {
     /**

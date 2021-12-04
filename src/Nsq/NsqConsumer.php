@@ -122,24 +122,12 @@ final class NsqConsumer
     {
         $decodedPayload = $this->decodeMessageBody($message);
 
-        $messageId = self::extractFromHeaders(
-            key: IncomingPackage::HEADER_MESSAGE_ID,
-            withDefault: uuid(),
-            headers: $decodedPayload['headers']
-        );
-
-        $traceId = self::extractFromHeaders(
-            key: IncomingPackage::HEADER_TRACE_ID,
-            withDefault: uuid(),
-            headers: $decodedPayload['headers']
-        );
-
         asyncCall(
             $onMessage,
             new NsqIncomingPackage(
                 $message,
-                messageId: $messageId,
-                traceId: $traceId,
+                messageId: self::extractUuidFromHeaders(IncomingPackage::HEADER_MESSAGE_ID, $decodedPayload['headers']),
+                traceId: self::extractUuidFromHeaders(IncomingPackage::HEADER_TRACE_ID, $decodedPayload['headers']),
                 payload: $decodedPayload['body'],
                 headers: $decodedPayload['headers'],
                 fromChannel: $onChannel
@@ -209,21 +197,20 @@ final class NsqConsumer
 
     /**
      * @psalm-param non-empty-string $key
-     * @psalm-param non-empty-string $withDefault
      *
      * @psalm-return non-empty-string
      */
-    private static function extractFromHeaders(string $key, string $withDefault, array &$headers): string
+    private static function extractUuidFromHeaders(string $key, array &$headers): string
     {
-        $value = (string) $headers[$key];
-
-        unset($headers[$key]);
-
-        if (!empty($value))
+        if (\array_key_exists($key, $headers) && \is_string($headers[$key]) && $headers[$key] !== '')
         {
+            $value = $headers[$key];
+
+            unset($headers[$key]);
+
             return $value;
         }
 
-        return $withDefault;
+        return uuid();
     }
 }

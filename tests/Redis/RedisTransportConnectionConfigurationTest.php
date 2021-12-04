@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace ServiceBus\Transport\Tests\Redis;
 
 use PHPUnit\Framework\TestCase;
-use ServiceBus\Transport\Redis\Exceptions\IncorrectConnectionParameters;
+use ServiceBus\Transport\Common\Exceptions\IncorrectConnectionParameters;
 use ServiceBus\Transport\Redis\RedisTransportConnectionConfiguration;
 
 /**

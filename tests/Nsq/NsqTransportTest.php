@@ -127,6 +127,9 @@ final class NsqTransportTest extends TestCase
             function (): \Generator
             {
                 yield (new NsqTransport($this->config))->disconnect();
+
+                self::assertTrue(true);
+
                 Loop::stop();
             }
         );

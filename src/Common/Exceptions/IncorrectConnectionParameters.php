@@ -1,16 +1,8 @@
 <?php
 
-/**
- * AMQP transport implementation.
- *
- * @author  Konstantin  Grachev <me@grachevko.ru>
- * @license MIT
- * @license https://opensource.org/licenses/MIT
- */
+declare(strict_types=1);
 
-declare(strict_types=0);
-
-namespace ServiceBus\Transport\Nsq\Exceptions;
+namespace ServiceBus\Transport\Common\Exceptions;
 
 final class IncorrectConnectionParameters extends \InvalidArgumentException
 {

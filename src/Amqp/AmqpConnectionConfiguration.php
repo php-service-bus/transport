@@ -12,15 +12,14 @@ declare(strict_types=0);
 
 namespace ServiceBus\Transport\Amqp;
 
-use ServiceBus\Transport\Common\Exceptions\InvalidConnectionParameters;
+use function ServiceBus\Transport\Common\parseConnectionDSN;
+use function ServiceBus\Transport\Common\parseConnectionQuery;
 
 /**
  * Amqp connection details.
  */
 final class AmqpConnectionConfiguration
 {
-    private const DEFAULT_SCHEMA = 'amqp';
-
     private const DEFAULT_HOST = 'localhost';
 
     private const DEFAULT_PORT = 5672;
@@ -58,7 +57,7 @@ final class AmqpConnectionConfiguration
     /**
      * @psalm-param non-empty-string $connectionDSN DSN example: amqp://user:password@host:port
      *
-     * @throws \ServiceBus\Transport\Common\Exceptions\InvalidConnectionParameters Incorrect DSN
+     * @throws \ServiceBus\Transport\Common\Exceptions\IncorrectConnectionParameters Incorrect DSN
      */
     public function __construct(string $connectionDSN)
     {
@@ -86,6 +85,8 @@ final class AmqpConnectionConfiguration
     }
 
     /**
+     * @psalm-param non-empty-string $connectionDSN
+     *
      * @psalm-return array{
      *   scheme:string,
      *   user:string,
@@ -97,63 +98,30 @@ final class AmqpConnectionConfiguration
      *   heartbeat:int
      * }
      *
-     * @throws \ServiceBus\Transport\Common\Exceptions\InvalidConnectionParameters Incorrect DSN
+     * @throws \ServiceBus\Transport\Common\Exceptions\IncorrectConnectionParameters
      */
     private static function extractConnectionParameters(string $connectionDSN): array
     {
-        $connectionParts = self::parseUrl($connectionDSN);
+        $connectionParts = parseConnectionDSN($connectionDSN);
 
-        $queryString = (string) ($connectionParts['query'] ?? '');
-
-        $queryParts = self::parseQuery($queryString);
+        /**
+         * @psalm-var array{
+         *     timeout:numeric-string|null,
+         *     vhost:non-empty-string|null,
+         *     heartbeat:numeric-string|null
+         * } $parsedQuery
+         */
+        $parsedQuery = parseConnectionQuery($connectionParts['query'] ?? '');
 
         return [
-            'scheme'    => (string) ($connectionParts['scheme'] ?? self::DEFAULT_SCHEMA),
-            'host'      => (string) ($connectionParts['host'] ?? self::DEFAULT_HOST),
-            'port'      => (int) ($connectionParts['port'] ?? self::DEFAULT_PORT),
-            'user'      => (string) ($connectionParts['user'] ?? self::DEFAULT_USERNAME),
-            'password'  => (string) ($connectionParts['pass'] ?? self::DEFAULT_PASSWORD),
-            'timeout'   => (int) ($queryParts['timeout'] ?? self::DEFAULT_TIMEOUT),
-            'vhost'     => (string) ($queryParts['vhost'] ?? self::DEFAULT_VIRTUAL_HOST),
-            'heartbeat' => (int) ($queryParts['heartbeat'] ?? self::DEFAULT_HEARTBEAT_INTERVAL),
+            'scheme'    => $connectionParts['scheme'],
+            'host'      => $connectionParts['host'] ?? self::DEFAULT_HOST,
+            'port'      => $connectionParts['port'] ?? self::DEFAULT_PORT,
+            'user'      => $connectionParts['user'] ?? self::DEFAULT_USERNAME,
+            'password'  => $connectionParts['pass'] ?? self::DEFAULT_PASSWORD,
+            'timeout'   => (int) ($parsedQuery['timeout'] ?? self::DEFAULT_TIMEOUT),
+            'vhost'     => $parsedQuery['vhost'] ?? self::DEFAULT_VIRTUAL_HOST,
+            'heartbeat' => (int) ($parsedQuery['heartbeat'] ?? self::DEFAULT_HEARTBEAT_INTERVAL),
         ];
-    }
-
-    /**
-     * Parse connection DSN parts.
-     *
-     * @throws \ServiceBus\Transport\Common\Exceptions\InvalidConnectionParameters Incorrect DSN
-     */
-    private static function parseUrl(string $url): array
-    {
-        if ($url === '')
-        {
-            throw InvalidConnectionParameters::emptyDSN();
-        }
-
-        $parsedParts = \parse_url($url);
-
-        if ($parsedParts !== false)
-        {
-            return $parsedParts;
-        }
-
-        throw InvalidConnectionParameters::incorrectDSN($url);
-    }
-
-    /**
-     * Parse url query parts.
-     *
-     * @psalm-return array<string, string|int|float>
-     */
-    private static function parseQuery(string $query): array
-    {
-        $output = [];
-
-        \parse_str($query, $output);
-
-        /** @psalm-var array<string, string|int|float> $output */
-
-        return $output;
     }
 }

@@ -127,7 +127,10 @@ final class RedisTransportTest extends TestCase
             function (): \Generator
             {
                 yield (new RedisTransport($this->config))->disconnect();
+
                 Loop::stop();
+
+                self::assertTrue(true);
             }
         );
     }

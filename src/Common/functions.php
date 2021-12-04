@@ -12,7 +12,7 @@ declare(strict_types=0);
 
 namespace ServiceBus\Transport\Common;
 
-use ServiceBus\Transport\Redis\Exceptions\IncorrectConnectionParameters;
+use ServiceBus\Transport\Common\Exceptions\IncorrectConnectionParameters;
 
 /**
  * @psalm-param non-empty-string $connectionDSN
@@ -27,7 +27,7 @@ use ServiceBus\Transport\Redis\Exceptions\IncorrectConnectionParameters;
  *    query:non-empty-string|null
  * }
  *
- * @throws \ServiceBus\Transport\Redis\Exceptions\IncorrectConnectionParameters
+ * @throws \ServiceBus\Transport\Common\Exceptions\IncorrectConnectionParameters
  */
 function parseConnectionDSN(string $connectionDSN): array
 {

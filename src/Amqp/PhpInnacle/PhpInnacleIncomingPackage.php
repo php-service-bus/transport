@@ -8,11 +8,10 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
-use function Amp\call;
 use Amp\Promise;
 use PHPinnacle\Ridge\Channel;
 use PHPinnacle\Ridge\Message;
@@ -22,14 +21,15 @@ use ServiceBus\Transport\Common\Exceptions\AcknowledgeFailed;
 use ServiceBus\Transport\Common\Exceptions\NotAcknowledgeFailed;
 use ServiceBus\Transport\Common\Exceptions\RejectFailed;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
+use function Amp\call;
+use function ServiceBus\Common\uuid;
 
-/**
- *
- */
 final class PhpInnacleIncomingPackage implements IncomingPackage
 {
     /**
      * Received message id.
+     *
+     * @psalm-var non-empty-string
      *
      * @var string
      */
@@ -37,6 +37,8 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
 
     /**
      * Received trace message id.
+     *
+     * @psalm-var non-empty-string
      *
      * @var string
      */
@@ -48,16 +50,25 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
     private $originMessage;
 
     /**
+     * @psalm-var array<non-empty-string, int|float|string|null>
+     *
+     * @var array
+     */
+    private $headers;
+
+    /**
      * @var Channel
      */
     private $channel;
 
-    public function __construct(string $messageId, string $traceId, Message $message, Channel $channel)
+    public function __construct(Message $message, Channel $channel)
     {
-        $this->id            = $messageId;
-        $this->traceId       = $traceId;
         $this->originMessage = $message;
         $this->channel       = $channel;
+        /** @psalm-suppress MixedPropertyTypeCoercion */
+        $this->headers       = $message->headers; /* @phpstan-ignore-line */
+        $this->id            = $this->extractFromHeaders(IncomingPackage::HEADER_MESSAGE_ID, uuid());
+        $this->traceId       = $this->extractFromHeaders(IncomingPackage::HEADER_TRACE_ID, uuid());
     }
 
     public function id(): string
@@ -78,22 +89,19 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
         );
     }
 
+    /**
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
+     */
     public function payload(): string
     {
+        /* @phpstan-ignore-next-line */
         return $this->originMessage->content;
     }
 
     public function headers(): array
     {
-        /**
-         * @noinspection PhpUnnecessaryLocalVariableInspection
-         * @noinspection OneTimeUseVariablesInspection
-         *
-         * @psalm-var    array<string, string|int|float> $headers
-         */
-        $headers = $this->originMessage->headers;
-
-        return $headers;
+        return $this->headers;
     }
 
     public function ack(): Promise
@@ -145,5 +153,25 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
                 }
             }
         );
+    }
+
+    /**
+     * @psalm-param non-empty-string $key
+     * @psalm-param non-empty-string $withDefault
+     *
+     * @psalm-return non-empty-string
+     */
+    private function extractFromHeaders(string $key, string $withDefault): string
+    {
+        $value = (string) $this->headers[$key];
+
+        unset($this->headers[$key]);
+
+        if (!empty($value))
+        {
+            return $value;
+        }
+
+        return $withDefault;
     }
 }

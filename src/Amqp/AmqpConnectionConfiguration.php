@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Amqp;
 
@@ -56,7 +56,7 @@ final class AmqpConnectionConfiguration
     public $parameters;
 
     /**
-     * @param string $connectionDSN DSN example: amqp://user:password@host:port
+     * @psalm-param non-empty-string $connectionDSN DSN example: amqp://user:password@host:port
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\InvalidConnectionParameters Incorrect DSN
      */

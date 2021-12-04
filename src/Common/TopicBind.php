@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Common;
 
@@ -32,11 +32,15 @@ class TopicBind
      * Binding Key.
      *
      * @psalm-readonly
+     * @psalm-var non-empty-string|null
      *
      * @var string|null
      */
     public $routingKey;
 
+    /**
+     * @psalm-param non-empty-string|null $routingKey
+     */
     public function __construct(Topic $destinationTopic, ?string $routingKey = null)
     {
         $this->destinationTopic = $destinationTopic;

@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Nsq;
 
@@ -17,16 +17,13 @@ use Nsq\Config\ClientConfig;
 use Nsq\Producer;
 use ServiceBus\Transport\Common\Exceptions\ConnectionFail;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
-use function Amp\call;
 use Amp\Promise;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
+use function Amp\call;
 use function ServiceBus\Common\jsonEncode;
 
-/**
- *
- */
 final class NsqPublisher
 {
     /**
@@ -65,6 +62,8 @@ final class NsqPublisher
 
     /**
      * Send multiple messages to Nsq server.
+     *
+     * @psalm-return Promise<void>
      */
     public function publishBulk(OutboundPackage ...$outboundPackages): Promise
     {
@@ -127,10 +126,9 @@ final class NsqPublisher
                     throw ConnectionFail::fromThrowable($e);
                 }
 
-                /** @var int $result */
                 $result = yield $this->publishClient->publish($destinationChannel, $package);
 
-                if ($result === 0 && $outboundPackage->mandatoryFlag === true)
+                if ($result === false && $outboundPackage->mandatoryFlag === true)
                 {
                     $this->logger->critical('Publish message failed', [
                         'traceId'     => $outboundPackage->traceId,

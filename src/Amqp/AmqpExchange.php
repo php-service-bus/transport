@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Amqp;
 
@@ -20,18 +20,8 @@ use ServiceBus\Transport\Common\Topic;
  */
 final class AmqpExchange implements Topic
 {
-    private const TYPE_FANOUT = 'fanout';
-
-    private const TYPE_DIRECT = 'direct';
-
-    private const TYPE_TOPIC = 'topic';
-
     private const AMQP_DURABLE = 2;
-
     private const AMQP_PASSIVE = 4;
-
-    /** Plugin rabbitmq_delayed_message_exchange */
-    private const TYPE_DELAYED = 'x-delayed-message';
 
     private const MAX_NAME_SYMBOLS = 255;
 
@@ -40,6 +30,7 @@ final class AmqpExchange implements Topic
      * period, or colon.
      *
      * @psalm-readonly
+     * @psalm-var non-empty-string
      *
      * @var string
      */
@@ -50,12 +41,7 @@ final class AmqpExchange implements Topic
      *
      * @psalm-readonly
      *
-     * - fanout
-     * - direct
-     * - topic
-     * - x-delayed-message
-     *
-     * @var string
+     * @var AmqpExchangeType
      */
     public $type;
 
@@ -107,51 +93,73 @@ final class AmqpExchange implements Topic
     public $flags;
 
     /**
+     * @psalm-param non-empty-string $name
+     *
      * @throws \ServiceBus\Transport\Amqp\Exceptions\InvalidExchangeName
      */
     public static function fanout(string $name): self
     {
         return new self(
             name: $name,
-            type: self::TYPE_FANOUT
+            type: AmqpExchangeType::FANOUT
         );
     }
 
     /**
+     * @psalm-param non-empty-string $name
+     *
      * @throws \ServiceBus\Transport\Amqp\Exceptions\InvalidExchangeName
      */
     public static function direct(string $name): self
     {
         return new self(
             name: $name,
-            type: self::TYPE_DIRECT
+            type: AmqpExchangeType::DIRECT
         );
     }
 
     /**
+     * @psalm-param non-empty-string $name
+     *
      * @throws \ServiceBus\Transport\Amqp\Exceptions\InvalidExchangeName
      */
     public static function topic(string $name): self
     {
         return new self(
             name: $name,
-            type: self::TYPE_TOPIC
+            type: AmqpExchangeType::TOPIC
         );
     }
 
     /**
+     * @psalm-param non-empty-string $name
+     *
      * @throws \ServiceBus\Transport\Amqp\Exceptions\InvalidExchangeName
      */
     public static function delayed(string $name): self
     {
         return new self(
             name: $name,
-            type: self::TYPE_DELAYED,
+            type: AmqpExchangeType::DELAYED,
             durable: true,
-            arguments: ['x-delayed-type' => self::TYPE_DIRECT]
+            arguments: [
+                'x-delayed-type' => AmqpExchangeType::DIRECT->value
+            ]
         );
     }
 
+    /**
+     * @psalm-param non-empty-string $name
+     *
+     * @throws \ServiceBus\Transport\Amqp\Exceptions\InvalidExchangeName
+     */
+    public static function headers(string $name): self
+    {
+        return new self(
+            name: $name,
+            type: AmqpExchangeType::HEADERS
+        );
+    }
 
     public function toString(): string
     {
@@ -198,23 +206,17 @@ final class AmqpExchange implements Topic
     }
 
     /**
+     * @psalm-param non-empty-string                   $name
      * @psalm-param array<array-key, string|int|float> $arguments
-     *
-     * @throws \ServiceBus\Transport\Amqp\Exceptions\InvalidExchangeName
      */
     private function __construct(
-        string $name,
-        string $type,
-        bool $passive = false,
-        bool $durable = false,
-        array $arguments = [],
-        int $flags = 0
+        string           $name,
+        AmqpExchangeType $type,
+        bool             $passive = false,
+        bool             $durable = false,
+        array            $arguments = [],
+        int              $flags = 0
     ) {
-        if ($name === '')
-        {
-            throw InvalidExchangeName::nameCantBeEmpty();
-        }
-
         if (self::MAX_NAME_SYMBOLS < \mb_strlen($name))
         {
             throw InvalidExchangeName::nameIsToLong($name);

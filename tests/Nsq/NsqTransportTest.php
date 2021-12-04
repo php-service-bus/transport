@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
+
+/** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * AMQP transport implementation.
@@ -8,11 +10,10 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace ServiceBus\Transport\Tests\Nsq;
 
-use function ServiceBus\Common\uuid;
 use Symfony\Component\Uid\Uuid;
 use Amp\Loop;
 use PHPUnit\Framework\TestCase;
@@ -23,6 +24,7 @@ use ServiceBus\Transport\Nsq\NsqIncomingPackage;
 use ServiceBus\Transport\Nsq\NsqTransport;
 use ServiceBus\Transport\Nsq\NsqTransportConnectionConfiguration;
 use ServiceBus\Transport\Nsq\NsqTransportLevelDestination;
+use function ServiceBus\Common\uuid;
 
 /**
  *

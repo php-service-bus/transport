@@ -8,20 +8,17 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Nsq;
 
 use Generator;
 use Nsq\Message;
-use function Amp\call;
 use Amp\Promise;
 use ServiceBus\Transport\Common\DeliveryDestination;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
+use function Amp\call;
 
-/**
- *
- */
 final class NsqIncomingPackage implements IncomingPackage
 {
     /**
@@ -32,6 +29,8 @@ final class NsqIncomingPackage implements IncomingPackage
     /**
      * Received message id.
      *
+     * @psalm-var non-empty-string
+     *
      * @var string
      */
     private $id;
@@ -39,32 +38,48 @@ final class NsqIncomingPackage implements IncomingPackage
     /**
      * Received trace message id.
      *
+     * @psalm-var non-empty-string
+     *
      * @var string
      */
     private $traceId;
 
     /**
+     * @psalm-var non-empty-string
+     *
      * @var string
      */
     private $fromChannel;
 
     /**
+     * @psalm-var non-empty-string
+     *
      * @var string
      */
     private $payload;
 
     /**
-     * @psalm-var array<string, string|int|float>
+     * @psalm-var array<non-empty-string, int|float|string|null>
      *
      * @var array
      */
     private $headers;
 
     /**
-     * @psalm-param array<string, string|int|float> $headers
+     * @psalm-param non-empty-string                               $messageId
+     * @psalm-param non-empty-string                               $traceId
+     * @psalm-param non-empty-string                               $payload
+     * @psalm-param array<non-empty-string, int|float|string|null> $headers
+     * @psalm-param non-empty-string                               $fromChannel
      */
-    public function __construct(Message $message, string $messageId, string $traceId, string $payload, array $headers, string $fromChannel)
-    {
+    public function __construct(
+        Message $message,
+        string  $messageId,
+        string  $traceId,
+        string  $payload,
+        array   $headers,
+        string  $fromChannel
+    ) {
         $this->message     = $message;
         $this->id          = $messageId;
         $this->traceId     = $traceId;

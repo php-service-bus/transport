@@ -8,16 +8,16 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Redis;
 
 use ServiceBus\Transport\Redis\Exceptions\IncorrectConnectionParameters;
+use function ServiceBus\Transport\Common\parseConnectionDSN;
+use function ServiceBus\Transport\Common\parseConnectionQuery;
 
 /**
  * Connection parameters.
- *
- * @psalm-immutable
  */
 final class RedisTransportConnectionConfiguration
 {
@@ -29,6 +29,7 @@ final class RedisTransportConnectionConfiguration
 
     /**
      * @psalm-readonly
+     * @psalm-var non-empty-string
      *
      * @var string
      */
@@ -36,6 +37,7 @@ final class RedisTransportConnectionConfiguration
 
     /**
      * @psalm-readonly
+     * @psalm-var non-empty-string
      *
      * @var string
      */
@@ -57,6 +59,7 @@ final class RedisTransportConnectionConfiguration
 
     /**
      * @psalm-readonly
+     * @psalm-var non-empty-string|null
      *
      * @var string|null
      */
@@ -67,17 +70,31 @@ final class RedisTransportConnectionConfiguration
      */
     public function __construct(string $connectionDSN)
     {
-        $parameters = self::parseUrl($connectionDSN);
+        if ($connectionDSN === '')
+        {
+            throw IncorrectConnectionParameters::connectionDsnCantBeEmpty();
+        }
 
-        $queryString = (string) ($parameters['query'] ?? '');
+        if (!\str_starts_with($connectionDSN, 'tcp://') && !\str_starts_with($connectionDSN, 'unix://'))
+        {
+            throw IncorrectConnectionParameters::incorrectScheme();
+        }
 
-        $query = self::parseQuery($queryString);
+        $parameters = parseConnectionDSN($connectionDSN);
 
-        $this->scheme   = (string) $parameters['scheme'];
-        $this->host     = isset($parameters['host']) ? (string) $parameters['host'] : self::DEFAULT_HOST;
-        $this->port     = isset($parameters['port']) ? (int) $parameters['port'] : self::DEFAULT_PORT;
-        $this->password = isset($query['password']) ? (string) $query['password'] : null;
-        $this->timeout  = isset($query['timeout']) ? (int) $query['timeout'] : self::DEFAULT_TIMEOUT;
+        /**
+         * @psalm-var array{
+         *     password:non-empty-string|null,
+         *     timeout:int|null
+         * } $queryParameters
+         */
+        $queryParameters = parseConnectionQuery($parameters['query'] ?? '');
+
+        $this->scheme   = $parameters['scheme'];
+        $this->host     = !empty($parameters['host']) ? $parameters['host'] : self::DEFAULT_HOST;
+        $this->port     = !empty($parameters['port']) ? $parameters['port'] : self::DEFAULT_PORT;
+        $this->password = !empty($queryParameters['password']) ? $queryParameters['password'] : null;
+        $this->timeout  = !empty($queryParameters['timeout']) ? $queryParameters['timeout'] : self::DEFAULT_TIMEOUT;
 
         if ($this->timeout < 0)
         {
@@ -94,44 +111,5 @@ final class RedisTransportConnectionConfiguration
             $this->port,
             \http_build_query(\array_filter(['timeout' => $this->timeout * 1000, 'password' => $this->password]))
         );
-    }
-
-    /**
-     * @throws \ServiceBus\Transport\Redis\Exceptions\IncorrectConnectionParameters
-     */
-    private static function parseUrl(string $connectionDSN): array
-    {
-        if ($connectionDSN === '')
-        {
-            throw IncorrectConnectionParameters::connectionDsnCantBeEmpty();
-        }
-
-        if (!\str_starts_with($connectionDSN, 'tcp://') && !\str_starts_with($connectionDSN, 'unix://'))
-        {
-            throw IncorrectConnectionParameters::incorrectScheme();
-        }
-
-        $parsedParts = \parse_url($connectionDSN);
-
-        if ($parsedParts !== false)
-        {
-            return $parsedParts;
-        }
-
-        throw IncorrectConnectionParameters::incorrectDSN($connectionDSN);
-    }
-
-    /**
-     * @psalm-return array<string, string|int|float>
-     */
-    private static function parseQuery(string $connectionDSN): array
-    {
-        $output = [];
-
-        \parse_str($connectionDSN, $output);
-
-        /** @psalm-var array<string, string|int|float> $output */
-
-        return $output;
     }
 }

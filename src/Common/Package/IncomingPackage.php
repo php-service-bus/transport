@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Common\Package;
 
@@ -25,11 +25,15 @@ interface IncomingPackage
 
     /**
      * Receive message id.
+     *
+     * @psalm-return non-empty-string
      */
     public function id(): string;
 
     /**
      * Receive message id.
+     *
+     * @psalm-return non-empty-string
      */
     public function traceId(): string;
 
@@ -40,20 +44,22 @@ interface IncomingPackage
 
     /**
      * Receive message body.
+     *
+     * @psalm-return non-empty-string
      */
     public function payload(): string;
 
     /**
      * Receive message headers bag.
      *
-     * @psalm-return array<string, int|float|string|null>
+     * @psalm-return array<non-empty-string, int|float|string|null>
      */
     public function headers(): array;
 
     /**
      * Acks given message.
      *
-     * @return Promise<void>
+     * @psalm-return Promise<void>
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\AcknowledgeFailed
      */
@@ -62,10 +68,9 @@ interface IncomingPackage
     /**
      * Nacks message.
      *
-     * @param bool        $requeue    Send back to the queue
-     * @param string|null $withReason Reason for refusal
+     * @psalm-param non-empty-string|null $withReason Reason for refusal
      *
-     * @return Promise<void>
+     * @psalm-return Promise<void>
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\NotAcknowledgeFailed
      */
@@ -74,10 +79,9 @@ interface IncomingPackage
     /**
      * Rejects message.
      *
-     * @param bool        $requeue    Send back to the queue
-     * @param string|null $withReason Reason for refusal
+     * @psalm-param non-empty-string|null $withReason Reason for refusal
      *
-     * @return Promise<void>
+     * @psalm-return Promise<void>
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\RejectFailed
      */

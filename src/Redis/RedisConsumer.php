@@ -8,22 +8,19 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Redis;
 
-use ServiceBus\Transport\Common\Package\IncomingPackage;
-use function Amp\asyncCall;
-use function Amp\call;
 use Amp\Promise;
 use Amp\Redis\Config;
 use Amp\Redis\Subscriber;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Common\Exceptions\ConnectionFail;
-use function ServiceBus\Common\jsonDecode;
+use function Amp\asyncCall;
+use function Amp\call;
 use function ServiceBus\Common\throwableDetails;
-use function ServiceBus\Common\uuid;
 
 /**
  * @internal
@@ -51,9 +48,9 @@ final class RedisConsumer
     private $subscribeClient;
 
     public function __construct(
-        RedisChannel $channel,
+        RedisChannel                          $channel,
         RedisTransportConnectionConfiguration $config,
-        ?LoggerInterface $logger = null
+        ?LoggerInterface                      $logger = null
     ) {
         $this->channel = $channel;
         $this->config  = $config;
@@ -62,6 +59,10 @@ final class RedisConsumer
 
     /**
      * Listen channel messages.
+     *
+     * @psalm-param callable(RedisIncomingPackage):\Generator $onMessage
+     *
+     * @psalm-return Promise<void>
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\ConnectionFail Connection refused
      */
@@ -93,10 +94,22 @@ final class RedisConsumer
                 {
                     try
                     {
-                        /** @var string $jsonMessage */
+                        /** @psalm-var string $jsonMessage */
                         $jsonMessage = $subscription->getCurrent();
 
-                        self::handleMessage($jsonMessage, $this->channel->name, $onMessage);
+                        $receivedPayload = new RedisReceivedPayload($jsonMessage);
+                        $messageData     = $receivedPayload->parse();
+
+                        asyncCall(
+                            $onMessage,
+                            new RedisIncomingPackage(
+                                messageId: $messageData['messageId'],
+                                traceId: $messageData['traceId'],
+                                payload: $messageData['body'],
+                                headers: $messageData['headers'],
+                                fromChannel: $this->channel->name
+                            )
+                        );
                     }
                     // @codeCoverageIgnoreStart
                     catch (\Throwable $throwable)
@@ -110,61 +123,9 @@ final class RedisConsumer
     }
 
     /**
-     * Call message handler.
-     *
-     * @throws \Throwable json decode failed
-     */
-    private static function handleMessage(string $messagePayload, string $onChannel, callable $onMessage): void
-    {
-        $decoded = jsonDecode($messagePayload);
-
-        if (\count($decoded) === 2)
-        {
-            /**
-             * @psalm-var string                          $body
-             * @psalm-var array<string, string|int|float> $headers
-             */
-            [$body, $headers] = $decoded;
-
-            $messageId = self::extractUuidHeader(IncomingPackage::HEADER_MESSAGE_ID, $headers);
-            $traceId   = self::extractUuidHeader(IncomingPackage::HEADER_TRACE_ID, $headers);
-
-            /** @psalm-suppress MixedArgumentTypeCoercion */
-            asyncCall(
-                $onMessage,
-                new RedisIncomingPackage(
-                    messageId: $messageId,
-                    traceId: $traceId,
-                    payload: $body,
-                    headers: $headers,
-                    fromChannel: $onChannel
-                )
-            );
-
-            return;
-        }
-
-        /**
-         * Message without headers.
-         *
-         * @psalm-suppress MixedArgumentTypeCoercion
-         */
-        asyncCall(
-            $onMessage,
-            new RedisIncomingPackage(
-                messageId: uuid(),
-                traceId: uuid(),
-                payload: $messagePayload,
-                headers: [],
-                fromChannel: $onChannel
-            )
-        );
-    }
-
-    /**
      * Stop watching the channel.
      *
-     * @return Promise It does not return any result
+     * @psalm-return Promise<void>
      */
     public function stop(): Promise
     {
@@ -181,15 +142,5 @@ final class RedisConsumer
                 $this->logger->debug('Subscription canceled', ['channelName' => $this->channel->name]);
             }
         );
-    }
-
-    private static function extractUuidHeader(string $key, array &$headers): string
-    {
-        $id  = (string) ($headers[$key] ?? uuid());
-        $key = $key !== '' ? $key : uuid();
-
-        unset($headers[$key]);
-
-        return $id;
     }
 }

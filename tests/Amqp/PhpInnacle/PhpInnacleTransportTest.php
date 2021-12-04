@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
+
+/** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * PHPinnacle RabbitMQ adapter.
@@ -8,14 +10,12 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace ServiceBus\Transport\Tests\Amqp\PhpInnacle;
 
 use ServiceBus\Transport\Amqp\PhpInnacle\PhpInnacleIncomingPackage;
 use ServiceBus\Transport\Amqp\PhpInnacle\PhpInnacleTransport;
-use function Amp\Promise\wait;
-use function ServiceBus\Common\readReflectionPropertyValue;
 use Amp\Loop;
 use PHPUnit\Framework\TestCase;
 use ServiceBus\Transport\Amqp\AmqpConnectionConfiguration;
@@ -25,6 +25,8 @@ use ServiceBus\Transport\Amqp\AmqpTransportLevelDestination;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
 use ServiceBus\Transport\Common\QueueBind;
 use ServiceBus\Transport\Common\TopicBind;
+use function Amp\Promise\wait;
+use function ServiceBus\Common\readReflectionPropertyValue;
 use function ServiceBus\Common\uuid;
 
 /**

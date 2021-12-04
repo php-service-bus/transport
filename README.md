@@ -3,13 +3,13 @@
 [![Packagist](https://img.shields.io/packagist/v/php-service-bus/transport.svg)](https://packagist.org/packages/php-service-bus/transport)
 [![Packagist](https://img.shields.io/packagist/dt/php-service-bus/transport.svg)](https://packagist.org/packages/php-service-bus/transport)
 ![Continuous Integration](https://github.com/php-service-bus/transport/workflows/Continuous%20Integration/badge.svg)
-[![codecov](https://codecov.io/gh/php-service-bus/transport/branch/v5.0/graph/badge.svg?token=0bKwdiuo0S)](https://codecov.io/gh/php-service-bus/transport)
+[![codecov](https://codecov.io/gh/php-service-bus/transport/branch/v5.1/graph/badge.svg?token=0bKwdiuo0S)](https://codecov.io/gh/php-service-bus/transport)
 [![Shepherd](https://shepherd.dev/github/php-service-bus/transport/coverage.svg)](https://shepherd.dev/github/php-service-bus/transport)
 
 This component is part of the [PHP Service Bus](https://github.com/php-service-bus/service-bus): contains transport adapters implementation.
 
 ## Documentation
-[**Transport**](https://github.com/php-service-bus/service-bus/blob/v5.0/.documentation/transport.md)
+[**Transport**](https://github.com/php-service-bus/service-bus/blob/v5.1/.documentation/transport.md)
 
 ## Contributing
 Contributions are welcome! Please read [CONTRIBUTING](.github/CONTRIBUTING.md) for details.

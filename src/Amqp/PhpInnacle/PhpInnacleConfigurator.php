@@ -8,11 +8,10 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
-use function Amp\call;
 use Amp\Promise;
 use PHPinnacle\Ridge\Channel;
 use Psr\Log\LoggerInterface;
@@ -22,6 +21,7 @@ use ServiceBus\Transport\Amqp\AmqpQueue;
 use ServiceBus\Transport\Common\Exceptions\BindFailed;
 use ServiceBus\Transport\Common\Exceptions\CreateQueueFailed;
 use ServiceBus\Transport\Common\Exceptions\CreateTopicFailed;
+use function Amp\call;
 use function ServiceBus\Common\throwableDetails;
 use function ServiceBus\Common\throwableMessage;
 
@@ -92,9 +92,7 @@ final class PhpInnacleConfigurator
     /**
      * Bind queue to exchange(s).
      *
-     * @psalm-param  array<mixed, \ServiceBus\Transport\Common\QueueBind> $binds
-     *
-     * @param \ServiceBus\Transport\Common\QueueBind[]                    $binds
+     * @psalm-param array<array-key, \ServiceBus\Transport\Common\QueueBind> $binds
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\BindFailed
      */
@@ -125,7 +123,8 @@ final class PhpInnacleConfigurator
                             queue: $queue->name,
                             exchange: $destinationExchange->name,
                             routingKey: (string) $bind->routingKey,
-                            noWait: true
+                            noWait: true,
+                            arguments: $bind->arguments
                         );
                     }
                 }
@@ -155,7 +154,7 @@ final class PhpInnacleConfigurator
 
                     yield $this->channel->exchangeDeclare(
                         exchange: $exchange->name,
-                        exchangeType: $exchange->type,
+                        exchangeType: $exchange->type->value,
                         passive: $exchange->passive,
                         durable: $exchange->durable,
                         autoDelete: false,
@@ -177,9 +176,7 @@ final class PhpInnacleConfigurator
     /**
      * Bind exchange to another exchange(s).
      *
-     * @psalm-param  array<mixed, \ServiceBus\Transport\Common\TopicBind> $binds
-     *
-     * @param \ServiceBus\Transport\Common\TopicBind[]                    $binds
+     * @psalm-param  array<array-key, \ServiceBus\Transport\Common\TopicBind> $binds
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\BindFailed
      */

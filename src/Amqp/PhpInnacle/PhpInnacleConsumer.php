@@ -8,21 +8,19 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
-use ServiceBus\Transport\Common\Package\IncomingPackage;
-use function Amp\asyncCall;
-use function Amp\call;
 use Amp\Promise;
 use PHPinnacle\Ridge\Channel;
 use PHPinnacle\Ridge\Message;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Amqp\AmqpQueue;
+use function Amp\asyncCall;
+use function Amp\call;
 use function ServiceBus\Common\throwableMessage;
-use function ServiceBus\Common\uuid;
 
 /**
  * @internal
@@ -49,14 +47,22 @@ final class PhpInnacleConsumer
     /**
      * Consumer tag.
      *
+     * @psalm-var non-empty-string|null
+     *
      * @var string|null
      */
     private $tag;
 
     public function __construct(AmqpQueue $queue, Channel $channel, ?LoggerInterface $logger = null)
     {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $this->tag = \sha1(\random_bytes(16));
+        /**
+         * @noinspection PhpUnhandledExceptionInspection
+         *
+         * @psalm-var     non-empty-string $consumerTag
+         */
+        $consumerTag = \sha1(\random_bytes(16));
+
+        $this->tag = $consumerTag;
 
         $this->queue   = $queue;
         $this->channel = $channel;
@@ -68,30 +74,38 @@ final class PhpInnacleConsumer
      *
      * @psalm-param callable(PhpInnacleIncomingPackage):\Generator $onMessageReceived
      *
-     * @return Promise It does not return any result
+     * @psalm-return Promise<void>
      */
     public function listen(callable $onMessageReceived): Promise
     {
-        $this->logger->debug('Creates new consumer on channel for queue "{queue}" with tag "{consumerTag}"', [
-            'queue'       => $this->queue->name,
-            'consumerTag' => $this->tag,
-        ]);
+        return call(
+            function () use ($onMessageReceived): \Generator
+            {
+                $this->logger->debug(
+                    'Creates new consumer on channel for queue "{queue}" with tag "{consumerTag}"',
+                    [
+                    'queue'       => $this->queue->name,
+                    'consumerTag' => $this->tag,
+                ]
+                );
 
-        return $this->channel->consume(
-            callback: $this->createMessageHandler($onMessageReceived),
-            queue: $this->queue->name,
-            consumerTag: (string) $this->tag,
-            noLocal: false,
-            noAck: false,
-            exclusive: false,
-            noWait: true
+                yield $this->channel->consume(
+                    callback: $this->createMessageHandler($onMessageReceived),
+                    queue: $this->queue->name,
+                    consumerTag: (string) $this->tag,
+                    noLocal: false,
+                    noAck: false,
+                    exclusive: false,
+                    noWait: true
+                );
+            }
         );
     }
 
     /**
      * Stop watching the queue.
      *
-     * @return Promise It does not return any result
+     * @psalm-return Promise<void>
      */
     public function stop(): Promise
     {
@@ -130,8 +144,6 @@ final class PhpInnacleConsumer
             try
             {
                 $incomingPackage = new PhpInnacleIncomingPackage(
-                    messageId: self::extractUuidHeader(IncomingPackage::HEADER_MESSAGE_ID, $message),
-                    traceId: self::extractUuidHeader(IncomingPackage::HEADER_TRACE_ID, $message),
                     message: $message,
                     channel: $channel
                 );
@@ -160,15 +172,5 @@ final class PhpInnacleConsumer
                 );
             }
         };
-    }
-
-    private static function extractUuidHeader(string $key, Message $message): string
-    {
-        $id  = (string) ($message->headers[$key] ?? uuid());
-        $key = $key !== '' ? $key : uuid();
-
-        unset($message->headers[$key]);
-
-        return $id;
     }
 }

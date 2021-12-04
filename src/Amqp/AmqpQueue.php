@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Amqp;
 
@@ -22,12 +22,9 @@ use ServiceBus\Transport\Common\Queue;
  */
 final class AmqpQueue implements Queue
 {
-    private const AMQP_DURABLE = 2;
-
-    private const AMQP_PASSIVE = 4;
-
-    private const AMQP_EXCLUSIVE = 8;
-
+    private const AMQP_DURABLE     = 2;
+    private const AMQP_PASSIVE     = 4;
+    private const AMQP_EXCLUSIVE   = 8;
     private const AMQP_AUTO_DELETE = 16;
 
     private const MAX_NAME_SYMBOLS = 255;
@@ -40,6 +37,7 @@ final class AmqpQueue implements Queue
      * these characters: letters, digits, hyphen, underscore, period, or colon.
      *
      * @psalm-readonly
+     * @psalm-var non-empty-string
      *
      * @var string
      */
@@ -125,6 +123,8 @@ final class AmqpQueue implements Queue
     public $flags;
 
     /**
+     * @psalm-param non-empty-string $name
+     *
      * @throws \ServiceBus\Transport\Amqp\Exceptions\InvalidQueueName
      */
     public static function default(string $name): self
@@ -137,6 +137,8 @@ final class AmqpQueue implements Queue
      *
      * @see https://github.com/rabbitmq/rabbitmq-delayed-message-exchange
      *
+     * @psalm-param non-empty-string $name
+     *
      * @throws \ServiceBus\Transport\Amqp\Exceptions\InvalidQueueName
      */
     public static function delayed(string $name, AmqpExchange $toExchange): self
@@ -145,6 +147,25 @@ final class AmqpQueue implements Queue
             name: $name,
             passive: true,
             arguments: ['x-dead-letter-exchange' => $toExchange->name]
+        );
+    }
+
+    /**
+     * Create quorum queue.
+     *
+     * @see https://www.rabbitmq.com/quorum-queues.html
+     *
+     * @psalm-param non-empty-string $name
+     *
+     * @throws \ServiceBus\Transport\Amqp\Exceptions\InvalidQueueName
+     */
+    public static function quorum(string $name): self
+    {
+        return new self(
+            name: $name,
+            durable: true,
+            exclusive: false,
+            arguments: ['x-queue-type' => 'quorum']
         );
     }
 
@@ -213,28 +234,23 @@ final class AmqpQueue implements Queue
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function toString(): string
     {
         return $this->name;
     }
 
+    /**
+     * @psalm-param non-empty-string $name
+     */
     private function __construct(
         string $name,
-        bool $passive = false,
-        bool $durable = false,
-        bool $exclusive = false,
-        bool $autoDelete = false,
-        array $arguments = [],
-        int $flags = 0
+        bool   $passive = false,
+        bool   $durable = false,
+        bool   $exclusive = false,
+        bool   $autoDelete = false,
+        array  $arguments = [],
+        int    $flags = 0
     ) {
-        if ($name === '')
-        {
-            throw InvalidQueueName::nameCantBeEmpty();
-        }
-
         if (self::MAX_NAME_SYMBOLS < \mb_strlen($name))
         {
             throw InvalidQueueName::nameIsToLong($name);

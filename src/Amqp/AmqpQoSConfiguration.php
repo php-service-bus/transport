@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Amqp;
 
@@ -18,9 +18,7 @@ namespace ServiceBus\Transport\Amqp;
 final class AmqpQoSConfiguration
 {
     private const DEFAULT_QOS_PRE_FETCH_SIZE = 0;
-
     private const DEFAULT_QOS_PRE_FETCH_COUNT = 100;
-
     private const DEFAULT_QOS_GLOBAL = false;
 
     /**

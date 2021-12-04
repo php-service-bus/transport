@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
+
+/** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * Common transport implementation interfaces.
@@ -8,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace ServiceBus\Transport\Tests\Common;
 
@@ -26,7 +28,7 @@ final class QueueBindTest extends TestCase
      */
     public function create(): void
     {
-        $topic = new class() implements Topic
+        $topic = new class () implements Topic
         {
             public function __toString(): string
             {

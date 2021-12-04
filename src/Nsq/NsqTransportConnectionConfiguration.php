@@ -8,16 +8,16 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Nsq;
 
 use ServiceBus\Transport\Nsq\Exceptions\IncorrectConnectionParameters;
+use function ServiceBus\Transport\Common\parseConnectionDSN;
+use function ServiceBus\Transport\Common\parseConnectionQuery;
 
 /**
  * Connection parameters.
- *
- * @psalm-immutable
  */
 final class NsqTransportConnectionConfiguration
 {
@@ -29,6 +29,7 @@ final class NsqTransportConnectionConfiguration
 
     /**
      * @psalm-readonly
+     * @psalm-var non-empty-string
      *
      * @var string
      */
@@ -36,6 +37,7 @@ final class NsqTransportConnectionConfiguration
 
     /**
      * @psalm-readonly
+     * @psalm-var non-empty-string
      *
      * @var string
      */
@@ -60,16 +62,23 @@ final class NsqTransportConnectionConfiguration
      */
     public function __construct(string $connectionDSN)
     {
-        $parameters = self::parseUrl($connectionDSN);
+        if ($connectionDSN === '')
+        {
+            throw IncorrectConnectionParameters::connectionDsnCantBeEmpty();
+        }
 
-        $queryString = (string) ($parameters['query'] ?? '');
+        if (!\str_starts_with($connectionDSN, 'tcp://') && !\str_starts_with($connectionDSN, 'unix://'))
+        {
+            throw IncorrectConnectionParameters::incorrectScheme();
+        }
 
-        $query = self::parseQuery($queryString);
+        $parameters = parseConnectionDSN($connectionDSN);
+        $query      = parseConnectionQuery($parameters['query'] ?? '');
 
-        $this->scheme   = (string) $parameters['scheme'];
-        $this->host     = isset($parameters['host']) ? (string) $parameters['host'] : self::DEFAULT_HOST;
-        $this->port     = isset($parameters['port']) ? (int) $parameters['port'] : self::DEFAULT_PORT;
-        $this->timeout  = isset($query['timeout']) ? (int) $query['timeout'] : self::DEFAULT_TIMEOUT;
+        $this->scheme  = $parameters['scheme'];
+        $this->host    = !empty($parameters['host']) ? $parameters['host'] : self::DEFAULT_HOST;
+        $this->port    = !empty($parameters['port']) ? $parameters['port'] : self::DEFAULT_PORT;
+        $this->timeout = !empty($query['timeout']) ? (int) $query['timeout'] : self::DEFAULT_TIMEOUT;
 
         if ($this->timeout < 0)
         {
@@ -85,44 +94,5 @@ final class NsqTransportConnectionConfiguration
             $this->host,
             $this->port,
         );
-    }
-
-    /**
-     * @throws \ServiceBus\Transport\Nsq\Exceptions\IncorrectConnectionParameters
-     */
-    private static function parseUrl(string $connectionDSN): array
-    {
-        if ($connectionDSN === '')
-        {
-            throw IncorrectConnectionParameters::connectionDsnCantBeEmpty();
-        }
-
-        if (!\str_starts_with($connectionDSN, 'tcp://') && !\str_starts_with($connectionDSN, 'unix://'))
-        {
-            throw IncorrectConnectionParameters::incorrectScheme();
-        }
-
-        $parsedParts = \parse_url($connectionDSN);
-
-        if ($parsedParts !== false)
-        {
-            return $parsedParts;
-        }
-
-        throw IncorrectConnectionParameters::incorrectDSN($connectionDSN);
-    }
-
-    /**
-     * @psalm-return array<string, string|int|float>
-     */
-    private static function parseQuery(string $connectionDSN): array
-    {
-        $output = [];
-
-        \parse_str($connectionDSN, $output);
-
-        /** @psalm-var array<string, string|int|float> $output */
-
-        return $output;
     }
 }

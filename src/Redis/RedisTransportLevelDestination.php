@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Redis;
 
@@ -24,6 +24,7 @@ final class RedisTransportLevelDestination implements DeliveryDestination
 {
     /**
      * @psalm-readonly
+     * @psalm-var non-empty-string
      *
      * @var string
      */

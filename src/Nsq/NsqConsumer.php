@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Nsq;
 
@@ -18,11 +18,11 @@ use Nsq\Consumer;
 use Nsq\Message;
 use ServiceBus\Transport\Common\Exceptions\ConnectionFail;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
-use function Amp\asyncCall;
-use function Amp\call;
 use Amp\Promise;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use function Amp\asyncCall;
+use function Amp\call;
 use function ServiceBus\Common\jsonDecode;
 use function ServiceBus\Common\uuid;
 
@@ -52,9 +52,9 @@ final class NsqConsumer
     private $subscribeClient;
 
     public function __construct(
-        NsqChannel $channel,
+        NsqChannel                          $channel,
         NsqTransportConnectionConfiguration $config,
-        ?LoggerInterface $logger = null
+        ?LoggerInterface                    $logger = null
     ) {
         $this->channel = $channel;
         $this->config  = $config;
@@ -63,6 +63,10 @@ final class NsqConsumer
 
     /**
      * Listen channel messages.
+     *
+     * @psalm-param callable(NsqIncomingPackage):\Generator $onMessage
+     *
+     * @psalm-return Promise<void>
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\ConnectionFail Connection refused
      */
@@ -74,23 +78,23 @@ final class NsqConsumer
                 if ($this->subscribeClient === null)
                 {
                     $this->logger->debug('Creates new consumer for channel "{channelName}" ', [
-                         'channelName' => $this->channel->name,
-                     ]);
+                        'channelName' => $this->channel->name,
+                    ]);
 
                     $this->subscribeClient = new Consumer(
-                        $this->config->toString(),
-                        $this->channel->toString(),
-                        'php-service-bus',
-                        function (Message $message) use ($onMessage): void
+                        address: $this->config->toString(),
+                        topic: $this->channel->toString(),
+                        channel: 'php-service-bus',
+                        onMessage: function (Message $message) use ($onMessage): void
                         {
-                            self::handleMessage(
+                            $this->handleMessage(
                                 $message,
                                 $this->channel->toString(),
                                 $onMessage,
                             );
                         },
-                        new ClientConfig(),
-                        $this->logger,
+                        clientConfig: new ClientConfig(),
+                        logger: $this->logger,
                     );
 
                     try
@@ -109,52 +113,35 @@ final class NsqConsumer
     /**
      * Call message handler.
      *
+     * @psalm-param non-empty-string                        $onChannel
+     * @psalm-param callable(NsqIncomingPackage):\Generator $onMessage
+     *
      * @throws \Throwable json decode failed
      */
-    private static function handleMessage(Message $message, string $onChannel, callable $onMessage): void
+    private function handleMessage(Message $message, string $onChannel, callable $onMessage): void
     {
-        $decoded = jsonDecode($message->body);
+        $decodedPayload = $this->decodeMessageBody($message);
 
-        if (\count($decoded) === 2)
-        {
-            /**
-             * @psalm-var string                          $body
-             * @psalm-var array<string, string|int|float> $headers
-             */
-            [$body, $headers] = $decoded;
+        $messageId = self::extractFromHeaders(
+            key: IncomingPackage::HEADER_MESSAGE_ID,
+            withDefault: uuid(),
+            headers: $decodedPayload['headers']
+        );
 
-            $messageId = self::extractUuidHeader(IncomingPackage::HEADER_MESSAGE_ID, $headers);
-            $traceId   = self::extractUuidHeader(IncomingPackage::HEADER_TRACE_ID, $headers);
+        $traceId = self::extractFromHeaders(
+            key: IncomingPackage::HEADER_TRACE_ID,
+            withDefault: uuid(),
+            headers: $decodedPayload['headers']
+        );
 
-            /** @psalm-suppress MixedArgumentTypeCoercion */
-            asyncCall(
-                $onMessage,
-                new NsqIncomingPackage(
-                    $message,
-                    messageId: $messageId,
-                    traceId: $traceId,
-                    payload: $body,
-                    headers: $headers,
-                    fromChannel: $onChannel
-                )
-            );
-
-            return;
-        }
-
-        /**
-         * Message without headers.
-         *
-         * @psalm-suppress MixedArgumentTypeCoercion
-         */
         asyncCall(
             $onMessage,
             new NsqIncomingPackage(
                 $message,
-                messageId: uuid(),
-                traceId: uuid(),
-                payload: $message->body,
-                headers: [],
+                messageId: $messageId,
+                traceId: $traceId,
+                payload: $decodedPayload['body'],
+                headers: $decodedPayload['headers'],
                 fromChannel: $onChannel
             )
         );
@@ -163,7 +150,7 @@ final class NsqConsumer
     /**
      * Stop watching the channel.
      *
-     * @return Promise It does not return any result
+     * @psalm-return Promise<void>
      */
     public function stop(): Promise
     {
@@ -185,13 +172,58 @@ final class NsqConsumer
         );
     }
 
-    private static function extractUuidHeader(string $key, array &$headers): string
+    /**
+     * @psalm-return array{body:non-empty-string, headers: array<non-empty-string, int|float|string|null>}
+     */
+    private function decodeMessageBody(Message $message): array
     {
-        $id  = (string) ($headers[$key] ?? uuid());
-        $key = $key !== '' ? $key : uuid();
+        $messageBody = $message->body;
+
+        if (empty($messageBody))
+        {
+            throw new \LogicException('Received message payload cant be empty');
+        }
+
+        /**
+         * @psalm-var array{
+         *     0:string|non-empty-string,
+         *     1:array<non-empty-string, int|float|string|null>|null
+         * } $decodedMessageBody
+         */
+        $decodedMessageBody = jsonDecode($messageBody);
+
+
+        if (empty($decodedMessageBody[0]))
+        {
+            throw new \LogicException('Received message payload cant be empty');
+        }
+
+        /** @psalm-var array<non-empty-string, int|float|string|null> $headers */
+        $headers = $decodedMessageBody[1] ?? [];
+
+        return [
+            'body'    => $decodedMessageBody[0],
+            'headers' => $headers
+        ];
+    }
+
+    /**
+     * @psalm-param non-empty-string $key
+     * @psalm-param non-empty-string $withDefault
+     *
+     * @psalm-return non-empty-string
+     */
+    private static function extractFromHeaders(string $key, string $withDefault, array &$headers): string
+    {
+        $value = (string) $headers[$key];
 
         unset($headers[$key]);
 
-        return $id;
+        if (!empty($value))
+        {
+            return $value;
+        }
+
+        return $withDefault;
     }
 }

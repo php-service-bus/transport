@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Common;
 
@@ -19,6 +19,8 @@ interface Topic
 {
     /**
      * Return topic name.
+     *
+     * @psalm-return non-empty-string
      */
     public function toString(): string;
 }

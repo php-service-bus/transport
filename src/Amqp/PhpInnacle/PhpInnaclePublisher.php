@@ -8,18 +8,18 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
 use PHPinnacle\Ridge\Client;
 use ServiceBus\Transport\Amqp\AmqpTransportLevelDestination;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
-use function Amp\call;
 use Amp\Promise;
 use PHPinnacle\Ridge\Channel;
 use Psr\Log\LoggerInterface;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
+use function Amp\call;
 
 /**
  * @internal
@@ -52,7 +52,7 @@ final class PhpInnaclePublisher
     /**
      * Send multiple messages to broker (in transaction).
      *
-     * @param OutboundPackage ...$outboundPackages
+     * @psalm-return Promise<void>
      *
      * @throws \Throwable
      */
@@ -124,6 +124,9 @@ final class PhpInnaclePublisher
                     $this->regularChannel = yield $this->client->channel();
                 }
 
+                /** @var Channel $channel */
+                $channel = $this->regularChannel;
+
                 /** @var AmqpTransportLevelDestination $destination */
                 $destination = $outboundPackage->destination;
                 $headers     = $this->prepareHeaders($outboundPackage);
@@ -134,7 +137,7 @@ final class PhpInnaclePublisher
                     headers: $headers
                 );
 
-                yield $this->regularChannel->publish(
+                yield $channel->publish(
                     body: $outboundPackage->payload,
                     exchange: $destination->exchange,
                     routingKey: (string) $destination->routingKey,

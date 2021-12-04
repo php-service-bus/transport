@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
+
+/** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * Redis transport implementation.
@@ -8,11 +10,10 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace ServiceBus\Transport\Tests\Redis;
 
-use function ServiceBus\Common\uuid;
 use Symfony\Component\Uid\Uuid;
 use Amp\Loop;
 use PHPUnit\Framework\TestCase;
@@ -23,6 +24,7 @@ use ServiceBus\Transport\Redis\RedisIncomingPackage;
 use ServiceBus\Transport\Redis\RedisTransport;
 use ServiceBus\Transport\Redis\RedisTransportConnectionConfiguration;
 use ServiceBus\Transport\Redis\RedisTransportLevelDestination;
+use function ServiceBus\Common\uuid;
 
 /**
  *

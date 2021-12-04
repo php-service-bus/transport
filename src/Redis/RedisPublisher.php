@@ -8,12 +8,11 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Redis;
 
 use ServiceBus\Transport\Common\Package\IncomingPackage;
-use function Amp\call;
 use Amp\Promise;
 use Amp\Redis\Config;
 use Amp\Redis\Redis;
@@ -21,11 +20,9 @@ use Amp\Redis\RemoteExecutor;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
+use function Amp\call;
 use function ServiceBus\Common\jsonEncode;
 
-/**
- *
- */
 final class RedisPublisher
 {
     /**
@@ -62,14 +59,14 @@ final class RedisPublisher
 
     /**
      * Send multiple messages to Redis server.
+     *
+     * @psalm-return Promise<void>
      */
     public function publishBulk(OutboundPackage ...$outboundPackages): Promise
     {
         return call(
             function () use ($outboundPackages): \Generator
             {
-                /** @todo: fix me Support transactions? */
-
                 $promises = [];
 
                 foreach ($outboundPackages as $outboundPackage)
@@ -84,6 +81,8 @@ final class RedisPublisher
 
     /**
      * Send message to Redis server.
+     *
+     * @psalm-return Promise<void>
      */
     public function publish(OutboundPackage $outboundPackage): Promise
     {

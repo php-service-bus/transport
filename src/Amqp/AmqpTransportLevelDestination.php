@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Amqp;
 
@@ -22,6 +22,7 @@ final class AmqpTransportLevelDestination implements DeliveryDestination
 {
     /**
      * @psalm-readonly
+     * @psalm-var non-empty-string
      *
      * @var string
      */
@@ -29,6 +30,7 @@ final class AmqpTransportLevelDestination implements DeliveryDestination
 
     /**
      * @psalm-readonly
+     * @psalm-var non-empty-string|null
      *
      * @var string|null
      */
@@ -45,6 +47,6 @@ final class AmqpTransportLevelDestination implements DeliveryDestination
         }
 
         $this->exchange   = $exchange;
-        $this->routingKey = $routingKey;
+        $this->routingKey = !empty($routingKey) ? $routingKey : null;
     }
 }

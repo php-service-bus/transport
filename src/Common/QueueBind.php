@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Common;
 
@@ -37,9 +37,22 @@ class QueueBind
      */
     public $routingKey;
 
-    public function __construct(Topic $destinationTopic, ?string $routingKey = null)
+    /**
+     * Binding Arguments.
+     *
+     * @psalm-readonly
+     * @psalm-var array<string, int|float|string|null>
+     */
+    public $arguments;
+
+    /**
+     * @psalm-param non-empty-string|null                $routingKey
+     * @psalm-param array<string, int|float|string|null> $arguments
+     */
+    public function __construct(Topic $destinationTopic, ?string $routingKey = null, array $arguments = [])
     {
         $this->destinationTopic = $destinationTopic;
         $this->routingKey       = $routingKey;
+        $this->arguments        = $arguments;
     }
 }

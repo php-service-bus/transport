@@ -8,11 +8,10 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Amqp\PhpInnacle;
 
-use function Amp\call;
 use Amp\Promise;
 use PHPinnacle\Ridge\Channel;
 use PHPinnacle\Ridge\Client;
@@ -30,6 +29,7 @@ use ServiceBus\Transport\Common\QueueBind;
 use ServiceBus\Transport\Common\Topic;
 use ServiceBus\Transport\Common\TopicBind;
 use ServiceBus\Transport\Common\Transport;
+use function Amp\call;
 
 /**
  *
@@ -54,7 +54,7 @@ final class PhpInnacleTransport implements Transport
     private $logger;
 
     /**
-     * @psalm-var array<string, \ServiceBus\Transport\Amqp\PhpInnacle\PhpInnacleConsumer>
+     * @psalm-var array<non-empty-string, \ServiceBus\Transport\Amqp\PhpInnacle\PhpInnacleConsumer>
      *
      * @var \ServiceBus\Transport\Amqp\PhpInnacle\PhpInnacleConsumer[]
      */
@@ -67,8 +67,8 @@ final class PhpInnacleTransport implements Transport
 
     public function __construct(
         AmqpConnectionConfiguration $connectionConfig,
-        AmqpQoSConfiguration $qosConfig = null,
-        ?LoggerInterface $logger = null
+        AmqpQoSConfiguration        $qosConfig = null,
+        ?LoggerInterface            $logger = null
     ) {
         $qosConfig = $qosConfig ?? new AmqpQoSConfiguration();
 
@@ -178,10 +178,6 @@ final class PhpInnacleTransport implements Transport
         return call(
             function (): \Generator
             {
-                /**
-                 * @var string             $queueName
-                 * @var PhpInnacleConsumer $consumer
-                 */
                 foreach ($this->consumers as $queueName => $consumer)
                 {
                     $this->logger->debug('Completing the subscription to the "{queueName}" queue', [
@@ -191,15 +187,9 @@ final class PhpInnacleTransport implements Transport
                         'queueName' => $queueName,
                     ]);
 
-                    if (isset($this->consumers[$queueName]))
-                    {
-                        /** @var PhpInnacleConsumer $consumer */
-                        $consumer = $this->consumers[$queueName];
+                    yield $consumer->stop();
 
-                        yield $consumer->stop();
-
-                        unset($this->consumers[$queueName]);
-                    }
+                    unset($this->consumers[$queueName]);
                 }
             }
         );
@@ -247,10 +237,6 @@ final class PhpInnacleTransport implements Transport
                 /** @var AmqpExchange $amqpExchange */
                 $amqpExchange = $topic;
 
-                /**
-                 * @var \ServiceBus\Transport\Common\TopicBind[]                   $binds
-                 * @psalm-var array<mixed, \ServiceBus\Transport\Common\TopicBind> $binds
-                 */
                 yield $this->connect();
 
                 /** @var Channel $channel */
@@ -295,7 +281,7 @@ final class PhpInnacleTransport implements Transport
 
     private function adaptConfig(
         AmqpConnectionConfiguration $connectionConfiguration,
-        AmqpQoSConfiguration $qoSConfiguration
+        AmqpQoSConfiguration        $qoSConfiguration
     ): Config {
         $connectionDSN = \sprintf(
             '%s://%s:%s@%s:%s/%s?%s',

@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
+
+/** @noinspection PhpUnhandledExceptionInspection */
 
 /**
  * Common transport implementation interfaces.
@@ -8,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace ServiceBus\Transport\Tests\Common\Package;
 
@@ -27,7 +29,7 @@ class OutboundPackageTest extends TestCase
      */
     public function create(): void
     {
-        $destination = new class() implements DeliveryDestination
+        $destination = new class () implements DeliveryDestination
         {
         };
 

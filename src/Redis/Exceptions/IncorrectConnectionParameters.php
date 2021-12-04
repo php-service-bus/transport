@@ -8,13 +8,10 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Redis\Exceptions;
 
-/**
- *
- */
 final class IncorrectConnectionParameters extends \InvalidArgumentException
 {
     public static function connectionDsnCantBeEmpty(): self

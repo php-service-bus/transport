@@ -8,11 +8,10 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-declare(strict_types = 0);
+declare(strict_types=0);
 
 namespace ServiceBus\Transport\Redis;
 
-use function Amp\call;
 use Amp\Promise;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -22,10 +21,8 @@ use ServiceBus\Transport\Common\QueueBind;
 use ServiceBus\Transport\Common\Topic;
 use ServiceBus\Transport\Common\TopicBind;
 use ServiceBus\Transport\Common\Transport;
+use function Amp\call;
 
-/**
- *
- */
 final class RedisTransport implements Transport
 {
     /**
@@ -34,7 +31,7 @@ final class RedisTransport implements Transport
     private $config;
 
     /**
-     * @psalm-var array<string, \ServiceBus\Transport\Redis\RedisConsumer>
+     * @psalm-var array<non-empty-string, \ServiceBus\Transport\Redis\RedisConsumer>
      *
      * @var RedisConsumer[]
      */
@@ -61,9 +58,11 @@ final class RedisTransport implements Transport
      */
     public function createTopic(Topic $topic, TopicBind ...$binds): Promise
     {
-        return call(static function ()
-        {
-        });
+        return call(
+            static function ()
+            {
+            }
+        );
     }
 
     /**
@@ -71,9 +70,11 @@ final class RedisTransport implements Transport
      */
     public function createQueue(Queue $queue, QueueBind ...$binds): Promise
     {
-        return call(static function ()
-        {
-        });
+        return call(
+            static function ()
+            {
+            }
+        );
     }
 
     public function consume(callable $onMessage, Queue ...$queues): Promise
@@ -156,10 +157,7 @@ final class RedisTransport implements Transport
         return call(
             function (): \Generator
             {
-                if ($this->publisher !== null)
-                {
-                    $this->publisher->disconnect();
-                }
+                $this->publisher?->disconnect();
 
                 $promises = [];
 

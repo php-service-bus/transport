@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace ServiceBus\Transport\Tests\Module;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Common\Transport;
 use ServiceBus\Transport\Module\NsqTransportModule;
@@ -32,7 +33,7 @@ final class NsqTransportModuleTest extends TestCase
     public function boot(): void
     {
         $containerBuilder = new ContainerBuilder();
-        $containerBuilder->addDefinitions(['service_bus.logger' => new Definition(NullLogger::class)]);
+        $containerBuilder->addDefinitions([LoggerInterface::class => new Definition(NullLogger::class)]);
 
         $module = new NsqTransportModule(
             (string) \getenv('NSQ_CONNECTION_DSN'),

@@ -12,6 +12,7 @@ declare(strict_types=0);
 
 namespace ServiceBus\Transport\Module;
 
+use Psr\Log\LoggerInterface;
 use ServiceBus\Common\Module\ServiceBusModule;
 use ServiceBus\Transport\Amqp\AmqpConnectionConfiguration;
 use ServiceBus\Transport\Amqp\AmqpQoSConfiguration;
@@ -107,7 +108,7 @@ final class PhpInnacleTransportModule implements ServiceBusModule
         $transportDefinition = new Definition(PhpInnacleTransport::class, [
             new Reference(AmqpConnectionConfiguration::class),
             new Reference(AmqpQoSConfiguration::class),
-            new Reference('service_bus.logger'),
+            new Reference(LoggerInterface::class),
         ]);
 
         $containerBuilder->addDefinitions([Transport::class => $transportDefinition]);

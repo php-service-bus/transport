@@ -12,6 +12,7 @@ declare(strict_types=0);
 
 namespace ServiceBus\Transport\Module;
 
+use Psr\Log\LoggerInterface;
 use ServiceBus\Common\Module\ServiceBusModule;
 use ServiceBus\Transport\Common\DeliveryDestination;
 use ServiceBus\Transport\Common\Transport;
@@ -65,7 +66,7 @@ final class NsqTransportModule implements ServiceBusModule
             NsqTransportConnectionConfiguration::class => $connectionConfigDefinition,
             Transport::class                             => new Definition(NsqTransport::class, [
                 new Reference(NsqTransportConnectionConfiguration::class),
-                new Reference('service_bus.logger'),
+                new Reference(LoggerInterface::class),
             ]),
         ]);
     }

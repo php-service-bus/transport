@@ -151,7 +151,7 @@ final class PhpInnacleConsumer
                 $this->logger->debug('New message received from "{queueName}"', [
                     'queueName'         => $this->queue->name,
                     'messageId'         => $incomingPackage->id(),
-                    'traceId'           => $incomingPackage->id(),
+                    'traceId'           => $incomingPackage->traceId(),
                     'rawMessagePayload' => $incomingPackage->payload(),
                     'rawMessageHeaders' => $incomingPackage->headers(),
                 ]);

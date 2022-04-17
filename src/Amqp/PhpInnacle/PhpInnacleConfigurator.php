@@ -197,7 +197,7 @@ final class PhpInnacleConfigurator
                         $this->logger->debug(
                             'Linking "{exchangeName}" exchange to the exchange "{destinationExchangeName}" with the routing key "{routingKey}"',
                             [
-                                'queueName'               => $sourceExchange->name,
+                                'exchangeName'               => $sourceExchange->name,
                                 'destinationExchangeName' => $exchange->name,
                                 'routingKey'              => (string) $bind->routingKey,
                             ]

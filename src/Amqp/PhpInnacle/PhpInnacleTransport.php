@@ -242,7 +242,10 @@ final class PhpInnacleTransport implements Transport
                 /** @var Channel $channel */
                 $channel = yield $this->client->channel();
 
-                $configurator = new PhpInnacleConfigurator($channel);
+                $configurator = new PhpInnacleConfigurator(
+                    channel: $channel,
+                    logger: $this->logger
+                );
 
                 yield $configurator->doCreateExchange($amqpExchange);
                 yield $configurator->doBindExchange($amqpExchange, $binds);
@@ -269,7 +272,10 @@ final class PhpInnacleTransport implements Transport
                 /** @var Channel $channel */
                 $channel = yield $this->client->channel();
 
-                $configurator = new PhpInnacleConfigurator($channel);
+                $configurator = new PhpInnacleConfigurator(
+                    channel: $channel,
+                    logger: $this->logger
+                );
 
                 yield $configurator->doCreateQueue($amqpQueue);
                 yield $configurator->doBindQueue($amqpQueue, $binds);

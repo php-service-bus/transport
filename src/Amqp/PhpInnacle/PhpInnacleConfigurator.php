@@ -204,8 +204,8 @@ final class PhpInnacleConfigurator
                         );
 
                         yield $this->channel->exchangeBind(
-                            destination: $sourceExchange->name,
-                            source: $exchange->name,
+                            destination: $exchange->name,
+                            source: $sourceExchange->name,
                             routingKey: (string) $bind->routingKey,
                             noWait: true
                         );

@@ -35,8 +35,7 @@ final class RedisTransportLevelDestination implements DeliveryDestination
      */
     public function __construct(string $channel)
     {
-        if ($channel === '')
-        {
+        if ($channel === '') {
             throw IncorrectChannelName::emptyChannelName();
         }
 

@@ -17,6 +17,7 @@ use Nsq\Message;
 use Amp\Promise;
 use ServiceBus\Transport\Common\DeliveryDestination;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
+
 use function Amp\call;
 
 final class NsqIncomingPackage implements IncomingPackage
@@ -116,8 +117,7 @@ final class NsqIncomingPackage implements IncomingPackage
     public function ack(): Promise
     {
         return call(
-            function (): Generator
-            {
+            function (): Generator {
                 yield $this->message->finish();
             }
         );
@@ -126,14 +126,10 @@ final class NsqIncomingPackage implements IncomingPackage
     public function nack(bool $requeue, ?string $withReason = null): Promise
     {
         return call(
-            function () use ($requeue): Generator
-            {
-                if ($requeue)
-                {
+            function () use ($requeue): Generator {
+                if ($requeue) {
                     yield $this->message->requeue(10);
-                }
-                else
-                {
+                } else {
                     yield $this->message->finish();
                 }
             }
@@ -143,14 +139,10 @@ final class NsqIncomingPackage implements IncomingPackage
     public function reject(bool $requeue, ?string $withReason = null): Promise
     {
         return call(
-            function () use ($requeue): Generator
-            {
-                if ($requeue)
-                {
+            function () use ($requeue): Generator {
+                if ($requeue) {
                     yield $this->message->requeue(10);
-                }
-                else
-                {
+                } else {
                     yield $this->message->finish();
                 }
             }

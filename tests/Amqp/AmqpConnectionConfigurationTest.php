@@ -81,7 +81,7 @@ final class AmqpConnectionConfigurationTest extends TestCase
      */
     public function virtualHost(): void
     {
-        $config = new  AmqpConnectionConfiguration(
+        $config = new AmqpConnectionConfiguration(
             'amqp://guest:guest@localhost:5672?vhost=/test//my/vhost///&timeout=1&heartbeat=60.00'
         );
 

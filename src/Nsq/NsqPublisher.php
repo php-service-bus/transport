@@ -21,6 +21,7 @@ use Amp\Promise;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
+
 use function Amp\call;
 use function ServiceBus\Common\jsonEncode;
 
@@ -52,9 +53,7 @@ final class NsqPublisher
      */
     public function disconnect(): void
     {
-        if ($this->publishClient !== null)
-        {
-            /** @psalm-suppress InternalMethod */
+        if ($this->publishClient !== null) {
             $this->publishClient->close();
             $this->publishClient = null;
         }
@@ -68,14 +67,12 @@ final class NsqPublisher
     public function publishBulk(OutboundPackage ...$outboundPackages): Promise
     {
         return call(
-            function () use ($outboundPackages): \Generator
-            {
+            function () use ($outboundPackages): \Generator {
                 /** @todo: fix me Support transactions? */
 
                 $promises = [];
 
-                foreach ($outboundPackages as $outboundPackage)
-                {
+                foreach ($outboundPackages as $outboundPackage) {
                     $promises[] = $this->publish($outboundPackage);
                 }
 
@@ -86,14 +83,14 @@ final class NsqPublisher
 
     /**
      * Send message to Nsq server.
+     *
+     * @return Promise<void>
      */
     public function publish(OutboundPackage $outboundPackage): Promise
     {
         return call(
-            function () use ($outboundPackage): \Generator
-            {
-                if ($this->publishClient === null)
-                {
+            function () use ($outboundPackage): \Generator {
+                if ($this->publishClient === null) {
                     $this->publishClient = new Producer(
                         $this->config->toString(),
                         new ClientConfig(),
@@ -117,19 +114,15 @@ final class NsqPublisher
                     'isMandatory' => $outboundPackage->mandatoryFlag,
                 ]);
 
-                try
-                {
+                try {
                     yield $this->publishClient->connect();
-                }
-                catch (ConnectException $e)
-                {
+                } catch (ConnectException $e) {
                     throw ConnectionFail::fromThrowable($e);
                 }
 
                 $result = yield $this->publishClient->publish($destinationChannel, $package);
 
-                if ($result === false && $outboundPackage->mandatoryFlag === true)
-                {
+                if ($result === false && $outboundPackage->mandatoryFlag === true) {
                     $this->logger->critical('Publish message failed', [
                         'traceId'     => $outboundPackage->traceId,
                         'channelName' => $destinationChannel,

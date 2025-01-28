@@ -17,6 +17,7 @@ namespace ServiceBus\Transport\Tests\Common\Package;
 use PHPUnit\Framework\TestCase;
 use ServiceBus\Transport\Common\DeliveryDestination;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
+
 use function ServiceBus\Common\uuid;
 
 /**
@@ -29,8 +30,7 @@ class OutboundPackageTest extends TestCase
      */
     public function create(): void
     {
-        $destination = new class () implements DeliveryDestination
-        {
+        $destination = new class () implements DeliveryDestination {
         };
 
         $package = new OutboundPackage(uuid(), 'payloadData', ['key' => 'value'], $destination);

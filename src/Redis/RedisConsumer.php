@@ -18,6 +18,7 @@ use Amp\Redis\Subscriber;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Common\Exceptions\ConnectionFail;
+
 use function Amp\asyncCall;
 use function Amp\call;
 use function ServiceBus\Common\throwableDetails;
@@ -69,10 +70,8 @@ final class RedisConsumer
     public function listen(callable $onMessage): Promise
     {
         return call(
-            function () use ($onMessage): \Generator
-            {
-                if ($this->subscribeClient === null)
-                {
+            function () use ($onMessage): \Generator {
+                if ($this->subscribeClient === null) {
                     $this->subscribeClient = new Subscriber(Config::fromUri($this->config->toString()));
                 }
 
@@ -80,26 +79,22 @@ final class RedisConsumer
                     'channelName' => $this->channel->name,
                 ]);
 
-                try
-                {
+                try {
                     /** @var \Amp\Redis\Subscription $subscription */
                     $subscription = yield $this->subscribeClient->subscribe($this->channel->toString());
-                }
-                catch (\Throwable $throwable)
-                {
+                } catch (\Throwable $throwable) {
                     throw ConnectionFail::fromThrowable($throwable);
                 }
 
-                while (yield $subscription->advance())
-                {
-                    try
-                    {
+                while (yield $subscription->advance()) {
+                    try {
                         /** @psalm-var string $jsonMessage */
                         $jsonMessage = $subscription->getCurrent();
 
                         $receivedPayload = new RedisReceivedPayload($jsonMessage);
                         $messageData     = $receivedPayload->parse();
 
+                        /** @psalm-suppress PossiblyInvalidArgument */
                         asyncCall(
                             $onMessage,
                             new RedisIncomingPackage(
@@ -112,8 +107,7 @@ final class RedisConsumer
                         );
                     }
                     // @codeCoverageIgnoreStart
-                    catch (\Throwable $throwable)
-                    {
+                    catch (\Throwable $throwable) {
                         $this->logger->error('Emit package failed: {throwableMessage} ', throwableDetails($throwable));
                     }
                     // @codeCoverageIgnoreEnd
@@ -129,11 +123,10 @@ final class RedisConsumer
      */
     public function stop(): Promise
     {
+        /** @phpstan-ignore return.type */
         return call(
-            function (): void
-            {
-                if ($this->subscribeClient === null)
-                {
+            function (): void {
+                if ($this->subscribeClient === null) {
                     return;
                 }
 

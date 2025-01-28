@@ -28,8 +28,7 @@ final class QueueBindTest extends TestCase
      */
     public function create(): void
     {
-        $topic = new class () implements Topic
-        {
+        $topic = new class () implements Topic {
             public function __toString(): string
             {
                 return 'qwerty';

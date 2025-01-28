@@ -13,6 +13,7 @@ declare(strict_types=0);
 namespace ServiceBus\Transport\Nsq;
 
 use ServiceBus\Transport\Common\Exceptions\IncorrectConnectionParameters;
+
 use function ServiceBus\Transport\Common\parseConnectionDSN;
 use function ServiceBus\Transport\Common\parseConnectionQuery;
 
@@ -62,13 +63,11 @@ final class NsqTransportConnectionConfiguration
      */
     public function __construct(string $connectionDSN)
     {
-        if ($connectionDSN === '')
-        {
+        if ($connectionDSN === '') {
             throw IncorrectConnectionParameters::connectionDsnCantBeEmpty();
         }
 
-        if (!\str_starts_with($connectionDSN, 'tcp://') && !\str_starts_with($connectionDSN, 'unix://'))
-        {
+        if (!\str_starts_with($connectionDSN, 'tcp://') && !\str_starts_with($connectionDSN, 'unix://')) {
             throw IncorrectConnectionParameters::incorrectScheme();
         }
 
@@ -80,8 +79,7 @@ final class NsqTransportConnectionConfiguration
         $this->port    = !empty($parameters['port']) ? $parameters['port'] : self::DEFAULT_PORT;
         $this->timeout = !empty($query['timeout']) ? (int) $query['timeout'] : self::DEFAULT_TIMEOUT;
 
-        if ($this->timeout < 0)
-        {
+        if ($this->timeout < 0) {
             $this->timeout = self::DEFAULT_TIMEOUT;
         }
     }

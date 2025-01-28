@@ -21,6 +21,7 @@ use ServiceBus\Transport\Amqp\AmqpQueue;
 use ServiceBus\Transport\Common\Exceptions\BindFailed;
 use ServiceBus\Transport\Common\Exceptions\CreateQueueFailed;
 use ServiceBus\Transport\Common\Exceptions\CreateTopicFailed;
+
 use function Amp\call;
 use function ServiceBus\Common\throwableDetails;
 use function ServiceBus\Common\throwableMessage;
@@ -47,8 +48,7 @@ final class PhpInnacleConfigurator
         $this->channel = $channel;
         $this->logger  = $logger ?? new NullLogger();
 
-        if (\extension_loaded('ext-buffer') === false)
-        {
+        if (\extension_loaded('ext-buffer') === false) {
             $this->logger->debug(
                 'Install a "ext-buffer" extension to improve performance (https://github.com/phpinnacle/ext-buffer)'
             );
@@ -58,15 +58,15 @@ final class PhpInnacleConfigurator
     /**
      * Execute queue creation.
      *
+     * @return Promise<void>
+     *
      * @throws \ServiceBus\Transport\Common\Exceptions\CreateQueueFailed
      */
     public function doCreateQueue(AmqpQueue $queue): Promise
     {
         return call(
-            function () use ($queue): \Generator
-            {
-                try
-                {
+            function () use ($queue): \Generator {
+                try {
                     $this->logger->debug('Creating "{queueName}" queue', ['queueName' => $queue->name]);
 
                     yield $this->channel->queueDeclare(
@@ -78,9 +78,7 @@ final class PhpInnacleConfigurator
                         noWait: true,
                         arguments: $queue->arguments
                     );
-                }
-                catch (\Throwable $throwable)
-                {
+                } catch (\Throwable $throwable) {
                     $this->logger->error(throwableMessage($throwable), throwableDetails($throwable));
 
                     throw CreateQueueFailed::fromThrowable($throwable);
@@ -94,17 +92,16 @@ final class PhpInnacleConfigurator
      *
      * @psalm-param array<array-key, \ServiceBus\Transport\Common\QueueBind> $binds
      *
+     * @return Promise<void>
+     *
      * @throws \ServiceBus\Transport\Common\Exceptions\BindFailed
      */
     public function doBindQueue(AmqpQueue $queue, array $binds): Promise
     {
         return call(
-            function () use ($queue, $binds): \Generator
-            {
-                try
-                {
-                    foreach ($binds as $bind)
-                    {
+            function () use ($queue, $binds): \Generator {
+                try {
+                    foreach ($binds as $bind) {
                         /** @var AmqpExchange $destinationExchange */
                         $destinationExchange = $bind->destinationTopic;
 
@@ -127,9 +124,7 @@ final class PhpInnacleConfigurator
                             arguments: $bind->arguments
                         );
                     }
-                }
-                catch (\Throwable $throwable)
-                {
+                } catch (\Throwable $throwable) {
                     $this->logger->error($throwable->getMessage(), throwableDetails($throwable));
 
                     throw BindFailed::fromThrowable($throwable);
@@ -141,15 +136,15 @@ final class PhpInnacleConfigurator
     /**
      * Execute exchange creation.
      *
+     * @return Promise<void>
+     *
      * @throws \ServiceBus\Transport\Common\Exceptions\CreateTopicFailed
      */
     public function doCreateExchange(AmqpExchange $exchange): Promise
     {
         return call(
-            function () use ($exchange): \Generator
-            {
-                try
-                {
+            function () use ($exchange): \Generator {
+                try {
                     $this->logger->debug('Creating "{exchangeName}" exchange', ['exchangeName' => $exchange->name]);
 
                     yield $this->channel->exchangeDeclare(
@@ -162,9 +157,7 @@ final class PhpInnacleConfigurator
                         noWait: true,
                         arguments: $exchange->arguments
                     );
-                }
-                catch (\Throwable $throwable)
-                {
+                } catch (\Throwable $throwable) {
                     $this->logger->error(throwableMessage($throwable), throwableDetails($throwable));
 
                     throw CreateTopicFailed::fromThrowable($throwable);
@@ -176,6 +169,8 @@ final class PhpInnacleConfigurator
     /**
      * Bind exchange to another exchange(s).
      *
+     * @return Promise<void>
+     *
      * @psalm-param  array<array-key, \ServiceBus\Transport\Common\TopicBind> $binds
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\BindFailed
@@ -183,12 +178,9 @@ final class PhpInnacleConfigurator
     public function doBindExchange(AmqpExchange $exchange, array $binds): Promise
     {
         return call(
-            function () use ($exchange, $binds): \Generator
-            {
-                try
-                {
-                    foreach ($binds as $bind)
-                    {
+            function () use ($exchange, $binds): \Generator {
+                try {
+                    foreach ($binds as $bind) {
                         /** @var AmqpExchange $sourceExchange */
                         $sourceExchange = $bind->destinationTopic;
 
@@ -210,9 +202,7 @@ final class PhpInnacleConfigurator
                             noWait: true
                         );
                     }
-                }
-                catch (\Throwable $throwable)
-                {
+                } catch (\Throwable $throwable) {
                     $this->logger->error($throwable->getMessage(), throwableDetails($throwable));
 
                     throw BindFailed::fromThrowable($throwable);

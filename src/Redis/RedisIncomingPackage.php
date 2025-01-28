@@ -15,6 +15,7 @@ namespace ServiceBus\Transport\Redis;
 use Amp\Promise;
 use ServiceBus\Transport\Common\DeliveryDestination;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
+
 use function Amp\call;
 
 final class RedisIncomingPackage implements IncomingPackage
@@ -104,9 +105,9 @@ final class RedisIncomingPackage implements IncomingPackage
      */
     public function ack(): Promise
     {
+        /** @phpstan-ignore return.type */
         return call(
-            static function ()
-            {
+            static function () {
             }
         );
     }
@@ -116,9 +117,9 @@ final class RedisIncomingPackage implements IncomingPackage
      */
     public function nack(bool $requeue, ?string $withReason = null): Promise
     {
+        /** @phpstan-ignore return.type */
         return call(
-            static function ()
-            {
+            static function () {
             }
         );
     }
@@ -128,9 +129,9 @@ final class RedisIncomingPackage implements IncomingPackage
      */
     public function reject(bool $requeue, ?string $withReason = null): Promise
     {
+        /** @phpstan-ignore return.type */
         return call(
-            static function ()
-            {
+            static function () {
             }
         );
     }

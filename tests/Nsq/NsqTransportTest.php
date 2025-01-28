@@ -24,6 +24,7 @@ use ServiceBus\Transport\Nsq\NsqIncomingPackage;
 use ServiceBus\Transport\Nsq\NsqTransport;
 use ServiceBus\Transport\Nsq\NsqTransportConnectionConfiguration;
 use ServiceBus\Transport\Nsq\NsqTransportLevelDestination;
+
 use function ServiceBus\Common\uuid;
 
 /**
@@ -56,20 +57,17 @@ final class NsqTransportTest extends TestCase
     public function flow(): void
     {
         Loop::run(
-            function (): \Generator
-            {
+            function (): \Generator {
                 $transport = new NsqTransport($this->config, null);
 
                 yield $transport->consume(
-                    static function (NsqIncomingPackage $message) use (&$messages, $transport): \Generator
-                    {
+                    static function (NsqIncomingPackage $message) use (&$messages, $transport): \Generator {
                         self::assertInstanceOf(NsqIncomingPackage::class, $message);
                         self::assertTrue(Uuid::isValid($message->id()));
 
                         $messages[] = $message->payload();
 
-                        if (\count($messages) === 2)
-                        {
+                        if (\count($messages) === 2) {
                             self::assertSame(['qwerty.message', 'root.message'], $messages);
 
                             yield $transport->stop();
@@ -78,11 +76,11 @@ final class NsqTransportTest extends TestCase
                         }
                     },
                     new NsqChannel('qwerty'),
-                    new  NsqChannel('root')
+                    new NsqChannel('root')
                 );
 
                 yield $transport->send(
-                    new  OutboundPackage(uuid(), 'qwerty.message', [], new NsqTransportLevelDestination('qwerty'))
+                    new OutboundPackage(uuid(), 'qwerty.message', [], new NsqTransportLevelDestination('qwerty'))
                 );
 
                 yield $transport->send(
@@ -102,17 +100,15 @@ final class NsqTransportTest extends TestCase
         $this->expectExceptionMessage('Connection to tcp://localhost:1000 refused; previous attempts: tcp://localhost:1000 (connection refused)');
 
         Loop::run(
-            static function (): \Generator
-            {
+            static function (): \Generator {
                 $config = new NsqTransportConnectionConfiguration('tcp://localhost:1000');
 
                 $transport = new NsqTransport($config);
 
                 yield $transport->consume(
-                    static function (): void
-                    {
+                    static function (): void {
                     },
-                    new  NsqChannel('root')
+                    new NsqChannel('root')
                 );
             }
         );
@@ -124,8 +120,7 @@ final class NsqTransportTest extends TestCase
     public function disconnectWithoutConnections(): void
     {
         Loop::run(
-            function (): \Generator
-            {
+            function (): \Generator {
                 yield (new NsqTransport($this->config))->disconnect();
 
                 self::assertTrue(true);

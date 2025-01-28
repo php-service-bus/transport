@@ -21,6 +21,7 @@ use ServiceBus\Transport\Common\Exceptions\AcknowledgeFailed;
 use ServiceBus\Transport\Common\Exceptions\NotAcknowledgeFailed;
 use ServiceBus\Transport\Common\Exceptions\RejectFailed;
 use ServiceBus\Transport\Common\Package\IncomingPackage;
+
 use function Amp\call;
 use function ServiceBus\Common\uuid;
 
@@ -66,7 +67,6 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
         $this->originMessage = $message;
         $this->channel       = $channel;
         /** @psalm-suppress MixedPropertyTypeCoercion */
-        /* @phpstan-ignore-next-line */
         $this->headers = $message->headers;
         $this->id      = $this->extractUuidFromHeaders(IncomingPackage::HEADER_MESSAGE_ID);
         $this->traceId = $this->extractUuidFromHeaders(IncomingPackage::HEADER_TRACE_ID);
@@ -108,14 +108,10 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
     public function ack(): Promise
     {
         return call(
-            function (): \Generator
-            {
-                try
-                {
+            function (): \Generator {
+                try {
                     yield $this->channel->ack($this->originMessage);
-                }
-                catch (\Throwable $throwable)
-                {
+                } catch (\Throwable $throwable) {
                     throw new AcknowledgeFailed($throwable->getMessage(), (int) $throwable->getCode(), $throwable);
                 }
             }
@@ -125,14 +121,10 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
     public function nack(bool $requeue, ?string $withReason = null): Promise
     {
         return call(
-            function () use ($requeue): \Generator
-            {
-                try
-                {
+            function () use ($requeue): \Generator {
+                try {
                     yield $this->channel->nack($this->originMessage, false, $requeue);
-                }
-                catch (\Throwable $throwable)
-                {
+                } catch (\Throwable $throwable) {
                     throw new NotAcknowledgeFailed($throwable->getMessage(), (int) $throwable->getCode(), $throwable);
                 }
             }
@@ -142,14 +134,10 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
     public function reject(bool $requeue, ?string $withReason = null): Promise
     {
         return call(
-            function () use ($requeue): \Generator
-            {
-                try
-                {
+            function () use ($requeue): \Generator {
+                try {
                     yield $this->channel->reject($this->originMessage, $requeue);
-                }
-                catch (\Throwable $throwable)
-                {
+                } catch (\Throwable $throwable) {
                     throw new RejectFailed($throwable->getMessage(), (int) $throwable->getCode(), $throwable);
                 }
             }
@@ -163,8 +151,7 @@ final class PhpInnacleIncomingPackage implements IncomingPackage
      */
     private function extractUuidFromHeaders(string $key): string
     {
-        if (\array_key_exists($key, $this->headers) && \is_string($this->headers[$key]) && $this->headers[$key] !== '')
-        {
+        if (\array_key_exists($key, $this->headers) && \is_string($this->headers[$key]) && $this->headers[$key] !== '') {
             $value = $this->headers[$key];
 
             unset($this->headers[$key]);

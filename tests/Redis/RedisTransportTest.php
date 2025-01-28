@@ -24,6 +24,7 @@ use ServiceBus\Transport\Redis\RedisIncomingPackage;
 use ServiceBus\Transport\Redis\RedisTransport;
 use ServiceBus\Transport\Redis\RedisTransportConnectionConfiguration;
 use ServiceBus\Transport\Redis\RedisTransportLevelDestination;
+
 use function ServiceBus\Common\uuid;
 
 /**
@@ -56,20 +57,17 @@ final class RedisTransportTest extends TestCase
     public function flow(): void
     {
         Loop::run(
-            function (): \Generator
-            {
+            function (): \Generator {
                 $transport = new RedisTransport($this->config, null);
 
                 yield $transport->consume(
-                    static function (RedisIncomingPackage $message) use (&$messages, $transport): \Generator
-                    {
+                    static function (RedisIncomingPackage $message) use (&$messages, $transport): \Generator {
                         self::assertInstanceOf(RedisIncomingPackage::class, $message);
                         self::assertTrue(Uuid::isValid($message->id()));
 
                         $messages[] = $message->payload();
 
-                        if (\count($messages) === 2)
-                        {
+                        if (\count($messages) === 2) {
                             self::assertSame(['qwerty.message', 'root.message'], $messages);
 
                             yield $transport->stop();
@@ -78,11 +76,11 @@ final class RedisTransportTest extends TestCase
                         }
                     },
                     new RedisChannel('qwerty'),
-                    new  RedisChannel('root')
+                    new RedisChannel('root')
                 );
 
                 yield $transport->send(
-                    new  OutboundPackage(uuid(), 'qwerty.message', [], new RedisTransportLevelDestination('qwerty'))
+                    new OutboundPackage(uuid(), 'qwerty.message', [], new RedisTransportLevelDestination('qwerty'))
                 );
 
                 yield $transport->send(
@@ -102,17 +100,15 @@ final class RedisTransportTest extends TestCase
         $this->expectExceptionMessage('Failed to connect to redis instance (tcp://localhost:1000)');
 
         Loop::run(
-            static function (): \Generator
-            {
+            static function (): \Generator {
                 $config = new RedisTransportConnectionConfiguration('tcp://localhost:1000');
 
                 $transport = new RedisTransport($config);
 
                 yield $transport->consume(
-                    static function (): void
-                    {
+                    static function (): void {
                     },
-                    new  RedisChannel('root')
+                    new RedisChannel('root')
                 );
             }
         );
@@ -124,8 +120,7 @@ final class RedisTransportTest extends TestCase
     public function disconnectWithoutConnections(): void
     {
         Loop::run(
-            function (): \Generator
-            {
+            function (): \Generator {
                 yield (new RedisTransport($this->config))->disconnect();
 
                 Loop::stop();

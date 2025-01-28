@@ -128,8 +128,7 @@ final class PhpInnacleTransportModule implements ServiceBusModule
             'service_bus.transport.amqp.default_destination_key'   => $this->defaultDestinationRoutingKey,
         ];
 
-        foreach ($parameters as $key => $value)
-        {
+        foreach ($parameters as $key => $value) {
             $containerBuilder->setParameter($key, $value);
         }
     }

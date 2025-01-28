@@ -13,6 +13,7 @@ declare(strict_types=0);
 namespace ServiceBus\Transport\Redis;
 
 use ServiceBus\Transport\Common\Exceptions\IncorrectConnectionParameters;
+
 use function ServiceBus\Transport\Common\parseConnectionDSN;
 use function ServiceBus\Transport\Common\parseConnectionQuery;
 
@@ -70,13 +71,11 @@ final class RedisTransportConnectionConfiguration
      */
     public function __construct(string $connectionDSN)
     {
-        if ($connectionDSN === '')
-        {
+        if ($connectionDSN === '') {
             throw IncorrectConnectionParameters::connectionDsnCantBeEmpty();
         }
 
-        if (!\str_starts_with($connectionDSN, 'tcp://') && !\str_starts_with($connectionDSN, 'unix://'))
-        {
+        if (!\str_starts_with($connectionDSN, 'tcp://') && !\str_starts_with($connectionDSN, 'unix://')) {
             throw IncorrectConnectionParameters::incorrectScheme();
         }
 
@@ -96,8 +95,7 @@ final class RedisTransportConnectionConfiguration
         $this->password = !empty($queryParameters['password']) ? $queryParameters['password'] : null;
         $this->timeout  = !empty($queryParameters['timeout']) ? $queryParameters['timeout'] : self::DEFAULT_TIMEOUT;
 
-        if ($this->timeout < 0)
-        {
+        if ($this->timeout < 0) {
             $this->timeout = self::DEFAULT_TIMEOUT;
         }
     }

@@ -20,6 +20,7 @@ use Amp\Redis\RemoteExecutor;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
+
 use function Amp\call;
 use function ServiceBus\Common\jsonEncode;
 
@@ -51,8 +52,7 @@ final class RedisPublisher
      */
     public function disconnect(): void
     {
-        if ($this->publishClient !== null)
-        {
+        if ($this->publishClient !== null) {
             $this->publishClient = null;
         }
     }
@@ -65,12 +65,10 @@ final class RedisPublisher
     public function publishBulk(OutboundPackage ...$outboundPackages): Promise
     {
         return call(
-            function () use ($outboundPackages): \Generator
-            {
+            function () use ($outboundPackages): \Generator {
                 $promises = [];
 
-                foreach ($outboundPackages as $outboundPackage)
-                {
+                foreach ($outboundPackages as $outboundPackage) {
                     $promises[] = $this->publish($outboundPackage);
                 }
 
@@ -87,10 +85,8 @@ final class RedisPublisher
     public function publish(OutboundPackage $outboundPackage): Promise
     {
         return call(
-            function () use ($outboundPackage): \Generator
-            {
-                if ($this->publishClient === null)
-                {
+            function () use ($outboundPackage): \Generator {
+                if ($this->publishClient === null) {
                     $this->publishClient = new Redis(
                         new RemoteExecutor(Config::fromUri($this->config->toString()))
                     );
@@ -115,8 +111,7 @@ final class RedisPublisher
                 /** @var int $result */
                 $result = yield $this->publishClient->publish($destinationChannel, $package);
 
-                if ($result === 0 && $outboundPackage->mandatoryFlag === true)
-                {
+                if ($result === 0 && $outboundPackage->mandatoryFlag === true) {
                     $this->logger->critical('Publish message failed', [
                         'traceId'     => $outboundPackage->traceId,
                         'channelName' => $destinationChannel,

@@ -41,8 +41,7 @@ final class AmqpTransportLevelDestination implements DeliveryDestination
      */
     public function __construct(string $exchange, ?string $routingKey = null)
     {
-        if ($exchange === '')
-        {
+        if ($exchange === '') {
             throw IncorrectDestinationExchange::destinationExchangeCantBeEmpty();
         }
 

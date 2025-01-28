@@ -81,8 +81,7 @@ final class NsqTransportModule implements ServiceBusModule
             'service_bus.transport.nsq.default_destination_channel' => $this->defaultDestinationChannel,
         ];
 
-        foreach ($parameters as $key => $value)
-        {
+        foreach ($parameters as $key => $value) {
             $containerBuilder->setParameter($key, $value);
         }
     }

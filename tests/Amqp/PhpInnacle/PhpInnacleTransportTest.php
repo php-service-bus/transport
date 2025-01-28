@@ -25,6 +25,7 @@ use ServiceBus\Transport\Amqp\AmqpTransportLevelDestination;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
 use ServiceBus\Transport\Common\QueueBind;
 use ServiceBus\Transport\Common\TopicBind;
+
 use function Amp\Promise\wait;
 use function ServiceBus\Common\readReflectionPropertyValue;
 use function ServiceBus\Common\uuid;
@@ -52,8 +53,7 @@ final class PhpInnacleTransportTest extends TestCase
     {
         parent::tearDown();
 
-        try
-        {
+        try {
             wait($this->transport->connect());
 
             /** @var \PHPinnacle\Ridge\Client|null $client */
@@ -71,9 +71,7 @@ final class PhpInnacleTransportTest extends TestCase
             wait($channel->queueDelete('consume.messages'));
 
             wait($this->transport->disconnect());
-        }
-        catch (\Throwable)
-        {
+        } catch (\Throwable) {
         }
     }
 
@@ -133,7 +131,7 @@ final class PhpInnacleTransportTest extends TestCase
         wait(
             $this->transport->createQueue(
                 AmqpQueue::default('createQueue'),
-                new  QueueBind(
+                new QueueBind(
                     AmqpExchange::topic('createExchange2'),
                     'qwerty'
                 )
@@ -149,8 +147,7 @@ final class PhpInnacleTransportTest extends TestCase
     public function consume(): void
     {
         Loop::run(
-            function (): \Generator
-            {
+            function (): \Generator {
                 $exchange = AmqpExchange::direct('consume');
                 $queue    = AmqpQueue::default('consume.messages');
 
@@ -158,7 +155,7 @@ final class PhpInnacleTransportTest extends TestCase
                 yield $this->transport->createQueue($queue, new QueueBind($exchange, 'consume'));
 
                 yield $this->transport->send(
-                    new  OutboundPackage(
+                    new OutboundPackage(
                         uuid(),
                         'somePayload',
                         ['key' => 'value'],
@@ -167,8 +164,7 @@ final class PhpInnacleTransportTest extends TestCase
                 );
 
                 yield $this->transport->consume(
-                    function (PhpInnacleIncomingPackage $package): \Generator
-                    {
+                    function (PhpInnacleIncomingPackage $package): \Generator {
                         self::assertInstanceOf(PhpInnacleIncomingPackage::class, $package);
                         self::assertSame('somePayload', $package->payload());
                         self::assertCount(1, $package->headers());
@@ -187,8 +183,7 @@ final class PhpInnacleTransportTest extends TestCase
     public function bulkPublish(): void
     {
         Loop::run(
-            function (): \Generator
-            {
+            function (): \Generator {
                 $exchange = AmqpExchange::direct('consume');
                 $queue    = AmqpQueue::default('consume.messages');
 
@@ -202,7 +197,7 @@ final class PhpInnacleTransportTest extends TestCase
                         ['key' => 'value'],
                         new AmqpTransportLevelDestination('consume', 'consume')
                     ),
-                    new  OutboundPackage(
+                    new OutboundPackage(
                         uuid(),
                         'somePayload2',
                         ['key' => 'value2'],
@@ -222,16 +217,14 @@ final class PhpInnacleTransportTest extends TestCase
                 $index = 1;
 
                 yield $this->transport->consume(
-                    function (PhpInnacleIncomingPackage $package) use (&$index): \Generator
-                    {
+                    function (PhpInnacleIncomingPackage $package) use (&$index): \Generator {
                         self::assertInstanceOf(PhpInnacleIncomingPackage::class, $package);
                         self::assertSame('somePayload' . $index, $package->payload());
                         self::assertCount(1, $package->headers());
 
                         $index++;
 
-                        if ($index === 3)
-                        {
+                        if ($index === 3) {
                             yield $this->transport->disconnect();
                         }
                     },

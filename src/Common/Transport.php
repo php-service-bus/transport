@@ -24,7 +24,7 @@ interface Transport
      * Create topic and bind them
      * If the topic to which we binds does not exist, it will be created.
      *
-     * @psalm-return Promise<void>
+     * @return Promise<void>
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\ConnectionFail Connection refused
      * @throws \ServiceBus\Transport\Common\Exceptions\CreateTopicFailed Failed to create topic
@@ -36,7 +36,7 @@ interface Transport
      * Create queue and bind to topic(s)
      * If the topic to which we binds does not exist, it will be created.
      *
-     * @psalm-return Promise<void>
+     * @return Promise<void>
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\ConnectionFail Connection refused
      * @throws \ServiceBus\Transport\Common\Exceptions\CreateQueueFailed Failed to create queue
@@ -49,7 +49,7 @@ interface Transport
      *
      * @psalm-param callable(\ServiceBus\Transport\Common\Package\IncomingPackage):\Generator $onMessage
      *
-     * @psalm-return Promise<void>
+     * @return Promise<void>
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\ConnectionFail Connection refused
      */
@@ -58,14 +58,14 @@ interface Transport
     /**
      * Stop subscription.
      *
-     * @psalm-return Promise<void>
+     * @return Promise<void>
      */
     public function stop(): Promise;
 
     /**
      * Send message to broker.
      *
-     * @psalm-return Promise<void>
+     * @return Promise<void>
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\SendMessageFailed Failed to send message
      */
@@ -74,7 +74,7 @@ interface Transport
     /**
      * Connect to broker.
      *
-     * @psalm-return Promise<void>
+     * @return Promise<void>
      *
      * @throws \ServiceBus\Transport\Common\Exceptions\ConnectionFail Connection refused
      */
@@ -83,7 +83,7 @@ interface Transport
     /**
      * Close connection.
      *
-     * @psalm-return Promise<void>
+     * @return Promise<void>
      */
     public function disconnect(): Promise;
 }

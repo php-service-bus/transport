@@ -21,6 +21,7 @@ use ServiceBus\Transport\Common\Package\IncomingPackage;
 use Amp\Promise;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+
 use function Amp\asyncCall;
 use function Amp\call;
 use function ServiceBus\Common\jsonDecode;
@@ -73,10 +74,8 @@ final class NsqConsumer
     public function listen(callable $onMessage): Promise
     {
         return call(
-            function () use ($onMessage): \Generator
-            {
-                if ($this->subscribeClient === null)
-                {
+            function () use ($onMessage): \Generator {
+                if ($this->subscribeClient === null) {
                     $this->logger->debug('Creates new consumer for channel "{channelName}" ', [
                         'channelName' => $this->channel->name,
                     ]);
@@ -85,8 +84,7 @@ final class NsqConsumer
                         address: $this->config->toString(),
                         topic: $this->channel->toString(),
                         channel: 'php-service-bus',
-                        onMessage: function (Message $message) use ($onMessage): void
-                        {
+                        onMessage: function (Message $message) use ($onMessage): void {
                             $this->handleMessage(
                                 $message,
                                 $this->channel->toString(),
@@ -97,12 +95,9 @@ final class NsqConsumer
                         logger: $this->logger,
                     );
 
-                    try
-                    {
+                    try {
                         yield $this->subscribeClient->connect();
-                    }
-                    catch (ConnectException $e)
-                    {
+                    } catch (ConnectException $e) {
                         throw ConnectionFail::fromThrowable($e);
                     }
                 }
@@ -122,6 +117,7 @@ final class NsqConsumer
     {
         $decodedPayload = $this->decodeMessageBody($message);
 
+        /** @psalm-suppress PossiblyInvalidArgument */
         asyncCall(
             $onMessage,
             new NsqIncomingPackage(
@@ -142,15 +138,13 @@ final class NsqConsumer
      */
     public function stop(): Promise
     {
+        /** @phpstan-ignore return.type */
         return call(
-            function (): void
-            {
-                if ($this->subscribeClient === null)
-                {
+            function (): void {
+                if ($this->subscribeClient === null) {
                     return;
                 }
 
-                /** @psalm-suppress InternalMethod */
                 $this->subscribeClient->close();
 
                 $this->subscribeClient = null;
@@ -167,8 +161,7 @@ final class NsqConsumer
     {
         $messageBody = $message->body;
 
-        if (empty($messageBody))
-        {
+        if (empty($messageBody)) {
             throw new \LogicException('Received message payload cant be empty');
         }
 
@@ -181,8 +174,7 @@ final class NsqConsumer
         $decodedMessageBody = jsonDecode($messageBody);
 
 
-        if (empty($decodedMessageBody[0]))
-        {
+        if (empty($decodedMessageBody[0])) {
             throw new \LogicException('Received message payload cant be empty');
         }
 
@@ -202,8 +194,7 @@ final class NsqConsumer
      */
     private static function extractUuidFromHeaders(string $key, array &$headers): string
     {
-        if (\array_key_exists($key, $headers) && \is_string($headers[$key]) && $headers[$key] !== '')
-        {
+        if (\array_key_exists($key, $headers) && \is_string($headers[$key]) && $headers[$key] !== '') {
             $value = $headers[$key];
 
             unset($headers[$key]);

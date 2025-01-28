@@ -50,8 +50,7 @@ final class NsqConsumerTest extends TestCase
     public function disconnectWithoutConsuming(): void
     {
         Loop::run(
-            function (): \Generator
-            {
+            function (): \Generator {
                 $consumer = new NsqConsumer(new NsqChannel('qwerty'), $this->config);
 
                 self::assertTrue(true);

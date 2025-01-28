@@ -44,10 +44,8 @@ function parseConnectionDSN(string $connectionDSN): array
      */
     $parsedDSN = \parse_url($connectionDSN);
 
-    if (\is_array($parsedDSN))
-    {
-        if (empty($parsedDSN['scheme']))
-        {
+    if (\is_array($parsedDSN)) {
+        if (empty($parsedDSN['scheme'])) {
             throw IncorrectConnectionParameters::incorrectScheme();
         }
 
@@ -67,6 +65,5 @@ function parseConnectionQuery(string $connectionQuery): array
     \parse_str($connectionQuery, $output);
 
     /** @psalm-var array<string, string|int|float> $output */
-
     return $output;
 }

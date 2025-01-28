@@ -19,6 +19,7 @@ use Amp\Promise;
 use PHPinnacle\Ridge\Channel;
 use Psr\Log\LoggerInterface;
 use ServiceBus\Transport\Common\Package\OutboundPackage;
+
 use function Amp\call;
 
 /**
@@ -59,19 +60,16 @@ final class PhpInnaclePublisher
     public function processBulk(OutboundPackage ...$outboundPackages): Promise
     {
         return call(
-            function () use ($outboundPackages): \Generator
-            {
+            function () use ($outboundPackages): \Generator {
                 /** @var Channel $channel */
                 $channel = yield $this->client->channel();
 
                 yield $channel->txSelect();
 
-                try
-                {
+                try {
                     $promises = [];
 
-                    foreach ($outboundPackages as $outboundPackage)
-                    {
+                    foreach ($outboundPackages as $outboundPackage) {
                         /** @var AmqpTransportLevelDestination $destination */
                         $destination = $outboundPackage->destination;
                         $headers     = $this->prepareHeaders($outboundPackage);
@@ -94,15 +92,11 @@ final class PhpInnaclePublisher
 
                     yield $promises;
                     yield $channel->txCommit();
-                }
-                catch (\Throwable $throwable)
-                {
+                } catch (\Throwable $throwable) {
                     yield $channel->txRollback();
 
                     throw $throwable;
-                }
-                finally
-                {
+                } finally {
                     yield $channel->close();
                 }
             }
@@ -112,15 +106,15 @@ final class PhpInnaclePublisher
     /**
      * Send message to broker.
      *
+     * @return Promise<void>
+     *
      * @throws \Throwable
      */
     public function process(OutboundPackage $outboundPackage): Promise
     {
         return call(
-            function () use ($outboundPackage): \Generator
-            {
-                if ($this->regularChannel === null)
-                {
+            function () use ($outboundPackage): \Generator {
+                if ($this->regularChannel === null) {
                     $this->regularChannel = yield $this->client->channel();
                 }
 

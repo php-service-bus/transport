@@ -20,8 +20,8 @@
     <issueHandlers>
         <PropertyNotSetInConstructor errorLevel="suppress"/>
         <UnnecessaryVarAnnotation errorLevel="suppress"/>
+        <RiskyTruthyFalsyComparison errorLevel="suppress"/>
+        <InternalClass errorLevel="suppress"/>
+        <InternalMethod errorLevel="suppress"/>
     </issueHandlers>
-    <plugins>
-        <pluginClass class="Boesing\PsalmPluginStringf\Plugin"/>
-    </plugins>
 </psalm>

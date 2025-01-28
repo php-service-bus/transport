@@ -29,6 +29,7 @@ use ServiceBus\Transport\Common\QueueBind;
 use ServiceBus\Transport\Common\Topic;
 use ServiceBus\Transport\Common\TopicBind;
 use ServiceBus\Transport\Common\Transport;
+
 use function Amp\call;
 
 /**
@@ -78,18 +79,19 @@ final class PhpInnacleTransport implements Transport
         $this->client = new Client($this->config);
     }
 
+    /**
+     * @psalm-suppress InvalidReturnType
+     * @psalm-suppress InvalidReturnStatement
+     */
     public function connect(): Promise
     {
         return call(
-            function (): \Generator
-            {
-                if ($this->client->isConnected())
-                {
+            function (): \Generator {
+                if ($this->client->isConnected()) {
                     return;
                 }
 
-                try
-                {
+                try {
                     yield $this->client->connect();
 
                     $this->logger->debug('Connected to broker', [
@@ -97,9 +99,7 @@ final class PhpInnacleTransport implements Transport
                         'port'  => $this->config->port,
                         'vhost' => $this->config->vhost,
                     ]);
-                }
-                catch (\Throwable $throwable)
-                {
+                } catch (\Throwable $throwable) {
                     throw new ConnectionFail(
                         \sprintf(
                             'Can\'t connect to %s:%d (vhost: %s) with credentials %s:%s',
@@ -120,17 +120,12 @@ final class PhpInnacleTransport implements Transport
     public function disconnect(): Promise
     {
         return call(
-            function (): \Generator
-            {
-                try
-                {
-                    if ($this->client->isConnected())
-                    {
+            function (): \Generator {
+                try {
+                    if ($this->client->isConnected()) {
                         yield $this->client->disconnect();
                     }
-                }
-                catch (\Throwable)
-                {
+                } catch (\Throwable) {
                     /** Not interested */
                 }
 
@@ -146,15 +141,13 @@ final class PhpInnacleTransport implements Transport
     public function consume(callable $onMessage, Queue ...$queues): Promise
     {
         return call(
-            function () use ($queues, $onMessage): \Generator
-            {
+            function () use ($queues, $onMessage): \Generator {
                 yield $this->connect();
 
                 $channel = yield $this->client->channel();
 
                 /** @var AmqpQueue $queue */
-                foreach ($queues as $queue)
-                {
+                foreach ($queues as $queue) {
                     $this->logger->debug('Starting a subscription to the "{queueName}" queue', [
                         'host'      => $this->config->host,
                         'port'      => $this->config->port,
@@ -176,10 +169,8 @@ final class PhpInnacleTransport implements Transport
     public function stop(): Promise
     {
         return call(
-            function (): \Generator
-            {
-                foreach ($this->consumers as $queueName => $consumer)
-                {
+            function (): \Generator {
+                foreach ($this->consumers as $queueName => $consumer) {
                     $this->logger->debug('Completing the subscription to the "{queueName}" queue', [
                         'host'      => $this->config->host,
                         'port'      => $this->config->port,
@@ -198,25 +189,21 @@ final class PhpInnacleTransport implements Transport
     public function send(OutboundPackage ...$outboundPackages): Promise
     {
         return call(
-            function () use ($outboundPackages): \Generator
-            {
-                if (\count($outboundPackages) === 0)
-                {
+            function () use ($outboundPackages): \Generator {
+                if (\count($outboundPackages) === 0) {
                     return;
                 }
 
                 yield $this->connect();
 
-                if ($this->publisher === null)
-                {
+                if ($this->publisher === null) {
                     $this->publisher = new PhpInnaclePublisher(
                         client: $this->client,
                         logger: $this->logger
                     );
                 }
 
-                if (\count($outboundPackages) === 1)
-                {
+                if (\count($outboundPackages) === 1) {
                     yield $this->publisher->process(
                         $outboundPackages[\array_key_first($outboundPackages)]
                     );
@@ -232,8 +219,7 @@ final class PhpInnacleTransport implements Transport
     public function createTopic(Topic $topic, TopicBind ...$binds): Promise
     {
         return call(
-            function () use ($topic, $binds): \Generator
-            {
+            function () use ($topic, $binds): \Generator {
                 /** @var AmqpExchange $amqpExchange */
                 $amqpExchange = $topic;
 
@@ -258,8 +244,7 @@ final class PhpInnacleTransport implements Transport
     public function createQueue(Queue $queue, QueueBind ...$binds): Promise
     {
         return call(
-            function () use ($queue, $binds): \Generator
-            {
+            function () use ($queue, $binds): \Generator {
                 /** @var AmqpQueue $amqpQueue */
                 $amqpQueue = $queue;
 

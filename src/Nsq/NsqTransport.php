@@ -21,6 +21,7 @@ use ServiceBus\Transport\Common\QueueBind;
 use ServiceBus\Transport\Common\Topic;
 use ServiceBus\Transport\Common\TopicBind;
 use ServiceBus\Transport\Common\Transport;
+
 use function Amp\call;
 
 final class NsqTransport implements Transport
@@ -58,9 +59,9 @@ final class NsqTransport implements Transport
      */
     public function createTopic(Topic $topic, TopicBind ...$binds): Promise
     {
+        /** @phpstan-ignore return.type */
         return call(
-            static function ()
-            {
+            static function () {
             }
         );
     }
@@ -70,9 +71,9 @@ final class NsqTransport implements Transport
      */
     public function createQueue(Queue $queue, QueueBind ...$binds): Promise
     {
+        /** @phpstan-ignore return.type */
         return call(
-            static function ()
-            {
+            static function () {
             }
         );
     }
@@ -80,13 +81,11 @@ final class NsqTransport implements Transport
     public function consume(callable $onMessage, Queue ...$queues): Promise
     {
         return call(
-            function () use ($queues, $onMessage): \Generator
-            {
+            function () use ($queues, $onMessage): \Generator {
                 yield $this->connect();
 
                 /** @var \ServiceBus\Transport\Nsq\NsqChannel $channel */
-                foreach ($queues as $channel)
-                {
+                foreach ($queues as $channel) {
                     $this->logger->debug('Starting a subscription to the "{channelName}" channel', [
                         'host'        => $this->config->host,
                         'port'        => $this->config->port,
@@ -98,10 +97,8 @@ final class NsqTransport implements Transport
                     $promise = $consumer->listen($onMessage);
 
                     $promise->onResolve(
-                        function (?\Throwable $throwable) use ($channel, $consumer): void
-                        {
-                            if ($throwable !== null)
-                            {
+                        function (?\Throwable $throwable) use ($channel, $consumer): void {
+                            if ($throwable !== null) {
                                 throw $throwable;
                             }
 
@@ -121,20 +118,16 @@ final class NsqTransport implements Transport
     public function send(OutboundPackage ...$outboundPackages): Promise
     {
         return call(
-            function () use ($outboundPackages): \Generator
-            {
-                if (\count($outboundPackages) === 0)
-                {
+            function () use ($outboundPackages): \Generator {
+                if (\count($outboundPackages) === 0) {
                     return;
                 }
 
-                if ($this->publisher === null)
-                {
+                if ($this->publisher === null) {
                     $this->publisher = new NsqPublisher($this->config, $this->logger);
                 }
 
-                if (\count($outboundPackages) === 1)
-                {
+                if (\count($outboundPackages) === 1) {
                     yield $this->publisher->publish($outboundPackages[\array_key_first($outboundPackages)]);
 
                     return;
@@ -147,9 +140,9 @@ final class NsqTransport implements Transport
 
     public function connect(): Promise
     {
+        /** @phpstan-ignore return.type */
         return call(
-            static function ()
-            {
+            static function () {
             }
         );
     }
@@ -157,14 +150,12 @@ final class NsqTransport implements Transport
     public function disconnect(): Promise
     {
         return call(
-            function (): \Generator
-            {
+            function (): \Generator {
                 $this->publisher?->disconnect();
 
                 $promises = [];
 
-                foreach ($this->consumers as $consumer)
-                {
+                foreach ($this->consumers as $consumer) {
                     $promises[] = $consumer->stop();
                 }
 

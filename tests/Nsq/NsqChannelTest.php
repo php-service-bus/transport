@@ -25,7 +25,7 @@ final class NsqChannelTest extends TestCase
      */
     public function successCreate(): void
     {
-        self::assertSame('qwerty', (new  NsqChannel('qwerty'))->name);
+        self::assertSame('qwerty', (new NsqChannel('qwerty'))->name);
     }
 
     /**

@@ -251,8 +251,7 @@ final class AmqpQueue implements Queue
         array  $arguments = [],
         int    $flags = 0
     ) {
-        if (self::MAX_NAME_SYMBOLS < \mb_strlen($name))
-        {
+        if (self::MAX_NAME_SYMBOLS < \mb_strlen($name)) {
             throw InvalidQueueName::nameIsToLong($name);
         }
 

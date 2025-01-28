@@ -81,8 +81,7 @@ final class RedisTransportModule implements ServiceBusModule
             'service_bus.transport.redis.default_destination_channel' => $this->defaultDestinationChannel,
         ];
 
-        foreach ($parameters as $key => $value)
-        {
+        foreach ($parameters as $key => $value) {
             $containerBuilder->setParameter($key, $value);
         }
     }

@@ -18,6 +18,7 @@ use PHPinnacle\Ridge\Message;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use ServiceBus\Transport\Amqp\AmqpQueue;
+
 use function Amp\asyncCall;
 use function Amp\call;
 use function ServiceBus\Common\throwableMessage;
@@ -56,14 +57,11 @@ final class PhpInnacleConsumer
     public function __construct(AmqpQueue $queue, Channel $channel, ?LoggerInterface $logger = null)
     {
         /**
-         * @noinspection PhpUnhandledExceptionInspection
-         *
-         * @psalm-var     non-empty-string $consumerTag
+         * @var non-empty-string $consumerTag
          */
         $consumerTag = \sha1(\random_bytes(16));
 
         $this->tag = $consumerTag;
-
         $this->queue   = $queue;
         $this->channel = $channel;
         $this->logger  = $logger ?? new NullLogger();
@@ -79,8 +77,7 @@ final class PhpInnacleConsumer
     public function listen(callable $onMessageReceived): Promise
     {
         return call(
-            function () use ($onMessageReceived): \Generator
-            {
+            function () use ($onMessageReceived): \Generator {
                 $this->logger->debug(
                     'Creates new consumer on channel for queue "{queue}" with tag "{consumerTag}"',
                     [
@@ -110,10 +107,8 @@ final class PhpInnacleConsumer
     public function stop(): Promise
     {
         return call(
-            function (): \Generator
-            {
-                if ($this->tag !== null)
-                {
+            function (): \Generator {
+                if ($this->tag !== null) {
                     yield $this->channel->cancel($this->tag);
                 }
 
@@ -137,12 +132,10 @@ final class PhpInnacleConsumer
      *
      * @psalm-return callable(Message, Channel):void
      */
-    private function createMessageHandler($onMessageReceived): callable
+    private function createMessageHandler(callable $onMessageReceived): callable
     {
-        return function (Message $message, Channel $channel) use ($onMessageReceived): void
-        {
-            try
-            {
+        return function (Message $message, Channel $channel) use ($onMessageReceived): void {
+            try {
                 $incomingPackage = new PhpInnacleIncomingPackage(
                     message: $message,
                     channel: $channel
@@ -156,12 +149,11 @@ final class PhpInnacleConsumer
                     'rawMessageHeaders' => $incomingPackage->headers(),
                 ]);
 
+                /** @psalm-suppress PossiblyInvalidArgument */
                 asyncCall($onMessageReceived, $incomingPackage);
 
                 unset($incomingPackage);
-            }
-            catch (\Throwable $throwable)
-            {
+            } catch (\Throwable $throwable) {
                 $this->logger->error(
                     'Error occurred: {throwableMessage}',
                     [

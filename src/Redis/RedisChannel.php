@@ -40,8 +40,7 @@ final class RedisChannel implements Queue
      */
     public function __construct(string $channel)
     {
-        if ($channel === '')
-        {
+        if ($channel === '') {
             throw IncorrectChannelName::emptyChannelName();
         }
 

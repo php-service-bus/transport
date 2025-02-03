@@ -37,13 +37,13 @@
     "php": ">=8.2",
     "amphp/amp": "v2.6.*",
     "amphp/redis": "v1.*",
-    "php-service-bus/common": "v5.2.x-dev",
+    "php-service-bus/common": "v5.2",
     "phpinnacle/ridge": "v1.3.*",
     "symfony/dependency-injection": "^6.3 || ^7.0",
     "nsq/nsq": "v0.9.*"
   },
   "require-dev": {
-    "php-service-bus/code-style-config": "v5.2.x-dev",
+    "php-service-bus/code-style-config": "v5.2",
     "phpunit/phpunit": "^10.0 || ^11.0",
     "vimeo/psalm": "^4.30 || ^5.4",
     "phpstan/phpstan": "^1.12 || ^2.0"
